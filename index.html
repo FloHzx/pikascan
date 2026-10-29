@@ -348,7 +348,7 @@
 .alert-row{ display:flex; gap:12px; align-items:center; padding:12px 0; border-top:1px solid var(--hairline); } .alert-row:first-child{ border-top:none; }
 .alert-ico{ width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; flex:0 0 auto; } .alert-ico.up{ background:var(--good-bg); color:var(--good); } .alert-ico.down{ background:var(--bad-bg); color:var(--bad); }
 .alert-row.seen{ opacity:.55; } .alert-row .txt{ flex:1 1 auto; font-size:14px; } .alert-row .when{ font-size:12px; color:var(--muted); }
-.status-pill{ font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:999px; } .status-pill.bought{ background:var(--good-bg); color:var(--good); } .status-pill.spotted{ background:var(--chip-bg); color:var(--ink-secondary); }
+.status-pill{ font-size:11.5px; font-weight:600; padding:3px 9px; border-radius:999px; } .status-pill.bought{ background:var(--good-bg); color:var(--good); } .status-pill.pack{ background:#fff3c4; color:#6b4a00; } .status-pill.spotted{ background:var(--chip-bg); color:var(--ink-secondary); }
 .toast{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--ink); color:var(--card); padding:10px 16px; border-radius:10px; font-size:13.5px; z-index:60; max-width:90vw; box-shadow:0 8px 30px rgba(0,0,0,.35); }
 .toast[hidden]{ display:none; }
 .settings-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; }
@@ -748,7 +748,7 @@
     <div class="card-box" id="impBox">
       <p class="imp-lead">Importe d'un coup toutes tes cartes depuis un fichier CSV (colonnes <code>edition;numero;nom</code>) — par exemple ta collection <b>Pokecardex</b>. Chaque carte est reconnue en direct (nom français, image, prix Cardmarket €) et ajoutée à ta base.</p>
       <div class="imp-grid">
-        <div class="field"><label for="impStatus">Ajouter comme</label><select id="impStatus"><option value="bought" selected>Acheté (je la possède)</option><option value="spotted">Repéré (à suivre)</option></select></div>
+        <div class="field"><label for="impStatus">Ajouter comme</label><select id="impStatus"><option value="bought">Acheté (je la possède)</option><option value="pack" selected>Pack (tiré d'un booster)</option><option value="spotted">Repéré (à suivre)</option></select></div>
         <div class="field"><label for="impRar">Cartes à importer</label><select id="impRar"><option value="chase" selected>Cartes rares seulement (AR, secrètes, ex, V, holo…)</option><option value="nocommon">Tout sauf communes et peu communes</option><option value="all">Toutes les cartes</option></select></div>
         <div class="field"><label for="impCond">État par défaut</label><select id="impCond"><option value="NM">Neuf / quasi neuf</option><option value="EX">Excellent</option><option value="GD">Bon</option><option value="PL">Joué</option></select></div>
       </div>
@@ -1130,7 +1130,7 @@ function renderTiles(){
   $('tiles').innerHTML = `
     <div class="tile"><div class="label">Valeur estimée${S.edition?' · '+esc(edLabel(S.edition)):''}</div><div class="value">${eur(total)}</div><div class="foot">${list.length} carte${list.length>1?'s':''} · prix Cardmarket (€)</div></div>
     <div class="tile"><div class="label">Carte la plus chère</div><div class="value small">${top?esc(dn(top)):'—'}</div><div class="foot">${top?eur(valueEur(top)):'—'}</div></div>
-    <div class="tile"><div class="label">Plus-value latente</div><div class="value ${bought.length?(gain>=0?'up':'down'):''}">${bought.length?(gain>=0?'+':'−')+eur(Math.abs(gain)):'—'}</div><div class="foot">${bought.length?`sur ${eur(invested)} investis (${bought.length} achetée${bought.length>1?'s':''})`:(list.some(c=>c.status==='bought') ? list.filter(c=>c.status==='bought').length+' carte(s) possédée(s), prix d\'achat non renseigné' : 'aucune carte marquée « achetée »')}</div></div>
+    <div class="tile"><div class="label">Plus-value latente</div><div class="value ${bought.length?(gain>=0?'up':'down'):''}">${bought.length?(gain>=0?'+':'−')+eur(Math.abs(gain)):'—'}</div><div class="foot">${bought.length?`sur ${eur(invested)} investis (${bought.length} achetée${bought.length>1?'s':''})`:(list.some(c=>c.status==='bought'||c.status==='pack') ? list.filter(c=>c.status==='bought'||c.status==='pack').length+' carte(s) possédée(s), prix d\'achat non renseigné' : 'aucune carte marquée « achetée »')}</div></div>
     <div class="tile"><div class="label">Alertes à lire</div><div class="value ${unseen?'down':''}">${unseen}</div><div class="foot">${unseen?'voir l\'onglet Alertes':'rien à signaler'}</div></div>`;
 }
 
@@ -1273,7 +1273,7 @@ function renderDossiers(){
       <div class="imgcell">${imgTag(c)}</div>
       <div class="body">
         <div class="title-row"><div><h3>${esc(dn(c))}</h3><div class="en-name">${esc(c.nameEn)}</div></div>
-          <span class="status-pill ${bought?'bought':'spotted'}">${bought?'Acheté':'Repéré'}</span></div>
+          <span class="status-pill ${c.status==='pack'?'pack':bought?'bought':'spotted'}">${c.status==='pack'?'Pack':bought?'Acheté':'Repéré'}</span></div>
         <div class="chips">${edChip(c)}<span class="chip">${esc(c.number||'')}</span><span class="chip rarity">${esc(c.rarity||'')}</span>${c.chaseTier?`<span class="chip">${esc(c.chaseTier)}</span>`:''}<span class="chip">${esc(condOf(c).l)}</span></div>
         <div class="price-block">
           <div class="price-now"><div class="label">Valeur estimée</div><div class="value num">${eur(valueEur(c))}</div><div class="label" style="text-transform:none;letter-spacing:0">prix Cardmarket (toutes langues)${c.lowUsd!=null?` · bas ${eur(c.lowUsd*fx()*condOf(c).f*frF(c))}`:''}</div>${ebayStat(c)}</div>
@@ -1289,7 +1289,7 @@ function renderDossiers(){
         <div class="footer-row">${listingBtn(c)}
           <button class="btn small" data-act="refresh1" data-id="${esc(c.id)}">↻ Actualiser</button>
           <button class="btn small" data-act="analyse" data-id="${esc(c.id)}">🔎 Re-analyser</button>
-          <button class="btn small" data-act="toggle" data-id="${esc(c.id)}">${bought?'Remettre en « repéré »':'Marquer « acheté »'}</button>
+          <button class="btn small" data-act="toggle" data-id="${esc(c.id)}">${c.status==='pack'?'Marquer « acheté »':bought?'Remettre en « repéré »':'Marquer « acheté »'}</button>
           ${c.canonicalUrl?`<a class="btn small" href="${esc(cmUrl(c.canonicalUrl))}" target="_blank" rel="noopener noreferrer">Cardmarket FR ↗</a>`:''}
           <button class="btn small ${S.confirmDel===c.id?'danger-confirm':''}" data-act="del" data-id="${esc(c.id)}">${S.confirmDel===c.id?'Confirmer le retrait ?':'Retirer'}</button>
         </div>
@@ -1442,7 +1442,7 @@ function renderAnalysis(){
       <div id="mlinksBox">${marketLinksHTML({name:frCardName(c.name), number:c.number, official:c.expansion&&c.expansion.official, edition:frEdition(c.expansion&&c.expansion.name), maxBuy:v.maxBuy})}</div>
       <div class="form-grid" style="margin-top:16px">
         <div class="field"><label for="f-source">Source</label><select id="f-source">${SOURCES.map(s=>`<option ${s===FORM.source?'selected':''}>${esc(s)}</option>`).join('')}</select></div>
-        <div class="field"><label for="f-status">Statut</label><select id="f-status"><option value="spotted" ${FORM.status==='spotted'?'selected':''}>Repérée</option><option value="bought" ${FORM.status==='bought'?'selected':''}>Achetée</option></select></div>
+        <div class="field"><label for="f-status">Statut</label><select id="f-status"><option value="spotted" ${FORM.status==='spotted'?'selected':''}>Repérée</option><option value="bought" ${FORM.status==='bought'?'selected':''}>Achetée</option><option value="pack" ${FORM.status==='pack'?'selected':''}>Pack (tirée d'un booster)</option></select></div>
         <div class="field"><label for="f-buy">Prix payé (€, si achetée)</label><input id="f-buy" type="number" step="0.1" min="0" value="${esc(FORM.buyPrice)}" placeholder="auto = prix demandé"></div>
         <div class="field" style="grid-column:1/-1"><label for="f-link">Lien de l'annonce (optionnel)</label><input id="f-link" type="url" placeholder="https://www.vinted.fr/items/…" value="${esc(FORM.link)}"></div>
       </div>
@@ -2335,7 +2335,7 @@ function renderPhoto(soft){
   root.innerHTML = `<div class="section-head"><div><h2>${PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost').length} carte${PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost').length>1?'s':''} détectée${PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost').length>1?'s':''}</h2><div class="sub">Vérifie, corrige l'impression si besoin, puis ajoute à ta base. Les prix sont ceux de Cardmarket (toutes langues).</div></div></div>` +
     groups.map(g=>`<div class="ph-group"><h3>${titles[g.cf]} <span class="badge" data-n="1">${g.list.length}</span></h3><div class="ph-list">${g.list.map(o=>phCardHTML(o.it,o.k)).join('')}</div></div>`).join('') +
     `<div class="ph-bar"><div class="ph-bar-t"><b>${t.n}</b> carte${t.n>1?'s':''} sélectionnée${t.n>1?'s':''} · valeur ≈ <b class="num">${eur(t.tot)}</b>${t.miss?` <span class="hint" style="margin:0">(${t.miss} sans prix)</span>`:''}</div>
-      <div class="ph-bar-c"><select id="phStatusSel" aria-label="Ajouter comme"><option value="bought" ${PH.status==='bought'?'selected':''}>Acheté (je la possède)</option><option value="spotted" ${PH.status==='spotted'?'selected':''}>Repéré (à suivre)</option></select>
+      <div class="ph-bar-c"><select id="phStatusSel" aria-label="Ajouter comme"><option value="bought" ${PH.status==='bought'?'selected':''}>Acheté (je la possède)</option><option value="pack" ${PH.status==='pack'?'selected':''}>Pack (tiré d'un booster)</option><option value="spotted" ${PH.status==='spotted'?'selected':''}>Repéré (à suivre)</option></select>
       <select id="phCondSel" aria-label="État">${COND.map(c=>`<option value="${c.k}" ${PH.cond===c.k?'selected':''}>${esc(c.l)}</option>`).join('')}</select>
       <button class="btn primary" id="phAdd" ${t.n?'':'disabled'}>Ajouter ${t.n||''} à ma base</button></div></div>` +
     `<details class="ph-txt"><summary>Texte lu par l'OCR (pour comprendre une erreur)</summary>${phTextHTML()}</details>`;

@@ -1,0 +1,396 @@
+edition;numero;nom
+PBL;001;Tropius
+PBL;002;Larvibule
+PBL;003;Mimantis
+PBL;005;Poltchageist
+PBL;006;Théffroyable
+PBL;007;Heatran
+PBL;008;Méga-Goupelin-ex
+PBL;009;Grillepattes
+PBL;010;Scolocendre
+PBL;011;Charbambin
+PBL;012;Carmadura
+PBL;013;Poissirène
+PBL;014;Poissoroy
+PBL;015;Wailmer
+PBL;016;Wailord-ex
+PBL;017;Relicanth
+PBL;018;Otaquin
+PBL;019;Otarlette
+PBL;020;Oratoria
+PBL;021;Dofin
+PBL;022;Superdofin
+PBL;023;Dynavolt
+PBL;024;Élecsprint
+PBL;025;Chrysapile
+PBL;026;Lucanon
+PBL;027;Méga-Zeraora-ex
+PBL;028;Miraidon
+PBL;029;Ramoloss
+PBL;030;Flagadoss
+PBL;031;Méga-Flagadoss-ex
+PBL;032;Lippoutou
+PBL;033;Polichombr
+PBL;034;Branette
+PBL;035;Spiritomb
+PBL;036;Funécire
+PBL;037;Mélancolux
+PBL;039;Sinistrail
+PBL;040;Marshadow
+PBL;041;Courrousinge
+PBL;042;Férosinge
+PBL;043;Colossinge
+PBL;044;Kranidos
+PBL;045;Charkos-ex
+PBL;046;Rototaupe
+PBL;047;Koraidon
+PBL;048;Méga-Darkrai-ex
+PBL;049;Vostourno
+PBL;050;Vaututrice
+PBL;051;Sepiatop
+PBL;052;Sepiatroce
+PBL;053;Goupilou
+PBL;054;Roublenard
+PBL;055;Morpeko-ex
+PBL;056;Zarude
+PBL;057;Grondogue
+PBL;058;Dogrino
+PBL;059;Yuyu
+PBL;060;Airmure
+PBL;061;Dinoclier
+PBL;062;Bastiodon
+PBL;063;Archéomire
+PBL;064;Archéodong
+PBL;066;Picassaut
+PBL;067;Piclairon
+PBL;068;Bazoucan
+PBL;069;Type:0
+PBL;070;Silvallié
+PBL;071;Lestombaile
+PBL;072;Fossile Armure Ancien
+PBL;073;Fossile Crâne Ancien
+PBL;074;Badge Rebelote
+PBL;075;Cloche Ténébreuse
+PBL;076;Carrière Fossile
+PBL;077;Combat Final de Gladio
+PBL;078;Albia
+PBL;079;Bridjet
+PBL;080;Vitalité d'Ondine
+PBL;081;Sbire du Clan Dérouillard
+PBL;082;Bombe Géniale
+PBL;083;Énergie Darkness Sombre
+PBL;084;Énergie Lightning Voltaïque
+PBL;086;Carmadura
+PBL;087;Poissirène
+PBL;089;Élecsprint
+PBL;099;Méga-Lugulabre-ex
+PBL;103;Méga-Minotaupe-ex
+PBL;105;Maillet Écrasant
+PBL;115;Méga-Lugulabre-ex
+30C;001;Noeunoeuf
+30C;002;Noadkoko d'Alola
+30C;003;Muciole
+30C;004;Lumivole
+30C;005;Tropius
+30C;006;Ceribou
+30C;007;Ceriflor
+30C;008;Prismillon
+30C;009;Goupix
+30C;010;Feunard
+30C;011;Sulfura
+30C;012;Ho-Oh
+30C;013;Victini
+30C;015;Chochodile-ex
+30C;016;Ramoloss
+30C;017;Lokhlass
+30C;018;Artikodin
+30C;019;Kyogre
+30C;020;Palkia
+30C;022;Froussardine
+30C;023;Pikachu
+30C;024;Pikachu
+30C;025;Pikachu
+30C;026;Pikachu
+30C;028;Pikachu
+30C;029;Pikachu
+30C;030;Pikachu
+30C;031;Pikachu
+30C;032;Pikachu
+30C;033;Pikachu
+30C;034;Pikachu
+30C;035;Pikachu
+30C;037;Pikachu
+30C;038;Pikachu
+30C;039;Pikachu
+30C;040;Pikachu
+30C;041;Pikachu
+30C;042;Pikachu
+30C;043;Pikachu
+30C;044;Pikachu
+30C;045;Pikachu
+30C;046;Pikachu
+30C;047;Pikachu
+30C;048;Pikachu
+30C;049;Pikachu
+30C;050;Pikachu
+30C;051;Pikachu
+30C;052;Pikachu
+30C;053;Pikachu-ex
+30C;056;Zekrom
+30C;057;Zeraora
+30C;058;Toxizap
+30C;059;Salarsen
+30C;060;Salarsen
+30C;061;Morpeko
+30C;063;Mewtwo
+30C;065;Mew
+30C;066;Mew-ex
+30C;067;Marill
+30C;068;Azumarill
+30C;069;Mentali
+30C;071;Nymphali-ex
+30C;072;Zarbi
+30C;073;Baudrive
+30C;074;Cresselia
+30C;075;Lugulabre
+30C;076;Xerneas
+30C;077;Guérilande
+30C;078;Cosmog
+30C;079;Cosmovum
+30C;080;Lunala
+30C;081;Mordudor
+30C;082;Groudon
+30C;083;Lucario
+30C;086;Koraidon
+30C;087;Nidoran♀
+30C;088;Nidorina
+30C;089;Miaouss d'Alola
+30C;090;Ectoplasma-ex
+30C;091;Noctali
+30C;093;Cornèbre
+30C;094;Baggiguane
+30C;095;Zorua
+30C;096;Zoroark
+30C;097;Solochi
+30C;099;Trioxhydre
+30C;100;Yveltal
+30C;101;Miaouss de Galar
+30C;102;Jirachi-ex
+30C;103;Dialga
+30C;105;Solgaleo
+30C;106;Zacian
+30C;107;Zamazenta
+30C;108;Gromago
+30C;110;Bébécaille
+30C;111;Écaïd
+30C;112;Ékaïser
+30C;113;Miaouss
+30C;114;Kangourex
+30C;115;Métamorph
+30C;118;Évoli
+30C;119;Ronflex
+30C;121;Lugia
+30C;123;Zoroark de Hisui
+30C;124;Météno
+30C;125;Famignol
+30C;126;Poké Registre
+30C;127;Échange
+30C;128;Hyper Ball
+30C;133;Électhor
+30C;134;Salarsen
+30C;137;Lugulabre
+30C;139;Miaouss d'Alola
+30C;141;Miaouss de Galar
+30C;142;Gromago
+30C;143;Ékaïser
+30C;144;Miaouss
+30C;145;Zorua de Hisui
+30C;150;Pikachu-ex
+30C;153;Nymphali-ex
+30C;154;Ectoplasma-ex
+MEG;060;Méga-Gardevoir-ex
+PRE;017;Ogerpon Masque du Fourneau-ex
+SSP;215;Fermite-ex
+SCR;151;Zeraora
+TWM;001;Saquedeneu
+TWM;003;Scarabrute
+TWM;005;Migalos
+TWM;007;Héliatronc
+TWM;009;Muciole
+TWM;011;Phyllali
+TWM;012;Brocélôme
+TWM;016;Gorythmic
+TWM;018;Pomdramour
+TWM;021;Poltchageist
+TWM;024;Ogerpon Masque Turquoise
+TWM;026;Goupix
+TWM;027;Feunard
+TWM;028;Limagma
+TWM;035;Darumacho
+TWM;036;Funécire
+TWM;038;Lugulabre
+TWM;039;Yuyu
+TWM;044;Poissirène
+TWM;049;Barpau
+TWM;050;Milobellus
+TWM;052;Oniglali
+TWM;053;Momartik
+TWM;056;Grenousse
+TWM;057;Croâporal
+TWM;058;Nigosier
+TWM;059;Dofin
+TWM;063;Serpente-Eau
+TWM;065;Électhor
+TWM;066;Lixy
+TWM;067;Luxio
+TWM;073;Têtampoule
+TWM;074;Ampibidou
+TWM;075;Zapétrel
+TWM;076;Fulgulairo
+TWM;078;Mélofée
+TWM;083;Girafarig
+TWM;086;Flabébé
+TWM;088;Florges
+TWM;089;Sucroquin
+TWM;090;Cupcanaille
+TWM;091;Bacabouh
+TWM;093;Amovénus
+TWM;099;Caninos de Hisui
+TWM;103;Charpenti
+TWM;108;Germéclat
+TWM;109;Floréclat
+TWM;111;Félicanis
+TWM;113;Medhyèna
+TWM;114;Grahyèna
+TWM;124;Vrombi
+TWM;125;Vrombotor
+TWM;126;Verpom
+TWM;128;Fantyrm
+TWM;131;Nigirigon
+TWM;132;Canarticho
+TWM;135;Évoli
+TWM;136;Ronflex
+TWM;140;Lakmécygne
+TWM;141;Ursaking Lune Vermeille-ex
+TWM;142;Flûte d'Accompagnement
+TWM;145;Roseille
+TWM;148;Maillet Amélioré
+TWM;149;Lieu de la Fête
+TWM;150;Ventilateur de Poche
+TWM;153;Tour de Brouillage
+TWM;155;Soutien de Néphie
+TWM;156;Love Ball
+TWM;158;Casque Chance
+TWM;160;Lithia
+TWM;167;Énergie Héritage
+TWM;168;Scarabrute
+TWM;172;Chartor
+TWM;178;Zapétrel
+TWM;188;Évoli
+TEF;099;Roc-de-Fer-ex
+TEF;190;Triopikeau-ex
+PAR;100;Salarsen-ex
+PAR;135;Exagide-ex
+PAR;192;Délestin
+PAR;237;Norman
+CRZ;045;Motisma V
+CRZ;GG66;Roxanne
+SIT;024;Reshiram V
+SIT;034;Goupix d'Alola VSTAR
+SIT;035;Amonistar V
+SIT;057;Regieleki V
+SIT;066;Zarbi VSTAR
+SIT;090;Arcanin de Hisui V
+SIT;120;Jirachi Radieux
+SIT;128;Magearna V
+SIT;140;Ho-Oh V
+SIT;180;Moufflair V
+SIT;187;Ho-Oh V
+SIT;214;Poncho de Camouflage Feuillu
+SIT;TG03;Lainergie
+SIT;TG07;Rocabot
+SIT;TG08;Quartermac
+SIT;TG09;Drakkarmin
+SIT;TG11;Altaria
+SIT;TG24;Chaz
+SIT;TG26;Professeure Pimprenelle
+LOR;027;Goupelin V
+LOR;056;Magnézone V
+LOR;057;Magnézone VSTAR
+LOR;058;Motisma V
+LOR;082;Amovénus V
+LOR;119;Drascore VSTAR
+LOR;136;Muplodocus de Hisui VSTAR
+LOR;146;Zoroark de Hisui V
+LOR;172;Électrode de Hisui V
+LOR;180;Ptéra V
+LOR;196;Percupio
+LOR;209;Les Détroussœurs
+LOR;214;Boîte à Désastre
+LOR;TG02;Roserade
+LOR;TG05;Pikachu
+LOR;TG08;Arcanin de Hisui
+LOR;TG10;Ronflex
+LOR;TG16;Pikachu V
+LOR;TG21;Éthernatos V
+LOR;TG23;Découverte de l'Aventurière
+PGO;004;Florizarre Radieux
+PGO;005;Noadkoko d'Alola V
+PGO;018;Tortank Radieux
+PGO;047;Melmetal V
+PGO;048;Melmetal VMAX
+PGO;049;Dracolosse V
+PGO;079;Mewtwo VSTAR
+PGO;083;Capitaine d'équipe Candela
+PGO;086;Mewtwo VSTAR
+PGO;087;Incubateur d'Œufs
+PGO;088;Module Leurre
+ASR;087;Hachécateur V
+ASR;098;Darkrai V
+ASR;171;Mackogneur V
+ASR;173;Archéduc de Hisui V
+ASR;188;Roxanne
+ASR;190;Fragilady de Hisui VSTAR
+ASR;192;Palkia Originel VSTAR
+ASR;TG02;Pomdrapi
+ASR;TG16;Artikodin de Galar V
+BRS;040;Luminéon V
+BRS;065;Farfaduvet VSTAR
+BRS;088;Corboss V
+BRS;095;Morpeko V
+BRS;097;Galeking VMAX
+BRS;106;Libégon V
+BRS;128;Draïeul V
+BRS;181;Artikodin de Galar V
+BRS;TG28;Mustar Style Poing Final
+BRS;TG30;Shifours Mille Poings VMAX
+FST;021;Sucreine V
+FST;022;Gorythmic V
+FST;039;Lugulabre V
+FST;040;Lugulabre VMAX
+FST;076;Crabominable V
+FST;079;Lézargus VMAX
+FST;146;Lucario V
+FST;185;Genesect V
+FST;217;Rongrigou V
+FST;266;Lézargus VMAX
+FST;281;Pastille Puissance
+SWSH5;117;Mastouffe V
+SWSH1;214;Écusson Métal
+PRSWSH;SWSH237;Typhlosion de Hisui V
+PRSWSH;SWSH238;Archéduc de Hisui V
+PRSWSH;SWSH239;Clamiral de Hisui V
+MD;99;Phyllali
+GE;2;Cresselia
+GE;103;Cresselia
+GE;106;Palkia
+SW;10;Ho-Oh
+DP;9;Manaphy
+DP;122;Torterra
+PRDP;DP10;Simiabraz
+PRDP;DP12;Lucario
+PRDP;DP17;Dialga
+PRDP;DP37;Dialga
+DF;91;Dracolosse ex δ
+DF;98;Drattak ex δ
+HL;8;Jirachi
