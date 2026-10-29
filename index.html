@@ -609,21 +609,36 @@
 @media (max-width:560px){.ph-zm-pair{gap:6px}.ph-zm-in{padding:8px}}
 
 .ph-acts{display:flex;flex-wrap:wrap;gap:6px}
+.pokeball{ width:54px; height:54px; }
+.mast-title h1{ letter-spacing:-.5px; }
+.ps-scan{ color:var(--accent); }
+.intro{ position:relative; display:flex; gap:14px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin:0 0 16px; padding:10px 40px 10px 16px; border:1px solid var(--hairline); border-left:4px solid var(--accent2); border-radius:12px; background:var(--card); }
+.intro-txt b{ font-weight:800; }
+.intro-txt{ flex:1 1 360px; font-size:14px; color:var(--ink-secondary); line-height:1.4; }
+.intro-txt b{ color:var(--ink); }
+.intro[hidden]{ display:none; }
+.intro-act{ display:flex; gap:8px; flex-wrap:wrap; }
+.intro-x{ position:absolute; top:6px; right:8px; border:none; background:transparent; color:var(--ink-secondary); font-size:15px; cursor:pointer; padding:4px 6px; border-radius:6px; }
+.intro-x:hover{ background:var(--chip-bg); color:var(--ink); }
+@media (max-width:720px){ .pokeball{ width:46px; height:46px; } .intro-act .btn{ flex:1; } }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
   <header class="mast">
     <div class="mast-title">
-      <svg class="pokeball" viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r="29" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
-        <path d="M3 32a29 29 0 0 1 58 0z" fill="var(--accent)"/>
-        <rect x="3" y="29" width="58" height="6" fill="var(--ink)"/>
-        <circle cx="32" cy="32" r="9" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
-        <circle cx="32" cy="32" r="3.5" fill="var(--ink)"/>
+      <svg class="pokeball" viewBox="0 0 72 72" aria-hidden="true">
+        <defs><linearGradient id="psBeam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="var(--accent)" stop-opacity="0"/><stop offset=".5" stop-color="var(--accent2)"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+        <path d="M5 21V10a5 5 0 0 1 5-5h11M51 5h11a5 5 0 0 1 5 5v11M67 51v11a5 5 0 0 1-5 5H51M21 67H10a5 5 0 0 1-5-5V51" fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round"/>
+        <circle cx="36" cy="36" r="24" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
+        <path d="M12 36a24 24 0 0 1 48 0z" fill="var(--accent)"/>
+        <rect x="12" y="33.2" width="48" height="5.6" fill="var(--ink)"/>
+        <circle cx="36" cy="36" r="8" fill="var(--card)" stroke="var(--ink)" stroke-width="3"/>
+        <circle cx="36" cy="36" r="3" fill="var(--ink)"/>
+        <rect x="2" y="23.2" width="68" height="3" rx="1.5" fill="url(#psBeam)"/>
       </svg>
       <div>
-        <h1>PikaScan</h1>
-        <div class="mast-sub">Repère une carte → prix, tendance, verdict d'achat → ajoute-la à ta base et suis sa valeur</div>
+        <h1>Pika<span class="ps-scan">Scan</span></h1>
+        <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -636,6 +651,15 @@
     <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false">🔔 Alertes <span class="badge" id="badgeAlerts" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false">⚙️ Réglages</button>
   </div>
+
+  <section class="intro" id="intro" aria-label="Présentation">
+    <div class="intro-txt"><b>Achète malin, revends au bon prix.</b> Scanne un lot : valeur Cardmarket de chaque carte et prix d'achat max.</div>
+    <div class="intro-act">
+      <button class="btn primary" type="button" data-intro="photo">📷 Scanner un lot</button>
+      <button class="btn" type="button" data-intro="scan">🔎 Chercher</button>
+    </div>
+    <button class="intro-x" type="button" id="introX" aria-label="Masquer la présentation" title="Masquer">✕</button>
+  </section>
 
   <!-- ===== Repérer ===== -->
   <section class="panel" id="panel-scan" role="tabpanel" aria-labelledby="tab-scan">
@@ -1671,6 +1695,13 @@ function setTab(t){
   if(t==='base') renderAll();
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+(function(){
+  const box=document.getElementById('intro'); if(!box) return;
+  let off=false; try{ off = localStorage.getItem('ps_intro_off')==='1'; }catch(e){}
+  if(off) box.hidden=true;
+  document.getElementById('introX').addEventListener('click',()=>{ box.hidden=true; try{ localStorage.setItem('ps_intro_off','1'); }catch(e){} });
+  box.querySelectorAll('[data-intro]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.intro)));
+})();
 $('searchForm').addEventListener('submit',e=>{ e.preventDefault(); doSearch($('searchInput').value); });
 $('editionSearch').addEventListener('input',renderSidebar);
 $('editionAll').addEventListener('click',()=>{ S.edition=null; renderAll(); });
