@@ -1750,12 +1750,7 @@ const LocalDB = (function(){
     }; }
   };
 })();
-const SEED = [
-  {id:'cel25-9', nameFr:'Pikachu Surfeur VMAX', nameEn:'Surfing Pikachu VMAX', number:'9', rarity:'Holo Rare VMAX', img:'https://assets.tcgdex.net/fr/swsh/cel25/9', eur:6.72, note:'État apparent sur photo : bon à excellent.'},
-  {id:'cel25-5', nameFr:'Pikachu', nameEn:'Pikachu', number:'5', rarity:'Holo Rare', img:'https://assets.tcgdex.net/fr/swsh/cel25/5', eur:5.15, note:'État apparent sur photo : bon.'},
-  {id:'cel25-8', nameFr:'Pikachu Surfeur V', nameEn:'Surfing Pikachu V', number:'8', rarity:'Holo Rare V', img:'https://assets.tcgdex.net/fr/swsh/cel25/8', eur:4.25, note:'État apparent sur photo : bon à excellent.'},
-  {id:'swshp-SWSH061', nameFr:'Pikachu V', nameEn:'Pikachu V', number:'SWSH061', rarity:'Promo', img:'https://assets.tcgdex.net/fr/swsh/swshp/SWSH061', eur:2.30, note:'État apparent sur photo : bon.', edition:'Promos Épée et Bouclier'}
-];
+const SEED = []; /* pas de cartes d'exemple : la base démarre vide */
 async function seedIfEmpty(){
   if(!LocalDB.isEmpty()) return;
   for(let i=0;i<SEED.length;i++){
