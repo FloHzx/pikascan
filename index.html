@@ -632,9 +632,15 @@
 .dossier{ position:relative; }
 .dossier .selbox{ position:absolute; top:10px; left:10px; z-index:2; display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; background:var(--card); border:1px solid var(--hairline); cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.25); }
 .dossier .selbox input{ width:16px; height:16px; margin:0; cursor:pointer; accent-color:var(--accent); }
-.dossier.sel{ outline:2px solid var(--accent); outline-offset:-2px; }
 .sel-bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .sel-info{ font-size:12.5px; color:var(--ink-secondary); font-weight:600; }
+.dossier.off{ opacity:.55; }
+.dossier.off:hover{ opacity:.9; }
+.sel-panel{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:0 0 14px; padding:10px 14px; border:1px solid var(--hairline); border-radius:12px; background:var(--card); }
+.sel-panel.partial{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+.sel-main{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1 1 280px; }
+.sel-main b{ font-size:14px; }
+.sel-hint{ font-size:12px; color:var(--ink-secondary); }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -732,6 +738,10 @@
         <div id="eraList"></div>
       </nav>
       <main class="main">
+        <div class="sel-panel" id="selPanel">
+          <div class="sel-main"><b id="selCount">Cartes prises en compte</b><span class="sel-hint">Les totaux, courbes et comparatifs ne comptent que les cartes cochées (cases sur chaque fiche, plus bas).</span></div>
+          <div class="sel-bar" role="group" aria-label="Sélection des cartes"><button class="btn small" type="button" id="selAll">☑ Tout sélectionner</button><button class="btn small" type="button" id="selNone">☐ Tout désélectionner</button></div>
+        </div>
         <section class="tiles" aria-label="Résumé" id="tiles"></section>
 
         <div class="section-head">
@@ -760,7 +770,7 @@
         </div>
         <div class="chart-card" id="barChart"></div>
 
-        <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Survole les courbes · clique une image pour l'agrandir</div></div><div class="sel-bar" role="group" aria-label="Sélection des cartes"><button class="btn small" type="button" id="selAll">☑ Tout sélectionner</button><button class="btn small" type="button" id="selNone">☐ Tout désélectionner</button><span class="sel-info" id="selInfo" aria-live="polite"></span></div></div>
+        <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Survole les courbes · clique une image pour l'agrandir · coche les cartes à prendre en compte</div></div></div>
         <div class="dossiers" id="dossiers"></div>
       </main>
     </div>
@@ -1162,7 +1172,7 @@ function renderSidebar(){
 }
 
 function renderTiles(){
-  const list=getFiltered(), total=list.reduce((a,c)=>a+(valueEur(c)||0),0);
+  const list=getSelected(), total=list.reduce((a,c)=>a+(valueEur(c)||0),0);
   const bought=list.filter(c=>c.status==='bought' && c.buyPrice!=null);
   const invested=bought.reduce((a,c)=>a+c.buyPrice,0), gain=bought.reduce((a,c)=>a+(valueEur(c)||0)-c.buyPrice,0);
   const top=list.slice().sort((a,b)=>(valueEur(b)||0)-(valueEur(a)||0))[0];
@@ -1185,7 +1195,8 @@ function renderMeta(){
 }
 
 function renderPortfolio(){
-  const list=getFiltered();
+  const list=getSelected();
+  if(!list.length && getFiltered().length){ $('portChart').innerHTML=selEmptyHTML(); return; }
   if(!list.length){ $('portChart').innerHTML='<div class="empty-state"><div class="big">📈</div>Ajoute une carte à ta base pour voir sa courbe de valeur.</div>'; return; }
   const byDay={}; list.forEach(c=>(c.history||[]).forEach(s=>{ const k=String(s.t).slice(0,10); if(!byDay[k]||s.t>byDay[k]) byDay[k]=s.t; }));
   const times=Object.values(byDay).sort(); const withHist=list.filter(c=>(c.history||[]).length).length;
@@ -1202,7 +1213,8 @@ function renderPortfolio(){
 }
 
 function renderBars(){
-  const list=getFiltered();
+  const list=getSelected();
+  if(!list.length && getFiltered().length){ $('barChart').innerHTML=selEmptyHTML(); return; }
   if(!list.length){ $('barChart').innerHTML=`<div class="empty-state"><div class="big">🃏</div>${S.edition?`Aucune carte dans « ${esc(edLabel(S.edition))} » pour l'instant.`:'Ta base est vide — repère une carte dans le premier onglet et ajoute-la.'}</div>`; return; }
   const arr=list.slice();
   if(S.sort==='edition') arr.sort((a,b)=>setRank(setIdOf(a))-setRank(setIdOf(b)) || (valueEur(b)||0)-(valueEur(a)||0));
@@ -1294,16 +1306,22 @@ function goToCard(id){
   }, 80);
 }
 function thumb(c){ return c ? imgTag(c, 'mini') : ''; }
-const PS_SEL = new Set();
+const PS_EXC = new Set((function(){ try{ const a=JSON.parse(localStorage.getItem('ps_sel_exc')||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } })());   /* cartes décochées (par défaut tout est pris en compte), mémorisées dans le navigateur */
+function psSelSave(){ try{ localStorage.setItem('ps_sel_exc', JSON.stringify([...PS_EXC])); }catch(e){} }
+function getSelected(){ return getFiltered().filter(c=>!PS_EXC.has(c.id)); }
+function selEmptyHTML(){ return '<div class="empty-state"><div class="big">☐</div>Aucune carte sélectionnée : coche des fiches plus bas ou clique sur « Tout sélectionner ».</div>'; }
 function psSelRefresh(){
-  PS_SEL.forEach(id=>{ if(!S.cards[id]) PS_SEL.delete(id); });
-  document.querySelectorAll('#dossiers .dossier').forEach(a=>{ const id=a.dataset.card, on=PS_SEL.has(id); a.classList.toggle('sel',on); const cb=a.querySelector('input[data-sel]'); if(cb) cb.checked=on; });
-  const n=PS_SEL.size, el=document.getElementById('selInfo'); if(el) el.textContent = n ? (n+' carte'+(n>1?'s':'')+' sélectionnée'+(n>1?'s':'')) : '';
+  if(S.loaded){ let ch=false; PS_EXC.forEach(id=>{ if(!S.cards[id]){ PS_EXC.delete(id); ch=true; } }); if(ch) psSelSave(); }
+  document.querySelectorAll('#dossiers .dossier').forEach(a=>{ const id=a.dataset.card, off=PS_EXC.has(id); a.classList.toggle('off',off); const cb=a.querySelector('input[data-sel]'); if(cb) cb.checked=!off; });
+  const f=getFiltered(), n=f.filter(c=>!PS_EXC.has(c.id)).length, el=document.getElementById('selCount');
+  if(el) el.textContent = n+' / '+f.length+' cartes sélectionnées';
+  const pn=document.getElementById('selPanel'); if(pn) pn.classList.toggle('partial', n!==f.length);
 }
-document.addEventListener('change', e=>{ const cb=e.target.closest && e.target.closest('input[data-sel]'); if(!cb) return; const id=cb.dataset.sel; if(cb.checked) PS_SEL.add(id); else PS_SEL.delete(id); psSelRefresh(); });
+function psSelChanged(){ psSelSave(); psSelRefresh(); try{ renderTiles(); renderPortfolio(); renderVariation(); renderBars(); }catch(e){} }
+document.addEventListener('change', e=>{ const cb=e.target.closest && e.target.closest('input[data-sel]'); if(!cb) return; if(cb.checked) PS_EXC.delete(cb.dataset.sel); else PS_EXC.add(cb.dataset.sel); psSelChanged(); });
 document.addEventListener('click', e=>{
-  if(e.target.closest('#selAll')){ getFiltered().forEach(c=>PS_SEL.add(c.id)); psSelRefresh(); }
-  else if(e.target.closest('#selNone')){ PS_SEL.clear(); psSelRefresh(); }
+  if(e.target.closest('#selAll')){ getFiltered().forEach(c=>PS_EXC.delete(c.id)); psSelChanged(); }
+  else if(e.target.closest('#selNone')){ getFiltered().forEach(c=>PS_EXC.add(c.id)); psSelChanged(); }
 });
 function renderDossiers(){
   const list=getFiltered().slice();
@@ -1320,7 +1338,7 @@ function renderDossiers(){
     const key='card-'+c.id, pts=cardPoints(c,range);
     const bought = c.status==='bought';
     const pnl = (bought && c.buyPrice!=null && valueEur(c)!=null) ? valueEur(c)-c.buyPrice : null;
-    return `<article class="dossier${PS_SEL.has(c.id)?' sel':''}" style="--rail:${col}" data-card="${esc(c.id)}"><label class="selbox" title="Sélectionner cette carte"><input type="checkbox" data-sel="${esc(c.id)}"${PS_SEL.has(c.id)?' checked':''} aria-label="Sélectionner ${esc(dn(c))}"></label>
+    return `<article class="dossier${PS_EXC.has(c.id)?' off':''}" style="--rail:${col}" data-card="${esc(c.id)}"><label class="selbox" title="Sélectionner cette carte"><input type="checkbox" data-sel="${esc(c.id)}"${PS_EXC.has(c.id)?'':' checked'} aria-label="Sélectionner ${esc(dn(c))}"></label>
       <div class="imgcell">${imgTag(c)}</div>
       <div class="body">
         <div class="title-row"><div><h3>${esc(dn(c))}</h3><div class="en-name">${esc(c.nameEn)}</div></div>
@@ -1421,7 +1439,7 @@ function periodCtl(){
 }
 function renderVariation(){
   const el=$('varChart'); if(!el) return; $('periodCtl').innerHTML=periodCtl();
-  const list=getFiltered(); if(!list.length){ el.innerHTML='<div class="hint">Ajoute des cartes pour voir leur variation.</div>'; return; }
+  const list=getSelected(); if(!list.length){ el.innerHTML=(getFiltered().length?'<div class="hint">Aucune carte sélectionnée.</div>':'<div class="hint">Ajoute des cartes pour voir leur variation.</div>'); return; }
   let rows=list.map(c=>({c, d:deltaPeriod(c,S.period)}));
   rows.sort((a,b)=>(b.d?b.d.pct:-1e9)-(a.d?a.d.pct:-1e9));
   let varNote='';
