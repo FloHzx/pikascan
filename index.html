@@ -629,6 +629,12 @@
   .var-val{ width:72px; font-size:12.5px; }
   .card-box{ padding:14px 12px; }
 }
+.dossier{ position:relative; }
+.dossier .selbox{ position:absolute; top:10px; left:10px; z-index:2; display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; background:var(--card); border:1px solid var(--hairline); cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.25); }
+.dossier .selbox input{ width:16px; height:16px; margin:0; cursor:pointer; accent-color:var(--accent); }
+.dossier.sel{ outline:2px solid var(--accent); outline-offset:-2px; }
+.sel-bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.sel-info{ font-size:12.5px; color:var(--ink-secondary); font-weight:600; }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -754,7 +760,7 @@
         </div>
         <div class="chart-card" id="barChart"></div>
 
-        <div class="section-head"><h2>Fiches cartes</h2><div class="sub">Survole les courbes · clique une image pour l'agrandir</div></div>
+        <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Survole les courbes · clique une image pour l'agrandir</div></div><div class="sel-bar" role="group" aria-label="Sélection des cartes"><button class="btn small" type="button" id="selAll">☑ Tout sélectionner</button><button class="btn small" type="button" id="selNone">☐ Tout désélectionner</button><span class="sel-info" id="selInfo" aria-live="polite"></span></div></div>
         <div class="dossiers" id="dossiers"></div>
       </main>
     </div>
@@ -1288,6 +1294,17 @@ function goToCard(id){
   }, 80);
 }
 function thumb(c){ return c ? imgTag(c, 'mini') : ''; }
+const PS_SEL = new Set();
+function psSelRefresh(){
+  PS_SEL.forEach(id=>{ if(!S.cards[id]) PS_SEL.delete(id); });
+  document.querySelectorAll('#dossiers .dossier').forEach(a=>{ const id=a.dataset.card, on=PS_SEL.has(id); a.classList.toggle('sel',on); const cb=a.querySelector('input[data-sel]'); if(cb) cb.checked=on; });
+  const n=PS_SEL.size, el=document.getElementById('selInfo'); if(el) el.textContent = n ? (n+' carte'+(n>1?'s':'')+' sélectionnée'+(n>1?'s':'')) : '';
+}
+document.addEventListener('change', e=>{ const cb=e.target.closest && e.target.closest('input[data-sel]'); if(!cb) return; const id=cb.dataset.sel; if(cb.checked) PS_SEL.add(id); else PS_SEL.delete(id); psSelRefresh(); });
+document.addEventListener('click', e=>{
+  if(e.target.closest('#selAll')){ getFiltered().forEach(c=>PS_SEL.add(c.id)); psSelRefresh(); }
+  else if(e.target.closest('#selNone')){ PS_SEL.clear(); psSelRefresh(); }
+});
 function renderDossiers(){
   const list=getFiltered().slice();
   if(S.sort==='edition') list.sort((a,b)=>setRank(setIdOf(a))-setRank(setIdOf(b)) || (valueEur(b)||0)-(valueEur(a)||0));
@@ -1303,7 +1320,7 @@ function renderDossiers(){
     const key='card-'+c.id, pts=cardPoints(c,range);
     const bought = c.status==='bought';
     const pnl = (bought && c.buyPrice!=null && valueEur(c)!=null) ? valueEur(c)-c.buyPrice : null;
-    return `<article class="dossier" style="--rail:${col}" data-card="${esc(c.id)}">
+    return `<article class="dossier${PS_SEL.has(c.id)?' sel':''}" style="--rail:${col}" data-card="${esc(c.id)}"><label class="selbox" title="Sélectionner cette carte"><input type="checkbox" data-sel="${esc(c.id)}"${PS_SEL.has(c.id)?' checked':''} aria-label="Sélectionner ${esc(dn(c))}"></label>
       <div class="imgcell">${imgTag(c)}</div>
       <div class="body">
         <div class="title-row"><div><h3>${esc(dn(c))}</h3><div class="en-name">${esc(c.nameEn)}</div></div>
@@ -1330,7 +1347,7 @@ function renderDossiers(){
         ${s?`<div class="hint">Dernier prix Cardmarket du ${esc(dtFmt(s.t))}${s.est?' (estimation initiale)':''}.</div>`:''}
       </div></article>`;
   }).join('') + (rest>0 ? `<div class="more-wrap"><button class="btn" id="moreBtn">Afficher ${Math.min(24,rest)} cartes de plus <span class="hint" style="margin:0">(${rest} restantes)</span></button></div>` : '');
-  attachChartHover($('dossiers'));
+  attachChartHover($('dossiers')); psSelRefresh();
 }
 document.addEventListener('click', e=>{ const b=e.target.closest('#moreBtn'); if(b){ S.limit=(S.limit||24)+24; renderDossiers(); } });
 
