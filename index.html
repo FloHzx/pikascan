@@ -630,17 +630,57 @@
   .card-box{ padding:14px 12px; }
 }
 .dossier{ position:relative; }
-.dossier .selbox{ position:absolute; top:10px; left:10px; z-index:2; display:flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:8px; background:var(--card); border:1px solid var(--hairline); cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,.25); }
-.dossier .selbox input{ width:16px; height:16px; margin:0; cursor:pointer; accent-color:var(--accent); }
-.sel-bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .sel-info{ font-size:12.5px; color:var(--ink-secondary); font-weight:600; }
-.dossier.off{ opacity:.55; }
-.dossier.off:hover{ opacity:.9; }
-.sel-panel{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:0 0 14px; padding:10px 14px; border:1px solid var(--hairline); border-radius:12px; background:var(--card); }
-.sel-panel.partial{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
-.sel-main{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1 1 280px; }
-.sel-main b{ font-size:14px; }
-.sel-hint{ font-size:12px; color:var(--ink-secondary); }
+@media (max-width:560px){
+  /* fiche carte : image au-dessus, contenu pleine largeur */
+  .dossier{ grid-template-columns:1fr; }
+  .dossier .imgcell{ padding:14px 14px 0; background:transparent; justify-content:flex-start; }
+  .dossier img{ max-width:132px; }
+  .dossier .body{ padding:14px 14px 16px; }
+  .dossier h3{ font-size:21px; }
+  .price-now .value{ font-size:32px; }
+  .deltas{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .hchart svg{ min-height:230px; }
+  .hc-head{ flex-direction:column; align-items:flex-start; gap:8px; }
+  .footer-row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .footer-row .btn{ justify-content:center; text-align:center; }
+  /* comparatif et variations : nom + valeur sur une ligne, barre dessous */
+  .bar-row, .var-row{ display:grid; grid-template-columns:1fr auto; column-gap:10px; row-gap:6px; align-items:center; padding:10px 0; }
+  .bar-row .bname, .var-row .bname{ width:auto; grid-column:1; grid-row:1; font-size:13.5px; min-width:0; }
+  .bar-row .bar-val, .var-row .var-val{ grid-column:2; grid-row:1; width:auto; font-size:14px; }
+  .bar-row .bar-val + .bar-val{ display:none; }
+  .bar-track, .vtrack{ grid-column:1 / -1; grid-row:2; min-width:0; height:16px; }
+  .thumb-box, .thumb-box img.mini{ width:30px; height:42px; } .thumb-box{ height:42px; }
+}
+.fl-compose textarea{ width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:var(--paper); color:var(--ink); font:inherit; resize:vertical; }
+.fl-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+.fl-row label, .fl-edit label{ font-size:12.5px; color:var(--ink-secondary); display:flex; align-items:center; gap:6px; }
+.fl-row input[type=number], .fl-edit input[type=number]{ width:68px; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; }
+.fl-row select, .fl-edit select{ padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; }
+.fl-bar{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:16px 0 12px; }
+#fluxList{ display:flex; flex-direction:column; gap:12px; margin-bottom:14px; }
+.fl-item{ display:grid; grid-template-columns:84px 1fr; gap:14px; padding:14px; background:var(--card); border:1px solid var(--border); border-left:5px solid var(--muted); border-radius:14px; box-shadow:var(--shadow); }
+.fl-item.good{ border-left-color:var(--good); } .fl-item.ok{ border-left-color:var(--warn); } .fl-item.low{ border-left-color:#e07a1f; } .fl-item.bad{ border-left-color:var(--bad); }
+.fl-item.ign{ opacity:.55; } .fl-item.isnew{ box-shadow:0 0 0 1px var(--accent) inset, var(--shadow); }
+.fl-img img{ width:84px; border-radius:7px; display:block; box-shadow:0 2px 8px rgba(0,0,0,.2); } .fl-noimg{ width:84px; height:117px; border-radius:7px; background:var(--chip-bg); display:flex; align-items:center; justify-content:center; font-size:28px; color:var(--muted); }
+.fl-body{ min-width:0; }
+.fl-top{ display:flex; flex-wrap:wrap; gap:6px 10px; align-items:baseline; } .fl-top b{ font-size:16px; } .fl-ed{ font-size:12.5px; color:var(--muted); }
+.fl-badge{ margin-left:auto; font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--chip-bg); color:var(--ink-secondary); }
+.fl-badge.good{ background:var(--good-bg); color:var(--good); } .fl-badge.ok,.fl-badge.low{ background:var(--warn-bg); color:var(--warn); } .fl-badge.bad{ background:var(--bad-bg); color:var(--bad); }
+.fl-title{ font-size:12.5px; color:var(--muted); font-style:italic; margin:2px 0 8px; overflow-wrap:anywhere; }
+.fl-nums{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:8px 0; }
+.fl-nums span{ display:flex; flex-direction:column; } .fl-nums i{ font-style:normal; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); } .fl-nums b{ font-size:16px; } .fl-nums small{ font-size:11px; color:var(--muted); }
+.fl-nums .up{ color:var(--good); } .fl-nums .down{ color:var(--bad); }
+.fl-edit{ display:flex; flex-wrap:wrap; gap:10px; margin:8px 0 6px; }
+.fl-note{ width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; font-size:13px; }
+.fl-acts{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center; } .fl-acts .btn.on{ background:var(--accent); color:var(--accent-ink); } .fl-when{ margin-left:auto; font-size:11.5px; color:var(--muted); }
+.fl-cands{ display:flex; gap:8px; flex-wrap:wrap; } .fl-cand{ display:flex; gap:8px; align-items:center; text-align:left; padding:6px 8px; border:1px solid var(--border); border-radius:10px; background:var(--paper); color:var(--ink); cursor:pointer; font:inherit; font-size:12.5px; } .fl-cand img{ width:34px; border-radius:4px; } .fl-cand small{ display:block; color:var(--muted); font-size:11px; }
+.fl-find{ display:flex; gap:6px; margin-top:8px; } .fl-find input{ flex:1; min-width:0; padding:6px 10px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; }
+@media (max-width:560px){
+  .fl-item{ grid-template-columns:56px 1fr; gap:10px; padding:12px; } .fl-img img, .fl-noimg{ width:56px; } .fl-noimg{ height:78px; }
+  .fl-nums{ grid-template-columns:1fr 1fr; } .fl-badge{ margin-left:0; } .fl-when{ margin-left:0; width:100%; }
+  .fl-row{ gap:8px; } .fl-row .btn{ width:100%; justify-content:center; }
+}
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -667,6 +707,7 @@
   <div class="tabs" role="tablist" aria-label="Sections">
     <button class="tab" role="tab" id="tab-scan" data-tab="scan" aria-selected="true">🔎 Repérer une carte</button>
     <button class="tab" role="tab" id="tab-photo" data-tab="photo" aria-selected="false">📷 Scanner photo</button>
+    <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false">📡 Flux <span class="badge" id="badgeFlux" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-base" data-tab="base" aria-selected="false">📚 Ma base <span class="badge" id="badgeCards" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false">🔔 Alertes <span class="badge" id="badgeAlerts" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false">⚙️ Réglages</button>
@@ -727,6 +768,25 @@
     <div id="phFiche" hidden><div class="section-head"><div><h2>Fiche de la carte</h2><div class="sub">Comme si tu l'avais repérée : valeur, historique, verdict d'achat, ajout à ta base.</div></div></div></div>
   </section>
 
+  <!-- ===== Flux d'annonces ===== -->
+  <section class="panel" id="panel-flux" role="tabpanel" aria-labelledby="tab-flux" hidden>
+    <div class="card-box fl-compose">
+      <h2 style="margin:0 0 4px">Flux d'annonces</h2>
+      <div class="hint" style="margin:0 0 10px">Colle le texte d'une alerte Vinted (titre + prix, une annonce par ligne) ou un lien : PikaScan reconnaît la carte, la compare au prix Cardmarket et donne le verdict. Les annonces s'accumulent ici, les plus récentes en premier.</div>
+      <textarea id="fxText" rows="3" placeholder="Ex. :&#10;Pikachu ex 053/191 — 12,00 €&#10;https://www.vinted.fr/items/…"></textarea>
+      <div class="fl-row">
+        <label>Frais d'achat par défaut <input id="fxShip" type="number" step="0.1" min="0" inputmode="decimal" value="3"> €</label>
+        <label>État <select id="fxCond"><option value="NM">Neuf / quasi neuf</option><option value="EX">Excellent</option><option value="GD">Bon</option><option value="PL">Joué</option></select></label>
+        <button class="btn primary" id="fxAdd" type="button">➕ Évaluer et ajouter</button>
+        <span class="hint" id="fxStatus" aria-live="polite" style="margin:0"></span>
+      </div>
+    </div>
+    <div class="fl-bar"><div class="sort-controls" id="fluxChips" role="group" aria-label="Filtrer le flux"></div><button class="btn small" id="fxRefresh" type="button">↻ Actualiser les valeurs</button></div>
+    <div id="fluxList"></div>
+    <div class="hint">Frais d'achat = port + protection acheteur Vinted (à ajuster selon l'annonce). Alimentation automatique : si un fichier <code>data/annonces.json</code> existe dans le dépôt, son contenu est ajouté au flux à l'ouverture.</div>
+  </section>
+
+
   <!-- ===== Ma base ===== -->
   <section class="panel" id="panel-base" role="tabpanel" aria-labelledby="tab-base" hidden>
     <div id="impBanner"></div>
@@ -738,10 +798,6 @@
         <div id="eraList"></div>
       </nav>
       <main class="main">
-        <div class="sel-panel" id="selPanel">
-          <div class="sel-main"><b id="selCount">Cartes prises en compte</b><span class="sel-hint">Les totaux, courbes et comparatifs ne comptent que les cartes cochées (cases sur chaque fiche, plus bas).</span></div>
-          <div class="sel-bar" role="group" aria-label="Sélection des cartes"><button class="btn small" type="button" id="selAll">☑ Tout sélectionner</button><button class="btn small" type="button" id="selNone">☐ Tout désélectionner</button></div>
-        </div>
         <section class="tiles" aria-label="Résumé" id="tiles"></section>
 
         <div class="section-head">
@@ -770,7 +826,7 @@
         </div>
         <div class="chart-card" id="barChart"></div>
 
-        <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Survole les courbes · clique une image pour l'agrandir · coche les cartes à prendre en compte</div></div></div>
+        <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Survole les courbes · clique une image pour l'agrandir</div></div></div>
         <div class="dossiers" id="dossiers"></div>
       </main>
     </div>
@@ -985,8 +1041,9 @@ function niceTicks(min,max,n){
   for(let v=a; v<=b+1e-9; v+=step) t.push(+v.toFixed(6));
   return t;
 }
+const MOB_Q = window.matchMedia ? window.matchMedia('(max-width:560px)') : {matches:false};
 function chartGeom(pts, h){
-  const W=620, H=h||200, L=48, R=22, T=14, B=28;
+  const mob=MOB_Q.matches, W=mob?Math.max(260,Math.min(window.innerWidth-60,520)):620, H=mob?Math.max(h||200,230):(h||200), L=mob?46:48, R=mob?16:22, T=mob?18:14, B=mob?32:28;
   const xs=pts.map(p=>new Date(p.t).getTime()), ys=pts.map(p=>p.v);
   let x0=Math.min(...xs), x1=Math.max(...xs); if(x1===x0){ x0-=864e5*3; x1+=864e5*3; }
   const ticks=niceTicks(Math.min(...ys)*0.97, Math.max(...ys)*1.03, 3);
@@ -999,16 +1056,16 @@ function lineChartHTML(id, pts, color, opts){
   if(!pts.length) return `<div class="hint">Pas encore de relevé de prix.</div>`;
   const g=chartGeom(pts, opts.h), {W,H,L,R,T,B,xs,ticks,X,Y}=g;
   let grid='', lbl='';
-  ticks.forEach(v=>{ const y=Y(v); grid+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--hairline)" stroke-width="1"/>`; lbl+=`<text x="${L-8}" y="${y+4}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${v.toFixed(v<10?1:0).replace('.',',')}</text>`; });
+  ticks.forEach(v=>{ const y=Y(v); grid+=`<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" stroke="var(--hairline)" stroke-width="1"/>`; lbl+=`<text x="${L-8}" y="${y+4}" text-anchor="end" font-size="${MOB_Q.matches?12:11}" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${v.toFixed(v<10?1:0).replace('.',',')}</text>`; });
   const path=pts.map((p,i)=>`${i?'L':'M'}${X(xs[i]).toFixed(1)},${Y(p.v).toFixed(1)}`).join(' ');
   const xl=[0, pts.length>2?Math.floor((pts.length-1)/2):null, pts.length-1].filter((v,i,a)=>v!=null && a.indexOf(v)===i);
-  let xlab=''; xl.forEach(i=>{ const anchor = i===0?'start':(i===pts.length-1?'end':'middle'); xlab+=`<text x="${X(xs[i])}" y="${H-8}" text-anchor="${anchor}" font-size="11" fill="var(--muted)">${esc(dFmt(pts[i].t))}</text>`; });
+  let xlab=''; xl.forEach(i=>{ const anchor = i===0?'start':(i===pts.length-1?'end':'middle'); xlab+=`<text x="${X(xs[i])}" y="${H-8}" text-anchor="${anchor}" font-size="${MOB_Q.matches?12:11}" fill="var(--muted)">${esc(dFmt(pts[i].t))}</text>`; });
   const dots=pts.map((p,i)=>`<circle cx="${X(xs[i]).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="${i===pts.length-1?5:3.5}" fill="${color}" stroke="var(--card)" stroke-width="2"/>`).join('');
   const last=pts[pts.length-1];
-  const lastLbl=`<text x="${X(xs[xs.length-1])}" y="${Y(last.v)-10}" text-anchor="${pts.length>1?'end':'middle'}" font-size="12" font-weight="600" fill="var(--ink)" font-family="IBM Plex Mono,monospace">${esc(eur(last.v))}</text>`;
+  const lastLbl=`<text x="${X(xs[xs.length-1])}" y="${Y(last.v)-10}" text-anchor="${pts.length>1?'end':'middle'}" font-size="${MOB_Q.matches?14:12}" font-weight="700" fill="var(--ink)" font-family="IBM Plex Mono,monospace">${esc(eur(last.v))}</text>`;
   CHART_DATA[id]={pts, xp:xs.map(t=>X(t)), yp:pts.map(p=>Y(p.v))};
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria||'Courbe de prix')}" data-chart="${esc(id)}">
-    ${grid}${lbl}${xlab}<path d="${path}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>${dots}${lastLbl}
+    ${grid}${lbl}${xlab}<path d="${path}" fill="none" stroke="${color}" stroke-width="${MOB_Q.matches?3:2.4}" stroke-linejoin="round" stroke-linecap="round"/>${dots}${lastLbl}
     <line class="cursor" x1="0" x2="0" y1="${T}" y2="${H-B}" stroke="var(--muted)" stroke-dasharray="3 3" style="display:none"/>
     <rect class="hit" x="${L}" y="0" width="${W-L-R}" height="${H}" fill="transparent"/></svg><div class="tip"></div>`;
 }
@@ -1172,7 +1229,7 @@ function renderSidebar(){
 }
 
 function renderTiles(){
-  const list=getSelected(), total=list.reduce((a,c)=>a+(valueEur(c)||0),0);
+  const list=getFiltered(), total=list.reduce((a,c)=>a+(valueEur(c)||0),0);
   const bought=list.filter(c=>c.status==='bought' && c.buyPrice!=null);
   const invested=bought.reduce((a,c)=>a+c.buyPrice,0), gain=bought.reduce((a,c)=>a+(valueEur(c)||0)-c.buyPrice,0);
   const top=list.slice().sort((a,b)=>(valueEur(b)||0)-(valueEur(a)||0))[0];
@@ -1195,8 +1252,7 @@ function renderMeta(){
 }
 
 function renderPortfolio(){
-  const list=getSelected();
-  if(!list.length && getFiltered().length){ $('portChart').innerHTML=selEmptyHTML(); return; }
+  const list=getFiltered();
   if(!list.length){ $('portChart').innerHTML='<div class="empty-state"><div class="big">📈</div>Ajoute une carte à ta base pour voir sa courbe de valeur.</div>'; return; }
   const byDay={}; list.forEach(c=>(c.history||[]).forEach(s=>{ const k=String(s.t).slice(0,10); if(!byDay[k]||s.t>byDay[k]) byDay[k]=s.t; }));
   const times=Object.values(byDay).sort(); const withHist=list.filter(c=>(c.history||[]).length).length;
@@ -1213,8 +1269,7 @@ function renderPortfolio(){
 }
 
 function renderBars(){
-  const list=getSelected();
-  if(!list.length && getFiltered().length){ $('barChart').innerHTML=selEmptyHTML(); return; }
+  const list=getFiltered();
   if(!list.length){ $('barChart').innerHTML=`<div class="empty-state"><div class="big">🃏</div>${S.edition?`Aucune carte dans « ${esc(edLabel(S.edition))} » pour l'instant.`:'Ta base est vide — repère une carte dans le premier onglet et ajoute-la.'}</div>`; return; }
   const arr=list.slice();
   if(S.sort==='edition') arr.sort((a,b)=>setRank(setIdOf(a))-setRank(setIdOf(b)) || (valueEur(b)||0)-(valueEur(a)||0));
@@ -1306,23 +1361,6 @@ function goToCard(id){
   }, 80);
 }
 function thumb(c){ return c ? imgTag(c, 'mini') : ''; }
-const PS_EXC = new Set((function(){ try{ const a=JSON.parse(localStorage.getItem('ps_sel_exc')||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } })());   /* cartes décochées (par défaut tout est pris en compte), mémorisées dans le navigateur */
-function psSelSave(){ try{ localStorage.setItem('ps_sel_exc', JSON.stringify([...PS_EXC])); }catch(e){} }
-function getSelected(){ return getFiltered().filter(c=>!PS_EXC.has(c.id)); }
-function selEmptyHTML(){ return '<div class="empty-state"><div class="big">☐</div>Aucune carte sélectionnée : coche des fiches plus bas ou clique sur « Tout sélectionner ».</div>'; }
-function psSelRefresh(){
-  if(S.loaded){ let ch=false; PS_EXC.forEach(id=>{ if(!S.cards[id]){ PS_EXC.delete(id); ch=true; } }); if(ch) psSelSave(); }
-  document.querySelectorAll('#dossiers .dossier').forEach(a=>{ const id=a.dataset.card, off=PS_EXC.has(id); a.classList.toggle('off',off); const cb=a.querySelector('input[data-sel]'); if(cb) cb.checked=!off; });
-  const f=getFiltered(), n=f.filter(c=>!PS_EXC.has(c.id)).length, el=document.getElementById('selCount');
-  if(el) el.textContent = n+' / '+f.length+' cartes sélectionnées';
-  const pn=document.getElementById('selPanel'); if(pn) pn.classList.toggle('partial', n!==f.length);
-}
-function psSelChanged(){ psSelSave(); psSelRefresh(); try{ renderTiles(); renderPortfolio(); renderVariation(); renderBars(); }catch(e){} }
-document.addEventListener('change', e=>{ const cb=e.target.closest && e.target.closest('input[data-sel]'); if(!cb) return; if(cb.checked) PS_EXC.delete(cb.dataset.sel); else PS_EXC.add(cb.dataset.sel); psSelChanged(); });
-document.addEventListener('click', e=>{
-  if(e.target.closest('#selAll')){ getFiltered().forEach(c=>PS_EXC.delete(c.id)); psSelChanged(); }
-  else if(e.target.closest('#selNone')){ getFiltered().forEach(c=>PS_EXC.add(c.id)); psSelChanged(); }
-});
 function renderDossiers(){
   const list=getFiltered().slice();
   if(S.sort==='edition') list.sort((a,b)=>setRank(setIdOf(a))-setRank(setIdOf(b)) || (valueEur(b)||0)-(valueEur(a)||0));
@@ -1338,7 +1376,7 @@ function renderDossiers(){
     const key='card-'+c.id, pts=cardPoints(c,range);
     const bought = c.status==='bought';
     const pnl = (bought && c.buyPrice!=null && valueEur(c)!=null) ? valueEur(c)-c.buyPrice : null;
-    return `<article class="dossier${PS_EXC.has(c.id)?' off':''}" style="--rail:${col}" data-card="${esc(c.id)}"><label class="selbox" title="Sélectionner cette carte"><input type="checkbox" data-sel="${esc(c.id)}"${PS_EXC.has(c.id)?'':' checked'} aria-label="Sélectionner ${esc(dn(c))}"></label>
+    return `<article class="dossier" style="--rail:${col}" data-card="${esc(c.id)}">
       <div class="imgcell">${imgTag(c)}</div>
       <div class="body">
         <div class="title-row"><div><h3>${esc(dn(c))}</h3><div class="en-name">${esc(c.nameEn)}</div></div>
@@ -1365,7 +1403,7 @@ function renderDossiers(){
         ${s?`<div class="hint">Dernier prix Cardmarket du ${esc(dtFmt(s.t))}${s.est?' (estimation initiale)':''}.</div>`:''}
       </div></article>`;
   }).join('') + (rest>0 ? `<div class="more-wrap"><button class="btn" id="moreBtn">Afficher ${Math.min(24,rest)} cartes de plus <span class="hint" style="margin:0">(${rest} restantes)</span></button></div>` : '');
-  attachChartHover($('dossiers')); psSelRefresh();
+  attachChartHover($('dossiers'));
 }
 document.addEventListener('click', e=>{ const b=e.target.closest('#moreBtn'); if(b){ S.limit=(S.limit||24)+24; renderDossiers(); } });
 
@@ -1439,7 +1477,7 @@ function periodCtl(){
 }
 function renderVariation(){
   const el=$('varChart'); if(!el) return; $('periodCtl').innerHTML=periodCtl();
-  const list=getSelected(); if(!list.length){ el.innerHTML=(getFiltered().length?'<div class="hint">Aucune carte sélectionnée.</div>':'<div class="hint">Ajoute des cartes pour voir leur variation.</div>'); return; }
+  const list=getFiltered(); if(!list.length){ el.innerHTML='<div class="hint">Ajoute des cartes pour voir leur variation.</div>'; return; }
   let rows=list.map(c=>({c, d:deltaPeriod(c,S.period)}));
   rows.sort((a,b)=>(b.d?b.d.pct:-1e9)-(a.d?a.d.pct:-1e9));
   let varNote='';
@@ -1736,6 +1774,7 @@ function setTab(t){
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.tab===t)));
   document.querySelectorAll('.panel').forEach(p=>{ p.hidden = p.id!=='panel-'+t; });
   if(t==='base') renderAll();
+  if(t==='flux') fluxOpen();
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 (function(){
@@ -3066,7 +3105,198 @@ async function syncHistory(){
 }
 window.__imgChain = imgChain; window.__imgTag = imgTag;
 document.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.clickable[data-act="gocard"]')){ e.preventDefault(); goToCard(e.target.dataset.id); } });
+/* ---------- Flux d'annonces (Vinted & co) ---------- */
+const FLUX = { items:{}, filter:'todo', busy:false, pulled:false };
+const FX_NOISE = /\b(carte|cartes|pok[eé]mon|pokemon|neuve?s?|tbe|tr[eè]s bon [eé]tat|[eé]tat|nm|mint|fr|vf|fran[cç]aise?|anglaise?|lot|holo|brillante?|collection|vinted|vends?|vente)\b/gi;
+function fxShipDefault(){ try{ const v=parseFloat(localStorage.getItem('ps_flux_ship')); return isNaN(v)?3:v; }catch(e){ return 3; } }
+function fxHash(s){ let h=0; s=String(s); for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return 'l'+(h>>>0).toString(36); }
+function fxParse(text){
+  const priceRe=/(\d{1,4}(?:[.,]\d{1,2})?)\s*(?:€|eur(?:os?)?\b)|€\s*(\d{1,4}(?:[.,]\d{1,2})?)/i;
+  const priceAll=new RegExp(priceRe.source,'ig');
+  const urlRe=/https?:\/\/[^\s)>\]]+/i;
+  const out=[]; let pend='';
+  const clean=s=>s.replace(/\s+/g,' ').replace(/^[\-–•·*\s]+|[\-–•·:|\s]+$/g,'').trim();
+  String(text||'').split(/\r?\n+/).map(s=>s.trim()).filter(Boolean).forEach(line=>{
+    const um=urlRe.exec(line); const url=um?um[0]:''; let rest=um?line.replace(url,' '):line;
+    const pm=priceRe.exec(rest); let ask=null;
+    if(pm){ ask=num(pm[1]||pm[2]); rest=rest.replace(priceAll,' '); }
+    rest=clean(rest.replace(/\b(frais de port|incl\.?|protection acheteurs?|livraison|prix)\b/ig,' '));
+    if(ask!=null){ out.push({title:rest||pend, ask, url}); pend=''; }
+    else if(url && !rest){ const last=out[out.length-1]; const sm=/\/items\/\d+-([a-z0-9-]+)/i.exec(url); const slug=sm?sm[1].replace(/-/g,' '):''; const share=!slug || !last || (last.title||'').toLowerCase().split(/\W+/).some(w=>w.length>=4 && slug.includes(w)); if(last && !last.url && share) last.url=url; else out.push({title:pend, ask:null, url}); pend=''; }
+    else if(url){ out.push({title:rest, ask:null, url}); pend=''; }
+    else pend=rest;
+  });
+  if(!out.length && pend) out.push({title:pend, ask:null, url:''});
+  out.forEach(o=>{ if(!o.title && o.url){ const m=/\/items\/\d+-([a-z0-9-]+)/i.exec(o.url); if(m) o.title=m[1].replace(/-/g,' '); } });
+  return out;
+}
+function fxQuery(title){
+  let t=' '+String(title||'')+' ', n=null, total=null;
+  let m=/(\d{1,3})\s*\/\s*(\d{1,3})/.exec(t);
+  if(m){ n=String(parseInt(m[1],10)); total=parseInt(m[2],10); t=t.replace(m[0],' '); }
+  else { m=/\b((?:swsh|svp|sv|smp|sm|xy|bw|tg|gg)\s?-?\d{1,3})\b/i.exec(t); if(m){ n=m[1].toLowerCase().replace(/[\s-]/g,''); t=t.replace(m[0],' '); } }
+  t=t.replace(FX_NOISE,' ').replace(/[()\[\],.!]/g,' ').replace(/\s+/g,' ').trim();
+  return {name:t, num:n, total};
+}
+function fxSummary(c){
+  const p = pickPrice(c,null);
+  return { id:c.id, name:frCardName(c.name)||c.name, ed:frEdition(c.expansion&&c.expansion.name), number:c.number, total:c.expansion&&c.expansion.official, img:c.imageUrl,
+    mkt:p?refPrice(p):null, mom7:p?p.mom7:null, mom30:p?p.mom30:null, cm:c.canonicalUrl||'' };
+}
+async function fxIdentify(title){
+  const q=fxQuery(title); if(!q.name) return {pick:null,cands:[]};
+  const w=q.name.split(' ');
+  const tries=[...new Set([q.name, w.slice(0,3).join(' '), w.slice(0,2).join(' '), w[0]])].filter(Boolean);
+  let res=[], err=null;
+  for(const t of tries){ try{ res=await tcSearch(q.num? t+' '+q.num : t); err=null; }catch(e){ res=[]; err=e; } if(res.length) break; }
+  let pick=null;
+  if(res.length){
+    let f=res; let ok=true; if(q.total){ const g=f.filter(c=>Number(c.expansion&&c.expansion.official)===q.total); if(g.length) f=g; else ok=false; }
+    if(f.length===1 && ok) pick=f[0]; res=f;
+  }
+  return {pick:pick?fxSummary(pick):null, cands:res.slice(0,6).map(fxSummary), err};
+}
+function fxApply(it, s){ Object.assign(it,{cardId:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,mkt:s.mkt,mom7:s.mom7,mom30:s.mom30,cm:s.cm,pt:Date.now(),cands:[]}); }
+function fxSave(it){ return S.db ? S.db.collection('listings').doc(it.id).set(it) : Promise.resolve(); }
+function fxEval(it){
+  if(it.mkt==null) return {level:'none', label: it.cardId?'Pas de prix Cardmarket':'Choisis la carte', v:null, weak:false};
+  const cond=COND.find(x=>x.k===(it.cond||'NM'))||COND[0];
+  const v=computeVerdict({marketUsd:it.mkt, condF:cond.f, ask:it.ask, shipIn:it.shipIn||0});
+  const weak=(it.mom7!=null && it.mom7<=-15)||(it.mom30!=null && it.mom30<=-15);
+  if(it.ask==null) return {level:'none', label:'Prix à renseigner', v:Object.assign({},v,{cost:0,margin:0,marginPct:null}), weak};
+  return {level:v.level, label:v.label, v, weak};
+}
+async function fxAddText(){
+  if(FLUX.busy) return;
+  const parsed=fxParse($('fxText').value);
+  if(!parsed.length){ toast("Colle le texte ou le lien d'une annonce."); return; }
+  const ship=num($('fxShip').value)||0; try{ localStorage.setItem('ps_flux_ship', String(ship)); }catch(e){}
+  const cond=$('fxCond').value, st=$('fxStatus'); FLUX.busy=true; $('fxAdd').disabled=true; let added=0, dup=0;
+  try{
+    for(let i=0;i<parsed.length;i++){
+      const p=parsed[i]; const id=fxHash((p.url||p.title)+'|'+(p.ask==null?'':p.ask));
+      if(FLUX.items[id]){ dup++; continue; }
+      st.innerHTML='<span class="spinner" aria-hidden="true"></span> Reconnaissance '+(i+1)+'/'+parsed.length+'…';
+      const it={id, t:new Date().toISOString(), title:p.title||'', ask:p.ask, shipIn:ship, cond, url:p.url||'', src:'manuel', status:'new', note:'', cardId:null, cands:[]};
+      const r=await fxIdentify(p.title||'');
+      if(r.pick) fxApply(it,r.pick); else it.cands=r.cands;
+      await fxSave(it); FLUX.items[id]=it; added++;
+    }
+    $('fxText').value=''; st.textContent = added ? (added+' annonce'+(added>1?'s':'')+' ajoutée'+(added>1?'s':'')+(dup?' ('+dup+' déjà présente'+(dup>1?'s':'')+')':'')+'.') : (dup?'Déjà dans le flux.':'');
+  }catch(e){ st.textContent=mcpErr(e); }
+  FLUX.busy=false; $('fxAdd').disabled=false; renderFlux();
+}
+async function fluxRefresh(force){
+  const ids=[...new Set(Object.values(FLUX.items).filter(it=>it.cardId).map(it=>it.cardId))];
+  const st=$('fxStatus'); let n=0; const cache={};
+  const todo=ids.filter(id=>force || Object.values(FLUX.items).some(it=>it.cardId===id && (!it.pt || Date.now()-it.pt>12*36e5)));
+  if(!todo.length){ if(force) toast('Valeurs déjà à jour.'); return; }
+  if(st) st.innerHTML='<span class="spinner" aria-hidden="true"></span> Actualisation des valeurs…';
+  let k=0; await Promise.all(Array.from({length:4},async()=>{ while(k<todo.length){ const id=todo[k++]; try{ cache[id]=fxSummary(await tcCard(id,false)); n++; }catch(e){} } }));
+  for(const it of Object.values(FLUX.items)){ const s=it.cardId&&cache[it.cardId]; if(s){ it.mkt=s.mkt; it.mom7=s.mom7; it.mom30=s.mom30; it.pt=Date.now(); await fxSave(it); } }
+  if(st) st.textContent = n ? ('Valeurs mises à jour ('+n+' carte'+(n>1?'s':'')+').') : '';
+  renderFlux();
+}
+async function fluxPull(){
+  /* source automatique : data/annonces.json (alimenté par une tâche externe) — [{id,title,ask,shipIn,url,t,cardId?,note?}] */
+  if(/netlify\.app$/.test(location.hostname)) return;
+  const m=/^([^.]+)\.github\.io$/.exec(location.hostname), repo=location.pathname.split('/')[1];
+  const urls=['data/annonces.json']; if(m && repo) urls.unshift('https://raw.githubusercontent.com/'+m[1]+'/'+repo+'/main/data/annonces.json');
+  let data=null; for(const u of urls){ try{ const r=await fetch(u,{cache:'no-store'}); if(r.ok){ data=await r.json(); break; } }catch(e){} }
+  if(!data) return; const list=Array.isArray(data)?data:(data.items||[]); let added=0;
+  for(const p of list.slice(-60)){
+    if(added>=12) break; const id=String(p.id||fxHash((p.url||p.title||'')+'|'+(p.ask==null?'':p.ask)));
+    if(FLUX.items[id]) continue;
+    const it={id, t:p.t||new Date().toISOString(), title:p.title||'', ask:p.ask==null?null:num(p.ask), shipIn:p.shipIn!=null?num(p.shipIn):fxShipDefault(), cond:p.cond||'NM', url:p.url||'', src:'auto', status:'new', note:p.note||'', cardId:null, cands:[]};
+    try{ if(p.cardId){ fxApply(it, fxSummary(await tcCard(p.cardId,false))); } else { const r=await fxIdentify(it.title); if(r.pick) fxApply(it,r.pick); else it.cands=r.cands; } }catch(e){}
+    await fxSave(it); FLUX.items[id]=it; added++;
+  }
+  if(added){ renderFlux(); toast(added+' nouvelle'+(added>1?'s':'')+' annonce'+(added>1?'s':'')+' dans le flux.'); }
+}
+function fxVinted(it){ return it.url || ('https://www.vinted.fr/catalog?search_text='+encodeURIComponent(((it.name||it.title||'')+' '+(it.number||'')).trim())); }
+function fxItemHTML(it){
+  const ev=fxEval(it), v=ev.v, when=dtFmt(it.t);
+  const img = it.img ? `<img src="${esc(it.img)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.visibility='hidden'">` : `<div class="fl-noimg">?</div>`;
+  const head = it.cardId ? `<b>${esc(it.name)}</b> <span class="fl-ed">${esc(it.ed||'')} · ${esc(it.number||'')}</span>` : `<b>Carte à confirmer</b>`;
+  const flags=[]; if(ev.weak) flags.push(`<span class="flag warn">▼ marché en baisse${it.mom7!=null?' ('+esc(pctS(it.mom7))+' / 7 j)':''}</span>`);
+  if(v && v.cost>0 && v.marketEur>0 && it.ask!=null && it.ask > v.marketEur) flags.push(`<span class="flag bad">Prix demandé au-dessus de la valeur</span>`);
+  const nums = v ? `<div class="fl-nums">
+      <span><i>Prix</i><b class="num">${esc(eur(it.ask))}</b><small>+ ${esc(eur(it.shipIn||0))} de frais</small></span>
+      <span><i>Valeur</i><b class="num">${esc(eur(v.marketEur))}</b><small>Cardmarket${it.mom30!=null?' · '+esc(pctS(it.mom30))+' / 30 j':''}</small></span>
+      <span><i>Marge</i><b class="num ${v.margin>=0?'up':'down'}">${v.cost>0?(v.margin>=0?'+':'−')+esc(eur(Math.abs(v.margin))):'—'}</b><small>${v.marginPct!=null?esc(pctS(v.marginPct)):''}</small></span>
+      <span><i>Achat max</i><b class="num">${esc(eur(Math.max(0,v.maxBuy)))}</b><small>marge ${S.settings.targetMargin} %</small></span></div>` : '';
+  let pick='';
+  if(!it.cardId){
+    pick = `<div class="fl-pick">${(it.cands||[]).length?'<div class="hint" style="margin:0 0 6px">Quelle carte ?</div><div class="fl-cands">'+it.cands.map((c,i)=>`<button type="button" class="fl-cand" data-fx="pick" data-id="${esc(it.id)}" data-i="${i}" title="${esc(c.name)}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<span>${esc(c.name)}<small>${esc(c.ed||'')} · ${esc(c.number||'')}</small></span></button>`).join('')+'</div>':'<div class="hint" style="margin:0 0 6px">Aucune carte reconnue dans le titre.</div>'}
+      <div class="fl-find"><input type="search" placeholder="Nom (+ n°) : Pikachu ex 53" data-fx-q="${esc(it.id)}"><button class="btn small" type="button" data-fx="find" data-id="${esc(it.id)}">Chercher</button></div></div>`;
+  }
+  const watch = it.status==='watch';
+  return `<article class="fl-item ${ev.level}${it.status==='ignored'?' ign':''}${it.status==='new'?' isnew':''}" data-id="${esc(it.id)}">
+    <div class="fl-img">${img}</div>
+    <div class="fl-body">
+      <div class="fl-top">${head}<span class="fl-badge ${ev.level}">${ev.level==='good'?'🔥 ':ev.level==='bad'?'⛔ ':''}${esc(ev.label)}</span></div>
+      ${it.title?`<div class="fl-title">« ${esc(it.title)} »</div>`:''}
+      ${nums}${flags.length?`<div>${flags.join('')}</div>`:''}${pick}
+      <div class="fl-edit">
+        <label>Prix <input type="number" step="0.1" min="0" inputmode="decimal" value="${it.ask==null?'':esc(it.ask)}" data-fx-f="ask" data-id="${esc(it.id)}"> €</label>
+        <label>Frais <input type="number" step="0.1" min="0" inputmode="decimal" value="${esc(it.shipIn||0)}" data-fx-f="shipIn" data-id="${esc(it.id)}"> €</label>
+        <label>État <select data-fx-f="cond" data-id="${esc(it.id)}">${COND.map(x=>`<option value="${x.k}" ${x.k===(it.cond||'NM')?'selected':''}>${esc(x.l)}</option>`).join('')}</select></label>
+      </div>
+      <input class="fl-note" type="text" placeholder="Note (état, vendeur, négociation…)" value="${esc(it.note||'')}" data-fx-f="note" data-id="${esc(it.id)}">
+      <div class="fl-acts">
+        <a class="btn small" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer">${it.url?'Ouvrir l\'annonce ↗':'Chercher sur Vinted ↗'}</a>
+        ${it.cardId?`<button class="btn small" type="button" data-fx="analyse" data-id="${esc(it.id)}">🔎 Analyser</button>`:''}
+        <button class="btn small${watch?' on':''}" type="button" data-fx="watch" data-id="${esc(it.id)}">${watch?'⭐ Suivie':'☆ Suivre'}</button>
+        <button class="btn small" type="button" data-fx="${it.status==='ignored'?'unignore':'ignore'}" data-id="${esc(it.id)}">${it.status==='ignored'?'↩ Rétablir':'🚫 Ignorer'}</button>
+        <button class="btn small" type="button" data-fx="del" data-id="${esc(it.id)}">Retirer</button>
+        <span class="fl-when">${esc(when)}${it.src==='auto'?' · auto':''}</span>
+      </div>
+    </div></article>`;
+}
+function renderFlux(){
+  const list=$('fluxList'); if(!list) return;
+  const all=Object.values(FLUX.items).sort((a,b)=>String(b.t).localeCompare(String(a.t)));
+  const lv=it=>fxEval(it).level;
+  const F={ todo:it=>it.status!=='ignored', good:it=>it.status!=='ignored' && lv(it)==='good', watch:it=>it.status==='watch', confirm:it=>!it.cardId && it.status!=='ignored', ignored:it=>it.status==='ignored' };
+  const cnt=k=>all.filter(F[k]).length;
+  const chips=[['todo','Toutes'],['good','🔥 Bons plans'],['watch','⭐ Suivies'],['confirm','À confirmer'],['ignored','Ignorées']];
+  $('fluxChips').innerHTML=chips.map(([k,l])=>`<button type="button" class="sort-btn" data-fx-filter="${k}" aria-pressed="${FLUX.filter===k}">${l} <span class="num">${cnt(k)}</span></button>`).join('');
+  const show=all.filter(F[FLUX.filter]||F.todo);
+  list.innerHTML = show.length ? show.map(fxItemHTML).join('') : `<div class="empty-state"><div class="big">📡</div>${all.length?'Rien dans cette vue.':'Le flux est vide. Colle une annonce ou le texte d\'une alerte Vinted ci-dessus.'}</div>`;
+  const n=all.filter(it=>it.status==='new' && ['good','ok'].includes(lv(it))).length, b=$('badgeFlux'); if(b){ b.textContent=n||''; b.dataset.n=String(n); }
+}
+function fluxOpen(){ renderFlux(); fluxRefresh(false); }
+document.addEventListener('click', async e=>{
+  const fb=e.target.closest('[data-fx-filter]'); if(fb){ FLUX.filter=fb.dataset.fxFilter; renderFlux(); return; }
+  if(e.target.closest('#fxAdd')){ fxAddText(); return; }
+  if(e.target.closest('#fxRefresh')){ fluxRefresh(true); fluxPull(); return; }
+  const b=e.target.closest('[data-fx]'); if(!b) return; const it=FLUX.items[b.dataset.id]; if(!it) return; const a=b.dataset.fx;
+  if(a==='watch'){ it.status = it.status==='watch'?'seen':'watch'; }
+  else if(a==='ignore'){ it.status='ignored'; } else if(a==='unignore'){ it.status='seen'; }
+  else if(a==='del'){ delete FLUX.items[it.id]; if(S.db) await S.db.collection('listings').doc(it.id).delete(); renderFlux(); return; }
+  else if(a==='pick'){ const c=(it.cands||[])[+b.dataset.i]; if(!c) return; fxApply(it,c); it.status = it.status==='new'?'new':it.status; }
+  else if(a==='find'){
+    const inp=document.querySelector('[data-fx-q="'+String(it.id).replace(/"/g,'')+'"]'); const q=inp&&inp.value.trim(); if(!q) return;
+    b.disabled=true; b.textContent='…'; const r=await fxIdentify(q); if(r.pick) fxApply(it,r.pick); else { it.cands=r.cands; if(!r.cands.length) toast(r.err?mcpErr(r.err):'Aucune carte trouvée.'); }
+  }
+  else if(a==='analyse'){
+    try{ const card=await cr('get_card',{cardId:it.cardId}); S.results=[card.card]; setTab('scan'); renderResults(); await pickResult(0);
+      Object.assign(FORM,{ask:it.ask==null?'':String(it.ask), shipIn:String(it.shipIn||0), cond:it.cond||'NM', link:it.url||'', source:'Vinted'}); renderAnalysis(); }catch(err){ toast(mcpErr(err)); }
+    return;
+  }
+  await fxSave(it); renderFlux();
+});
+document.addEventListener('change', async e=>{
+  const f=e.target.closest && e.target.closest('[data-fx-f]'); if(!f) return; const it=FLUX.items[f.dataset.id]; if(!it) return; const k=f.dataset.fxF;
+  if(k==='ask'||k==='shipIn'){ const v=num(f.value); it[k]= k==='ask' ? v : (v||0); } else it[k]=f.value;
+  if(it.status==='new' && k!=='note') it.status='seen';
+  await fxSave(it); if(k!=='note') renderFlux();
+});
+document.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.matches && e.target.matches('[data-fx-q]')){ e.preventDefault(); const b=document.querySelector('[data-fx="find"][data-id="'+e.target.dataset.fxQ+'"]'); if(b) b.click(); } });
+
+
 /* ---------- démarrage ---------- */
+try{ MOB_Q.addEventListener('change', ()=>{ try{ renderAll(); }catch(e){} }); }catch(e){}
 async function init(){
   renderAll(); setTab('scan'); renderSettings();
   loadCatalog().then(ok=>{ if(ok) renderAll(); });
@@ -3075,6 +3305,9 @@ async function init(){
   let first = true;
   S.db.collection('settings').doc('config').onSnapshot(s=>{ if(s.exists){ S.settings = Object.assign({},DEFAULTS,s.data()); } renderAll(); }, ()=>{});
   S.db.collection('alerts').onSnapshot(snap=>{ const m={}; snap.docs.forEach(d=>{ m[d.id]=d.data(); if(!m[d.id].id) m[d.id].id=d.id; }); S.alerts=m; renderAll(); }, ()=>{});
+  { const sh=$('fxShip'); if(sh) sh.value=fxShipDefault(); }
+  S.db.collection('listings').onSnapshot(snap=>{ const m={}; snap.docs.forEach(d=>{ m[d.id]=d.data(); }); FLUX.items=m; renderFlux(); }, ()=>{});
+  setTimeout(()=>{ fluxPull().catch(()=>{}); }, 3500);
   S.db.collection('cards').onSnapshot(snap=>{
     const m={}; snap.docs.forEach(d=>{ const x=d.data(); m[x.id||d.id]=x; });
     S.cards=m; S.loaded=true; renderAll();
