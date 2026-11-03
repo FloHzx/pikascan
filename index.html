@@ -675,12 +675,14 @@
 .fl-note{ width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; font-size:13px; }
 .fl-acts{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center; } .fl-acts .btn.on{ background:var(--accent); color:var(--accent-ink); } .fl-when{ margin-left:auto; font-size:11.5px; color:var(--muted); }
 .fl-cands{ display:flex; gap:8px; flex-wrap:wrap; } .fl-cand{ display:flex; gap:8px; align-items:center; text-align:left; padding:6px 8px; border:1px solid var(--border); border-radius:10px; background:var(--paper); color:var(--ink); cursor:pointer; font:inherit; font-size:12.5px; } .fl-cand img{ width:34px; border-radius:4px; } .fl-cand small{ display:block; color:var(--muted); font-size:11px; }
+.fl-auto{ font-size:12.5px; color:var(--muted); margin:6px 0 2px; line-height:1.4; } .fl-lot{ margin:8px 0 2px; } .fl-lotc{ display:flex; gap:6px; flex-wrap:wrap; } .fl-lc{ display:flex; flex-direction:column; align-items:center; width:74px; text-align:center; padding:4px; border:1px solid var(--border); border-radius:8px; background:var(--paper); } .fl-lc img{ width:48px; border-radius:3px; } .fl-lc b{ font-size:11px; line-height:1.15; margin-top:3px; word-break:break-word; } .fl-lc small{ color:var(--muted); font-size:10.5px; }
 .fl-find{ display:flex; gap:6px; margin-top:8px; } .fl-find input{ flex:1; min-width:0; padding:6px 10px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; }
 @media (max-width:560px){
   .fl-item{ grid-template-columns:56px 1fr; gap:10px; padding:12px; } .fl-img img, .fl-noimg{ width:56px; } .fl-noimg{ height:78px; }
   .fl-nums{ grid-template-columns:1fr 1fr; } .fl-badge{ margin-left:0; } .fl-when{ margin-left:0; width:100%; }
   .fl-row{ gap:8px; } .fl-row .btn{ width:100%; justify-content:center; }
 }
+.fl-photo{ margin-top:6px; border:2px solid var(--accent2); }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -3187,13 +3189,13 @@ async function fxAddText(){
   FLUX.busy=false; $('fxAdd').disabled=false; renderFlux();
 }
 async function fluxRefresh(force){
-  const ids=[...new Set(Object.values(FLUX.items).filter(it=>it.cardId).map(it=>it.cardId))];
+  const ids=[...new Set(Object.values(FLUX.items).filter(it=>it.cardId&&!it.lot).map(it=>it.cardId))];
   const st=$('fxStatus'); let n=0; const cache={};
-  const todo=ids.filter(id=>force || Object.values(FLUX.items).some(it=>it.cardId===id && (!it.pt || Date.now()-it.pt>12*36e5)));
+  const todo=ids.filter(id=>force || Object.values(FLUX.items).some(it=>it.cardId===id && !it.lot && (!it.pt || Date.now()-it.pt>12*36e5)));
   if(!todo.length){ if(force) toast('Valeurs déjà à jour.'); return; }
   if(st) st.innerHTML='<span class="spinner" aria-hidden="true"></span> Actualisation des valeurs…';
   let k=0; await Promise.all(Array.from({length:4},async()=>{ while(k<todo.length){ const id=todo[k++]; try{ cache[id]=fxSummary(await tcCard(id,false)); n++; }catch(e){} } }));
-  for(const it of Object.values(FLUX.items)){ const s=it.cardId&&cache[it.cardId]; if(s){ it.mkt=s.mkt; it.mom7=s.mom7; it.mom30=s.mom30; it.pt=Date.now(); await fxSave(it); } }
+  for(const it of Object.values(FLUX.items)){ const s=it.cardId&&!it.lot&&cache[it.cardId]; if(s){ it.mkt=s.mkt; it.mom7=s.mom7; it.mom30=s.mom30; it.pt=Date.now(); await fxSave(it); } }
   if(st) st.textContent = n ? ('Valeurs mises à jour ('+n+' carte'+(n>1?'s':'')+').') : '';
   renderFlux();
 }
@@ -3203,11 +3205,12 @@ async function fluxPull(){
   const m=/^([^.]+)\.github\.io$/.exec(location.hostname), repo=location.pathname.split('/')[1];
   const urls=['data/annonces.json']; if(m && repo) urls.unshift('https://raw.githubusercontent.com/'+m[1]+'/'+repo+'/main/data/annonces.json');
   let data=null; for(const u of urls){ try{ const r=await fetch(u,{cache:'no-store'}); if(r.ok){ data=await r.json(); break; } }catch(e){} }
-  if(!data) return; const list=Array.isArray(data)?data:(data.items||[]); let added=0;
-  for(const p of list.slice(-60)){
-    if(added>=12) break; const id=String(p.id||fxHash((p.url||p.title||'')+'|'+(p.ask==null?'':p.ask)));
+  if(!data) return; const list=(Array.isArray(data)?data:(data.items||[])).slice().sort((a,b)=>String(b.t||'').localeCompare(String(a.t||''))).slice(0,40); let added=0;
+  for(const p of list){
+    if(added>=15) break; const id=String(p.id?('v'+String(p.id).replace(/^v/,'')):fxHash((p.url||p.title||'')+'|'+(p.ask==null?'':p.ask)));
     if(FLUX.items[id]) continue;
-    const it={id, t:p.t||new Date().toISOString(), title:p.title||'', ask:p.ask==null?null:num(p.ask), shipIn:p.shipIn!=null?num(p.shipIn):fxShipDefault(), cond:p.cond||'NM', url:p.url||'', src:'auto', status:'new', note:p.note||'', cardId:null, cands:[]};
+    const it={id, t:p.t||new Date().toISOString(), title:p.title||'', ask:p.ask==null?null:num(p.ask), shipIn:p.shipIn!=null?num(p.shipIn):fxShipDefault(), cond:p.cond||'NM', url:p.url||'', src:'auto', status:'new', note:p.note||'', photo:p.photo||'', cardId:null, cands:[]};
+    if(p.lot&&p.lot.cards&&p.lot.cards.length){ it.lot=p.lot; it.cardId=p.cardId||p.lot.cards[0].id; it.name='Lot · '+p.lot.n+' cartes reconnues'; it.img=p.lot.cards[0].img||''; it.mkt=p.lot.value; it.pt=Date.now(); await fxSave(it); FLUX.items[id]=it; added++; continue; }
     try{ if(p.cardId){ fxApply(it, fxSummary(await tcCard(p.cardId,false))); } else { const r=await fxIdentify(it.title); if(r.pick) fxApply(it,r.pick); else it.cands=r.cands; } }catch(e){}
     await fxSave(it); FLUX.items[id]=it; added++;
   }
@@ -3217,14 +3220,16 @@ function fxVinted(it){ return it.url || ('https://www.vinted.fr/catalog?search_t
 function fxItemHTML(it){
   const ev=fxEval(it), v=ev.v, when=dtFmt(it.t);
   const img = it.img ? `<img src="${esc(it.img)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.visibility='hidden'">` : `<div class="fl-noimg">?</div>`;
-  const head = it.cardId ? `<b>${esc(it.name)}</b> <span class="fl-ed">${esc(it.ed||'')} · ${esc(it.number||'')}</span>` : `<b>Carte à confirmer</b>`;
+  const head = it.lot ? `<b>Lot · ${esc(it.lot.n)} carte${it.lot.n>1?'s':''} reconnue${it.lot.n>1?'s':''}</b>` : it.cardId ? `<b>${esc(it.name)}</b> <span class="fl-ed">${esc(it.ed||'')} · ${esc(it.number||'')}</span>` : `<b>Carte à confirmer</b>`;
   const flags=[]; if(ev.weak) flags.push(`<span class="flag warn">▼ marché en baisse${it.mom7!=null?' ('+esc(pctS(it.mom7))+' / 7 j)':''}</span>`);
+  if(it.lot && v && v.cost>0 && v.marketEur>8*v.cost) flags.push(`<span class="flag warn">⚠ Valeur très supérieure au prix : vérifie sur les photos (fausses cartes, photos d'écran…)</span>`);
   if(v && v.cost>0 && v.marketEur>0 && it.ask!=null && it.ask > v.marketEur) flags.push(`<span class="flag bad">Prix demandé au-dessus de la valeur</span>`);
   const nums = v ? `<div class="fl-nums">
       <span><i>Prix</i><b class="num">${esc(eur(it.ask))}</b><small>+ ${esc(eur(it.shipIn||0))} de frais</small></span>
-      <span><i>Valeur</i><b class="num">${esc(eur(v.marketEur))}</b><small>Cardmarket${it.mom30!=null?' · '+esc(pctS(it.mom30))+' / 30 j':''}</small></span>
+      <span><i>Valeur</i><b class="num">${esc(eur(v.marketEur))}</b><small>${it.lot?'somme des cartes lues':'Cardmarket'}${it.mom30!=null?' · '+esc(pctS(it.mom30))+' / 30 j':''}</small></span>
       <span><i>Marge</i><b class="num ${v.margin>=0?'up':'down'}">${v.cost>0?(v.margin>=0?'+':'−')+esc(eur(Math.abs(v.margin))):'—'}</b><small>${v.marginPct!=null?esc(pctS(v.marginPct)):''}</small></span>
       <span><i>Achat max</i><b class="num">${esc(eur(Math.max(0,v.maxBuy)))}</b><small>marge ${S.settings.targetMargin} %</small></span></div>` : '';
+  const lotBox = it.lot ? `<div class="fl-lot"><div class="hint" style="margin:0 0 6px">Cartes lues sur la photo (valeur Cardmarket)${it.lot.lost?` · ${esc(it.lot.lost)} non lue${it.lot.lost>1?'s':''}, comptée${it.lot.lost>1?'s':''} 0 €`:''}</div><div class="fl-lotc">${it.lot.cards.slice(0,12).map(c=>`<span class="fl-lc" title="${esc(c.name)} · ${esc(c.ed||'')} ${esc(c.number||'')}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<b>${esc(c.name)}${c.q>1?' ×'+esc(c.q):''}</b><small>${c.p?esc(eur(c.p*c.q)):'< 0,30 €'}</small></span>`).join('')}</div></div>` : '';
   let pick='';
   if(!it.cardId){
     pick = `<div class="fl-pick">${(it.cands||[]).length?'<div class="hint" style="margin:0 0 6px">Quelle carte ?</div><div class="fl-cands">'+it.cands.map((c,i)=>`<button type="button" class="fl-cand" data-fx="pick" data-id="${esc(it.id)}" data-i="${i}" title="${esc(c.name)}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<span>${esc(c.name)}<small>${esc(c.ed||'')} · ${esc(c.number||'')}</small></span></button>`).join('')+'</div>':'<div class="hint" style="margin:0 0 6px">Aucune carte reconnue dans le titre.</div>'}
@@ -3232,20 +3237,21 @@ function fxItemHTML(it){
   }
   const watch = it.status==='watch';
   return `<article class="fl-item ${ev.level}${it.status==='ignored'?' ign':''}${it.status==='new'?' isnew':''}" data-id="${esc(it.id)}">
-    <div class="fl-img">${img}</div>
+    <div class="fl-img">${img}${it.photo?`<a href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer" title="Photo de l'annonce"><img class="fl-photo" src="${esc(it.photo)}" alt="Photo de l'annonce" referrerpolicy="no-referrer" loading="lazy" onerror="this.parentNode.remove()"></a>`:''}</div>
     <div class="fl-body">
       <div class="fl-top">${head}<span class="fl-badge ${ev.level}">${ev.level==='good'?'🔥 ':ev.level==='bad'?'⛔ ':''}${esc(ev.label)}</span></div>
       ${it.title?`<div class="fl-title">« ${esc(it.title)} »</div>`:''}
-      ${nums}${flags.length?`<div>${flags.join('')}</div>`:''}${pick}
+      ${nums}${flags.length?`<div>${flags.join('')}</div>`:''}${lotBox}${pick}
       <div class="fl-edit">
         <label>Prix <input type="number" step="0.1" min="0" inputmode="decimal" value="${it.ask==null?'':esc(it.ask)}" data-fx-f="ask" data-id="${esc(it.id)}"> €</label>
         <label>Frais <input type="number" step="0.1" min="0" inputmode="decimal" value="${esc(it.shipIn||0)}" data-fx-f="shipIn" data-id="${esc(it.id)}"> €</label>
         <label>État <select data-fx-f="cond" data-id="${esc(it.id)}">${COND.map(x=>`<option value="${x.k}" ${x.k===(it.cond||'NM')?'selected':''}>${esc(x.l)}</option>`).join('')}</select></label>
       </div>
+      ${it.src==='auto'&&it.note?`<div class="fl-auto">🤖 ${esc(it.note.replace(/\s*⚠.*$/,''))}</div>`:''}
       <input class="fl-note" type="text" placeholder="Note (état, vendeur, négociation…)" value="${esc(it.note||'')}" data-fx-f="note" data-id="${esc(it.id)}">
       <div class="fl-acts">
         <a class="btn small" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer">${it.url?'Ouvrir l\'annonce ↗':'Chercher sur Vinted ↗'}</a>
-        ${it.cardId?`<button class="btn small" type="button" data-fx="analyse" data-id="${esc(it.id)}">🔎 Analyser</button>`:''}
+        ${it.cardId&&!it.lot?`<button class="btn small" type="button" data-fx="analyse" data-id="${esc(it.id)}">🔎 Analyser</button>`:''}
         <button class="btn small${watch?' on':''}" type="button" data-fx="watch" data-id="${esc(it.id)}">${watch?'⭐ Suivie':'☆ Suivre'}</button>
         <button class="btn small" type="button" data-fx="${it.status==='ignored'?'unignore':'ignore'}" data-id="${esc(it.id)}">${it.status==='ignored'?'↩ Rétablir':'🚫 Ignorer'}</button>
         <button class="btn small" type="button" data-fx="del" data-id="${esc(it.id)}">Retirer</button>
@@ -3257,7 +3263,7 @@ function renderFlux(){
   const list=$('fluxList'); if(!list) return;
   const all=Object.values(FLUX.items).sort((a,b)=>String(b.t).localeCompare(String(a.t)));
   const lv=it=>fxEval(it).level;
-  const F={ todo:it=>it.status!=='ignored', good:it=>it.status!=='ignored' && lv(it)==='good', watch:it=>it.status==='watch', confirm:it=>!it.cardId && it.status!=='ignored', ignored:it=>it.status==='ignored' };
+  const F={ todo:it=>it.status!=='ignored' && !(it.src==='auto' && !it.cardId), good:it=>it.status!=='ignored' && lv(it)==='good', watch:it=>it.status==='watch', confirm:it=>!it.cardId && it.status!=='ignored', ignored:it=>it.status==='ignored' };
   const cnt=k=>all.filter(F[k]).length;
   const chips=[['todo','Toutes'],['good','🔥 Bons plans'],['watch','⭐ Suivies'],['confirm','À confirmer'],['ignored','Ignorées']];
   $('fluxChips').innerHTML=chips.map(([k,l])=>`<button type="button" class="sort-btn" data-fx-filter="${k}" aria-pressed="${FLUX.filter===k}">${l} <span class="num">${cnt(k)}</span></button>`).join('');

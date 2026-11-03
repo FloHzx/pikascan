@@ -1,0 +1,50 @@
+name: Flux d'annonces
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+concurrency:
+  group: annonces
+  cancel-in-progress: false
+permissions:
+  contents: write
+env:
+  APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+  APIFY_TASK: ${{ vars.APIFY_TASK }}
+  APIFY_DATASET: ${{ vars.APIFY_DATASET }}
+  MAX_PRICE: ${{ vars.MAX_PRICE }}
+  TARGET_MARGIN: ${{ vars.TARGET_MARGIN }}
+  MODE: ${{ vars.MODE }}
+  PHOTOS: ${{ vars.PHOTOS }}
+  NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Y a-t-il de nouvelles annonces ?
+        id: pre
+        run: node scripts/pull_annonces.mjs --count
+      # Le lecteur de photos (Chromium) n'est installé que s'il y a quelque chose à lire.
+      - name: Installer le lecteur de photos
+        if: steps.pre.outputs.new != '' && steps.pre.outputs.new != '0' && vars.PHOTOS != 'off'
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.49.1
+          npx playwright install --with-deps chromium
+      - name: Lire les annonces
+        if: steps.pre.outputs.new != '' && steps.pre.outputs.new != '0'
+        run: node scripts/pull_annonces.mjs
+      - name: Enregistrer si changement
+        run: |
+          if [ -n "$(git status --porcelain data/annonces.json)" ]; then
+            git config user.name "pikascan-bot"
+            git config user.email "pikascan-bot@users.noreply.github.com"
+            git add data/annonces.json
+            git commit -m "Annonces $(date -u +%Y-%m-%d_%H:%M)"
+            git pull --rebase -q origin main || true
+            git push
+          fi
