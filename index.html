@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.6.0 | 2026-11-05 11:32 UTC">
+<meta name="pikascan-build" content="1.7.0 | 2026-11-05 15:29 UTC">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3Cpath d='M3 32a29 29 0 0 1 58 0z' fill='%23e3350d'/%3E%3Crect x='3' y='29' width='58' height='6' fill='%231a1d24'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -694,6 +694,9 @@
 .ver.ok{ border-color:rgba(42,157,58,.55); color:var(--ink); background:rgba(42,157,58,.14); }
 .ver.wait{ border-color:rgba(255,210,63,.6); color:var(--ink); background:rgba(255,210,63,.14); }
 .ver.new{ border-color:rgba(230,100,30,.65); color:var(--ink); background:rgba(230,100,30,.18); font-weight:600; }
+
+.fx-ov.ctx{pointer-events:none}.fx-ov.ctx polygon{fill:none;stroke:rgba(255,255,255,.45);stroke-width:1.5;vector-effect:non-scaling-stroke;pointer-events:none;cursor:default}
+.fx-hd.mv{background:#ffd23f;color:#000;border-color:#000;width:30px;height:30px;margin:-15px 0 0 -15px;cursor:move}
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -712,7 +715,7 @@
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.6.0</button>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.7.0</button>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -3392,9 +3395,9 @@ function fxViewerRender(){
   const ed=FXV.edit&&FXV.edit.ph===FXV.ph?FXV.edit:null, canEd=!!(P[FXV.ph]&&window.__ocr&&window.__ocr.PH);
   const polys=ents.map((e,i)=>({e,i,poly:(e.c||e.l).poly,ph:(e.c||e.l).ph})).filter(o=>o.poly && o.ph===FXV.ph);
   const ov=polys.length?`<svg class="fx-ov" viewBox="0 0 1 1" preserveAspectRatio="none">${polys.map(o=>`<polygon data-fxv="card" data-i="${o.i}" points="${o.poly.map(p=>p.join(',')).join(' ')}" class="${o.i===FXV.i?'cur':''}${o.e.kind==='lost'?' lost':''}${o.e.c&&o.e.c.ok?' ok':''}"></polygon>`).join('')}</svg>`+polys.map(o=>{ const cx=o.poly.reduce((a,p)=>a+p[0],0)/4*100, cy=o.poly.reduce((a,p)=>a+p[1],0)/4*100; return `<span class="fx-lab${o.i===FXV.i?' cur':''}" style="left:${cx}%;top:${cy}%">${o.i+1}</span>`; }).join(''):'';
-  $('fxMdL').innerHTML = n ? `<div class="fx-pw"><img src="${esc(P[FXV.ph])}" alt="Photo ${FXV.ph+1}" referrerpolicy="no-referrer">${ed?fxEditOverlay(ed):ov}${n>1&&!ed?`<button type="button" class="fx-nav l" data-fxv="pp" aria-label="Photo précédente">‹</button><button type="button" class="fx-nav r" data-fxv="pn" aria-label="Photo suivante">›</button>`:''}</div>
-    ${canEd&&!ed?`<div class="fx-acts" style="margin:8px 0 0"><button type="button" class="btn small" data-fxv="edit">✂️ Ajuster le découpage de cette photo</button></div>`:''}<div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
-  $('fxMdR').innerHTML = ed ? fxEditPane(ed) : ents.length ? fxReviewHTML(it,ents) : '<div class="hint">Les cartes lues apparaissent ici quand l\'annonce est analysée sur photo.</div>';
+  $('fxMdL').innerHTML = n ? `<div class="fx-pw"><img src="${esc(P[FXV.ph])}" alt="Photo ${FXV.ph+1}" referrerpolicy="no-referrer">${ed?(ed.frame?fxFrameCtx(ents,FXV.ph,ed.ref&&(ed.ref.c||ed.ref.l)):'')+fxEditOverlay(ed):ov}${n>1&&!ed?`<button type="button" class="fx-nav l" data-fxv="pp" aria-label="Photo précédente">‹</button><button type="button" class="fx-nav r" data-fxv="pn" aria-label="Photo suivante">›</button>`:''}</div>
+    ${canEd&&!ed?`<div class="fx-acts" style="margin:8px 0 0"><button type="button" class="btn small" data-fxv="edit">✂️ Ajuster le découpage de cette photo</button><button type="button" class="btn small" data-fxv="fnew">➕ Ajouter un cadre</button></div>`:''}<div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
+  $('fxMdR').innerHTML = ed ? (ed.frame?fxFramePane(ed):fxEditPane(ed)) : ents.length ? fxReviewHTML(it,ents) : '<div class="hint">Les cartes lues apparaissent ici quand l\'annonce est analysée sur photo.</div>';
 }
 function fxConfLbl(c){ return c.conf==='sure'?'Certaine':c.conf==='probable'?'Probable':c.conf==='manual'?'Choisie à la main':c.conf==='titre'?'Citée dans le titre':'À vérifier'; }
 function fxReviewHTML(it,ents){
@@ -3403,7 +3406,7 @@ function fxReviewHTML(it,ents){
     <div class="fx-strip c">${ents.map((x,j)=>{ const k=(x.c||x.l).k, cr=crops[k]; return `<button type="button" class="${j===i?'on':''}${x.c&&x.c.ok?' ok':''}${x.kind==='lost'?' lost':''}" data-fxv="card" data-i="${j}" title="${esc(x.c?x.c.name:'Non lue')}">${cr?`<img src="${esc(cr)}" alt="">`:(x.c&&x.c.img?`<img src="${esc(x.c.img)}" alt="" referrerpolicy="no-referrer">`:'?')}<span>${j+1}</span></button>`; }).join('')}</div>`;
   const search=`<div class="fx-find"><input type="search" id="fxvQ" placeholder="${e.kind==='lost'?'Quelle est cette carte ? (nom + n°)':'Autre carte : nom (+ n°), ex. Pikachu 53'}" value="${esc(FXV.q)}"><button type="button" class="btn small" data-fxv="search">Chercher</button></div>${FXV.res.length?`<div class="fx-res">${FXV.res.map((r,j)=>`<button type="button" class="fl-cand" data-fxv="pickres" data-i="${j}">${r.img?`<img src="${esc(r.img)}" alt="" referrerpolicy="no-referrer">`:''}<span>${esc(r.name)}<small>${esc(r.ed||'')} · ${esc(r.number||'')}</small></span></button>`).join('')}</div>`:''}`;
   if(e.kind==='lost'){
-    const cr=crops[e.l.k]; return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="">`:'<div class="fl-noimg">?</div>'}<figcaption>Sur la photo</figcaption></figure></div><div class="hint">Cette carte n'a pas été reconnue (comptée 0 €). Cherche-la par son nom pour l'ajouter au lot.</div>${search}<div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀ Précédente</button><button type="button" class="btn small" data-fxv="next">Suivante ▶</button></div>`;
+    const cr=crops[e.l.k]; return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="">`:'<div class="fl-noimg">?</div>'}<figcaption>Sur la photo</figcaption></figure></div><div class="hint">Cette carte n'a pas été reconnue (comptée 0 €). Cherche-la par son nom pour l'ajouter au lot.</div>${search}<div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀ Précédente</button><button type="button" class="btn small" data-fxv="next">Suivante ▶</button></div><div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Ajuster ce cadre</button><button type="button" class="btn small danger" data-fxv="rmlost">🗑 Retirer ce cadre</button></div>`;
   }
   const c=e.c, cr=crops[c.k], alts=[c.id,...(c.alts||[])].filter((x,j,a)=>x&&a.indexOf(x)===j).slice(0,6);
   setTimeout(()=>alts.forEach(id=>{ if(!FXV.sums[id]) fxSumC(id).then(()=>{ const box=$('fxAlts'); if(box&&FXV.i===i) box.innerHTML=fxAltsHTML(c,alts); }); }),0);
@@ -3411,7 +3414,8 @@ function fxReviewHTML(it,ents){
     ${(!cr && !c.poly)?'<div class="fx-warn">ℹ️ Cette annonce a été analysée avant l\'ajout des zones sur la photo. <b>Re-clique sur l\'icône de l\'extension depuis la page Vinted</b> : l\'annonce sera mise à jour (photos relues) avec les cadres et les cartes découpées.</div>':''}
     <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div></div>
     ${alts.length>1?`<div class="hint" style="margin:8px 0 4px">Ce n'est pas la bonne impression ? Choisis-en une autre :</div><div class="fx-alts" id="fxAlts">${fxAltsHTML(c,alts)}</div>`:''}${search}
-    <div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀</button><button type="button" class="btn primary small" data-fxv="ok">✓ Valider et suivante</button><button type="button" class="btn small" data-fxv="next">▶</button><button type="button" class="btn small danger" data-fxv="rm">🗑 Retirer du lot</button></div>`;
+    <div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀</button><button type="button" class="btn primary small" data-fxv="ok">✓ Valider et suivante</button><button type="button" class="btn small" data-fxv="next">▶</button><button type="button" class="btn small danger" data-fxv="rm">🗑 Retirer du lot</button></div>
+    <div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Ajuster ce cadre</button></div>`;
 }
 function fxAltsHTML(c,alts){ return alts.map(id=>{ const s=FXV.sums[id]||(id===c.id?c:null); return `<button type="button" class="fx-alt${id===c.id?' on':''}" data-fxv="alt" data-id="${esc(id)}" title="${esc(id)}">${s&&s.img?`<img src="${esc(s.img)}" alt="" referrerpolicy="no-referrer">`:'<span class="fx-alt-i">…</span>'}<small>${esc(s?(s.ed||'')+' · '+(s.number||''):id)}</small></button>`; }).join(''); }
 /* --- ajustement du découpage d'une photo (coins + lignes/colonnes) puis relecture de cette photo --- */
@@ -3420,8 +3424,10 @@ function fxGridOf(ph){ const g=(FXV.media.grids||[])[ph]||FX_GRID0; return {quad
 function fxGP(q,u,v){ return [0,1].map(a=>q[0][a]*(1-u)*(1-v)+q[1][a]*u*(1-v)+q[2][a]*u*v+q[3][a]*(1-u)*v); }
 function fxEditPath(ed){ const d=[]; for(let r=1;r<ed.rows;r++){ const a=fxGP(ed.quad,0,r/ed.rows), b=fxGP(ed.quad,1,r/ed.rows); d.push(`M${a[0]},${a[1]}L${b[0]},${b[1]}`); } for(let c=1;c<ed.cols;c++){ const a=fxGP(ed.quad,c/ed.cols,0), b=fxGP(ed.quad,c/ed.cols,1); d.push(`M${a[0]},${a[1]}L${b[0]},${b[1]}`); } return d.join(''); }
 function fxEditOverlay(ed){ const nm=['↖','↗','↘','↙'];
-  return `<svg class="fx-ov edit" viewBox="0 0 1 1" preserveAspectRatio="none"><polygon id="fxEdQ" points="${ed.quad.map(p=>p.join(',')).join(' ')}"></polygon><path id="fxEdG" d="${fxEditPath(ed)}"></path></svg>`+ed.quad.map((p,i)=>`<button type="button" class="fx-hd" data-hd="${i}" style="left:${p[0]*100}%;top:${p[1]*100}%" aria-label="Coin ${i+1}">${nm[i]}</button>`).join(''); }
-function fxEditDraw(){ const ed=FXV.edit; if(!ed) return; const q=$('fxEdQ'), g=$('fxEdG'); if(q) q.setAttribute('points',ed.quad.map(p=>p.join(',')).join(' ')); if(g) g.setAttribute('d',fxEditPath(ed)); document.querySelectorAll('.fx-hd').forEach(h=>{ const p=ed.quad[+h.dataset.hd]; h.style.left=p[0]*100+'%'; h.style.top=p[1]*100+'%'; }); }
+  return `<svg class="fx-ov edit" viewBox="0 0 1 1" preserveAspectRatio="none"><polygon id="fxEdQ" points="${ed.quad.map(p=>p.join(',')).join(' ')}"></polygon><path id="fxEdG" d="${fxEditPath(ed)}"></path></svg>`+ed.quad.map((p,i)=>`<button type="button" class="fx-hd" data-hd="${i}" style="left:${p[0]*100}%;top:${p[1]*100}%" aria-label="Coin ${i+1}">${nm[i]}</button>`).join('')+(ed.frame?`<button type="button" class="fx-hd mv" data-hd="m" style="left:${fxCen(ed.quad)[0]*100}%;top:${fxCen(ed.quad)[1]*100}%" aria-label="Déplacer le cadre">✥</button>`:''); }
+const fxCen=q=>[q.reduce((a,p)=>a+p[0],0)/4,q.reduce((a,p)=>a+p[1],0)/4];
+function fxFrameCtx(ents,ph,skip){ const ps=ents.filter(e=>{ const o=e.c||e.l; return o&&o.poly&&o.ph===ph&&o!==skip; }).map(e=>(e.c||e.l).poly); return ps.length?`<svg class="fx-ov ctx" viewBox="0 0 1 1" preserveAspectRatio="none">${ps.map(q=>`<polygon points="${q.map(p=>p.join(',')).join(' ')}"></polygon>`).join('')}</svg>`:''; }
+function fxEditDraw(){ const ed=FXV.edit; if(!ed) return; const q=$('fxEdQ'), g=$('fxEdG'); if(q) q.setAttribute('points',ed.quad.map(p=>p.join(',')).join(' ')); if(g) g.setAttribute('d',fxEditPath(ed)); document.querySelectorAll('.fx-hd').forEach(h=>{ const p=h.dataset.hd==='m'?fxCen(ed.quad):ed.quad[+h.dataset.hd]; h.style.left=p[0]*100+'%'; h.style.top=p[1]*100+'%'; }); }
 function fxEditPane(ed){
   return `<div class="fx-rv-h"><b>✂️ Ajuster le découpage · photo ${ed.ph+1}</b></div>
     <div class="hint" style="margin:0 0 10px">Tire les <b>4 coins</b> (↖ ↗ ↘ ↙) pour qu'ils entourent <b>toutes les cartes</b> de la photo, puis règle le nombre de lignes et de colonnes : les traits cyan doivent passer <b>entre</b> les cartes, une carte par case.</div>
@@ -3465,10 +3471,36 @@ async function fxRescanApply(it, ph, res){
   it.scanNote=`Lot lu sur les photos (découpage ajusté) : ${L.n} carte${L.n>1?'s':''} reconnue${L.n>1?'s':''} ≈ ${L.value.toFixed(2)} €${L.lost?` · ${L.lost} non lue${L.lost>1?'s':''} (comptée${L.lost>1?'s':''} 0 €)`:''}. Vérifie sur les photos.`;
   await FXI.put(it.id,media); await fxSave(it);
 }
-document.addEventListener('pointerdown',e=>{ const h=e.target.closest&&e.target.closest('.fx-hd'); if(!h) return; e.preventDefault(); FXV.drag=+h.dataset.hd; try{ h.setPointerCapture(e.pointerId); }catch(_){} });
-document.addEventListener('pointermove',e=>{ if(FXV.drag==null||!FXV.edit) return; const img=document.querySelector('.fx-pw>img'); if(!img) return; const r=img.getBoundingClientRect(), x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)), y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)); FXV.edit.quad[FXV.drag]=[Math.round(x*1000)/1000,Math.round(y*1000)/1000]; fxEditDraw(); });
+document.addEventListener('pointerdown',e=>{ const h=e.target.closest&&e.target.closest('.fx-hd'); if(!h) return; e.preventDefault(); const hd=h.dataset.hd; FXV.drag=hd==='m'?'m':+hd; if(hd==='m'&&FXV.edit) FXV.dragStart={x:e.clientX,y:e.clientY,q:FXV.edit.quad.map(p=>p.slice())}; try{ h.setPointerCapture(e.pointerId); }catch(_){} });
+document.addEventListener('pointermove',e=>{ if(FXV.drag==null||!FXV.edit) return; const img=document.querySelector('.fx-pw>img'); if(!img) return; const r=img.getBoundingClientRect();
+  if(FXV.drag==='m'){ const st=FXV.dragStart; if(!st) return; let dx=(e.clientX-st.x)/r.width, dy=(e.clientY-st.y)/r.height; const xs=st.q.map(p=>p[0]), ys=st.q.map(p=>p[1]); dx=Math.max(-Math.min(...xs),Math.min(1-Math.max(...xs),dx)); dy=Math.max(-Math.min(...ys),Math.min(1-Math.max(...ys),dy)); FXV.edit.quad=st.q.map(p=>[Math.round((p[0]+dx)*1000)/1000,Math.round((p[1]+dy)*1000)/1000]); fxEditDraw(); return; }
+  const x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)), y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)); FXV.edit.quad[FXV.drag]=[Math.round(x*1000)/1000,Math.round(y*1000)/1000]; fxEditDraw(); });
 document.addEventListener('pointerup',()=>{ FXV.drag=null; });
 
+
+/* --- ajustement d'un seul cadre (une carte) : déplacer / déformer le cadre puis relire uniquement cette carte --- */
+function fxFramePane(ed){
+  return `<div class="fx-rv-h"><b>✋ ${ed.isNew?'Nouveau cadre':'Ajuster ce cadre'} · photo ${ed.ph+1}</b></div>
+    <div class="hint" style="margin:0 0 10px">Place le cadre <b>pile sur la carte</b> : tire les <b>4 coins</b> (↖ ↗ ↘ ↙) ou déplace tout le cadre avec <b>✥</b>. Puis clique sur « Lire ce cadre ».</div>
+    <div class="fx-acts"><button type="button" class="btn primary small" data-fxv="fanalyse" ${FXV.busy?'disabled':''}>🔍 Lire ce cadre</button><button type="button" class="btn small" data-fxv="fsnap" ${FXV.busy?'disabled':''} title="Redresse le cadre aux proportions d'une carte">▯ Proportions carte</button><button type="button" class="btn small" data-fxv="cancel" ${FXV.busy?'disabled':''}>Annuler</button></div>
+    <div class="hint" id="fxEdMsg" style="margin-top:10px">${FXV.busy?'<span class="spinner" aria-hidden="true"></span> '+esc(FXV.busyMsg||'Lecture…'):'Seule cette carte est relue ; les autres ne changent pas.'}</div>`; }
+function fxDefaultFrame(){ const im=document.querySelector('.fx-pw>img'), nw=(im&&im.naturalWidth)||3, nh=(im&&im.naturalHeight)||4, w=0.28, h=Math.min(0.9,w*nw/0.716/nh); return [[.5-w/2,.5-h/2],[.5+w/2,.5-h/2],[.5+w/2,.5+h/2],[.5-w/2,.5+h/2]].map(p=>p.map(v=>Math.round(v*1000)/1000)); }
+function fxSnapFrame(q){ const c=fxCen(q), im=document.querySelector('.fx-pw>img'), nw=(im&&im.naturalWidth)||3, nh=(im&&im.naturalHeight)||4, d=(a,b)=>Math.hypot((a[0]-b[0])*nw,(a[1]-b[1])*nh); const hpx=(d(q[0],q[3])+d(q[1],q[2]))/2, wpx=hpx*0.716, w=wpx/nw, h=hpx/nh; const cl=v=>Math.round(Math.min(1,Math.max(0,v))*1000)/1000; return [[c[0]-w/2,c[1]-h/2],[c[0]+w/2,c[1]-h/2],[c[0]+w/2,c[1]+h/2],[c[0]-w/2,c[1]+h/2]].map(p=>[cl(p[0]),cl(p[1])]); }
+async function fxFrameApply(it, ed, res){
+  const media=FXV.media; media.crops=media.crops||{}; const ph=ed.ph, poly=ed.quad.map(p=>p.slice()), r=(res.cs||[])[0]||null, crop=r?r.crop:((res.lc||[])[0]||{}).crop||'', sum=r?await fxSum(r.id).catch(()=>null):null, nk='f'+Date.now().toString(36);
+  if(!it.lot){
+    if(ed.ref&&ed.ref.kind==='single'&&!ed.isNew){ if(sum){ fxApply(it,sum); media.crops.c0=crop; it.scanCard={id:sum.id,k:'c0',ph,poly,conf:r.conf,s1:r.s1,alts:r.alt}; } else { it.scanCard=Object.assign({},it.scanCard,{poly}); } await FXI.put(it.id,media); await fxSave(it); return nk; }
+    const L0={cards:[],lostCells:[],value:0,n:0,lost:0};
+    if(it.cardId&&it.scanCard){ L0.cards.push({id:it.cardId,name:it.name,ed:it.ed,number:it.number,img:it.img,q:1,p:it.mkt!=null&&it.mkt>=0.3?it.mkt:0,conf:it.scanCard.conf,s1:it.scanCard.s1,alts:it.scanCard.alts||[],ph:it.scanCard.ph,poly:it.scanCard.poly,k:'c0'}); }
+    it.lot=L0; delete it.scanCard; it.scan=true;
+  }
+  const L=it.lot; L.lostCells=L.lostCells||[];
+  if(ed.ref&&!ed.isNew){ if(ed.ref.kind==='lost') L.lostCells=L.lostCells.filter(x=>x!==ed.ref.l); else if(ed.ref.kind==='card') L.cards=L.cards.filter(x=>x!==ed.ref.c); }
+  if(sum){ media.crops[nk]=crop; L.cards.push({id:sum.id,name:sum.name,ed:sum.ed,number:sum.number,img:sum.img,q:1,p:sum.mkt!=null&&sum.mkt>=0.3?sum.mkt:0,conf:r.conf,s1:r.s1,alts:r.alt,ph,poly,k:nk}); }
+  else { media.crops[nk]=crop; L.lostCells.push({k:nk,ph,poly}); }
+  L.cards.sort((a,b)=>b.p*b.q-a.p*a.q); L.lost=L.lostCells.length; if(L.cards.length) fxLotCalc(it); else { L.n=0; L.value=0; it.mkt=0; }
+  await FXI.put(it.id,media); await fxSave(it); return nk;
+}
 async function fxApplyChoice(s){
   const it=FXV.it, e=fxEntries(it)[FXV.i]; if(!e||!s) return; const p1=s.mkt!=null&&s.mkt>=0.3?s.mkt:0;
   if(e.kind==='lost'){ const L=it.lot, l=e.l, c={id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,q:1,p:p1,conf:'manual',s1:null,alts:[],ph:l.ph,poly:l.poly,k:l.k,ok:true}; L.cards.push(c); L.lostCells=L.lostCells.filter(x=>x!==l); L.lost=Math.max(0,(L.lost||1)-1); fxLotCalc(it); FXV.i=L.cards.length-1; }
@@ -3483,6 +3515,20 @@ async function fxViewerClick(e){
   if(a==='close'){ fxViewerClose(); return; }
   if(FXV.busy) return;
   if(a==='edit'){ FXV.edit=Object.assign({ph:FXV.ph},fxGridOf(FXV.ph)); fxViewerRender(); return; }
+  if(a==='fnew'){ FXV.edit={ph:FXV.ph,quad:fxDefaultFrame(),rows:1,cols:1,frame:true,isNew:true,ref:null}; fxViewerRender(); return; }
+  if(a==='fedit'){ const c0=ents[FXV.i]; if(!c0) return; const o=c0.c||c0.l, ph=(o.ph!=null?o.ph:FXV.ph); FXV.ph=ph; FXV.edit={ph,quad:(o.poly?o.poly.map(p=>p.slice()):fxDefaultFrame()),rows:1,cols:1,frame:true,isNew:false,ref:c0}; fxViewerRender(); return; }
+  if(a==='fsnap'&&FXV.edit&&FXV.edit.frame){ FXV.edit.quad=fxSnapFrame(FXV.edit.quad); fxViewerRender(); return; }
+  if(a==='rmlost'){ const c0=ents[FXV.i]; if(c0&&c0.kind==='lost'){ it.lot.lostCells=it.lot.lostCells.filter(x=>x!==c0.l); it.lot.lost=it.lot.lostCells.length; await fxSave(it); FXV.i=Math.max(0,Math.min(FXV.i,fxEntries(it).length-1)); fxViewerRender(); } return; }
+  if(a==='fanalyse'&&FXV.edit&&FXV.edit.frame){
+    const ed=FXV.edit, ph=ed.ph, say=m=>{ FXV.busyMsg=m; const x=$('fxEdMsg'); if(x) x.innerHTML='<span class="spinner" aria-hidden="true"></span> '+esc(m); };
+    FXV.busy=true; say('Lecture de la carte…'); fxViewerRender();
+    try{
+      const r=await fxScanOne(FXV.photos[ph],{quad:ed.quad,rows:1,cols:1},ph,say), nk=await fxFrameApply(it,ed,r); FXV.edit=null;
+      const es=fxEntries(it), j=es.findIndex(x=>(x.c||x.l)&&(x.c||x.l).k===nk); if(j>=0) FXV.i=j; else FXV.i=Math.max(0,Math.min(FXV.i,es.length-1));
+      const top=r.cs&&r.cs[0]; toast(top?('Carte lue : '+(top.conf==='sure'?'certaine':top.conf==='probable'?'probable':'à vérifier')+'.'):'Carte non reconnue : cherche-la par son nom.');
+    }catch(err){ toast(String(err&&err.message||err)); }
+    FXV.busy=false; FXV.busyMsg=''; fxViewerRender(); return;
+  }
   if(a==='cancel'){ FXV.edit=null; fxViewerRender(); return; }
   if(FXV.edit && /^(rows|cols)[+-]$/.test(a)){ const k=a.slice(0,4), d=a.endsWith('+')?1:-1; FXV.edit[k]=Math.max(1,Math.min(6,FXV.edit[k]+d)); fxViewerRender(); return; }
   if(FXV.edit && (a==='auto'||a==='analyse')){
@@ -3513,7 +3559,7 @@ async function fxViewerClick(e){
 }
 document.addEventListener('click', fxViewerClick);
 document.addEventListener('keydown', e=>{ const m=$('fxMd'); if(!m) return; if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){ if(e.key==='Enter'&&e.target.id==='fxvQ'){ e.preventDefault(); const bt=m.querySelector('[data-fxv="search"]'); if(bt) bt.click(); } if(e.key!=='Escape') return; }
-  if(e.key==='Escape'){ fxViewerClose(); return; } const ents=fxEntries(FXV.it); if(!ents.length) return;
+  if(e.key==='Escape'){ if(FXV.edit&&!FXV.busy){ FXV.edit=null; fxViewerRender(); } else if(!FXV.busy) fxViewerClose(); return; } if(FXV.edit) return; const ents=fxEntries(FXV.it); if(!ents.length) return;
   if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ const d=e.key==='ArrowRight'?1:-1, j=(FXV.i+d+ents.length)%ents.length; FXV.i=j; FXV.res=[]; FXV.q=''; const x=ents[j], ph=(x.c||x.l).ph; if(ph!=null) FXV.ph=ph; fxViewerRender(); e.preventDefault(); } });
 async function fxAddText(){
   if(FLUX.busy) return;
