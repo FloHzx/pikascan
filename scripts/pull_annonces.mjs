@@ -165,7 +165,7 @@ try {
     const p = pick(it); if (!p || have.has(p.id) || seen.has(p.id)) continue;
     if (MAXP != null && p.ask > MAXP) { seen.add(p.id); continue; }
     if (++looked > 40) break;
-    const { photos, ...rec } = p;
+    const { photos, ...rec } = p; rec.photos = photos.slice(0, 4);
     if (MODE === 'all') { have.set(p.id, rec); added++; seen.add(p.id); continue; }
     let e; try { e = await evaluate(p); } catch (err) { console.log('  erreur :', String(err.message || err).slice(0, 120)); continue; }   // on retentera au prochain passage
     seen.add(p.id);
