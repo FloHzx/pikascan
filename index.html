@@ -2778,6 +2778,39 @@ async function phAutoGrid(vidx, im, onMsg){
   return { quad, rows:best?best.r:3, cols:best?best.c:3 };
 }
 
+/* affinage automatique de la grille : on déplace les 4 coins (et on teste les dispositions voisines) tant que les cases ressemblent mieux à de vraies cartes de l'index */
+async function phRefineGrid(vidx, im, g, onMsg){
+  if(!g || g.rows*g.cols<2) return g;
+  const q0=g.quad.map(p=>p.slice()), W=phWork(im,q0,g.cols), sw=W.sw, sh=W.sh;
+  const cellScore=(quad,rows,cols,r,c)=>{ const st=phCellState(quad,rows,cols,r,c,W), rc=phRectOf(W,st); if(!phInImg(rc)) return 0; const d=phDescQ(W,UNIT,rc,false); if(d.sd<22) return 0; const m=phMatchAll(vidx,d.v,2,18); return Math.max(0,m[0][1]+0.5*(m[0][1]-m[1][1])); };
+  const gridScore=(quad,rows,cols)=>{ let t=0; for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) t+=cellScore(quad,rows,cols,r,c); return t/(rows*cols); };
+  const cellAR=(quad,rows,cols)=>{ const P=(u,v)=>phQuadPt(quad,u,v), d=(a,b)=>Math.hypot((a[0]-b[0])*sw,(a[1]-b[1])*sh); return ((d(P(0,0),P(1,0))+d(P(0,1),P(1,1)))/2/cols)/((d(P(0,0),P(0,1))+d(P(1,0),P(1,1)))/2/rows); };
+  const fresh=q=>q.map(p=>p.slice());
+  let best={ quad:fresh(q0), rows:g.rows, cols:g.cols, s:gridScore(q0,g.rows,g.cols) };
+  const base=best.s, tick=()=>new Promise(r=>setTimeout(r,0));
+  /* dispositions voisines à tester avec le cadre actuel */
+  const dims=[[g.rows,g.cols]]; for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1]]){ const r=g.rows+dr, c=g.cols+dc; if(r>=1&&c>=1&&r<=5&&c<=5&&r*c>=2){ const a=cellAR(q0,r,c); if(a>0.5&&a<1.25) dims.push([r,c]); } }
+  const starts=[];
+  for(const [r,c] of dims){ starts.push({ r, c, s:(r===g.rows&&c===g.cols)?best.s:gridScore(q0,r,c)*0.97 }); await tick(); }
+  starts.sort((a,b)=>b.s-a.s);
+  for(const st of starts.slice(0,2)){
+    let q=fresh(q0), cur=gridScore(q,st.r,st.c);
+    for(const step of [0.04,0.02,0.01,0.005]){
+      for(let it=0; it<5; it++){
+        if(onMsg) onMsg(`Affinage du découpage (${st.r}×${st.c})…`); await tick();
+        let moved=false;
+        for(let k=0;k<4;k++) for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+          const nq=fresh(q); nq[k][0]=Math.min(1,Math.max(0,nq[k][0]+dx*step)); nq[k][1]=Math.min(1,Math.max(0,nq[k][1]+dy*step));
+          const a=cellAR(nq,st.r,st.c); if(!(a>0.5&&a<1.25)) continue;
+          const s=gridScore(nq,st.r,st.c); if(s>cur+1e-3){ cur=s; q=nq; moved=true; } }
+        if(!moved) break; } }
+    const prior=(st.r===g.rows&&st.c===g.cols)?0:0.025;   /* changer de disposition demande un net progrès */
+    if(cur>best.s+prior+0.01 && (cur>base+0.015)) best={ quad:q, rows:st.r, cols:st.c, s:cur };
+  }
+  g.refined={ before:Math.round(base*1000)/1000, after:Math.round(best.s*1000)/1000 };
+  return { quad:best.quad, rows:best.rows, cols:best.cols, refined:g.refined };
+}
+
 /* ===== détection de la grille par les séparations entre cartes (rangées / colonnes), avec perspective ===== */
 const PH_TILTS = Array.from({length:19},(_,i)=>-0.18+i*0.02);
 function phGrayWork(im, S){
@@ -2865,7 +2898,7 @@ async function phPrepare(f){
   if(f.grid) return f.grid;
   const im=await phEnsureImg(f), vidx=await phLoadIndex(m=>phSet(m));
   phSet('Recherche de la disposition des cartes…');
-  const g=await phAutoGrid(vidx, im, m=>phSet(m)); f.grid={ quad:g.quad.map(p=>p.slice()), rows:g.rows, cols:g.cols }; f.auto=true;
+  let g=await phAutoGrid(vidx, im, m=>phSet(m)); try{ g=await phRefineGrid(vidx, im, g, m=>phSet(m)); }catch(e){ console.warn('refine',e); } f.grid={ quad:g.quad.map(p=>p.slice()), rows:g.rows, cols:g.cols }; f.auto=true;
   phSet(''); return f.grid;
 }
 async function phRunVis(only){
@@ -3068,7 +3101,7 @@ function phZoomClick(e){
 }
 /*VIS-END*/
 
-window.__ocr = { renderPhoto, phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
+window.__ocr = { renderPhoto, phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phRefineGrid, phAutoGrid, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
 phInit();
 /*OCRSCAN-END*/
 window.__imp = { csvToRows, resolveRow, impPreview, impRun, IMP };
