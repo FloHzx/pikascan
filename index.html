@@ -683,6 +683,11 @@
   .fl-row{ gap:8px; } .fl-row .btn{ width:100%; justify-content:center; }
 }
 .fl-photo{ margin-top:6px; border:2px solid var(--accent2); }
+
+.fx-ov.edit{pointer-events:none}.fx-ov.edit polygon{fill:rgba(0,200,255,.08);stroke:#00d0ff;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:none;cursor:default}.fx-ov.edit path{fill:none;stroke:#00d0ff;stroke-width:2;vector-effect:non-scaling-stroke;stroke-dasharray:6 4}
+.fx-hd{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid #fff;background:#0aa8d6;color:#fff;font-size:16px;line-height:1;cursor:grab;touch-action:none;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 6px rgba(0,0,0,.5);padding:0;z-index:3}
+.fx-hd:active{cursor:grabbing}
+.fx-steps2{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 12px;align-items:center}.fx-steps2 b{display:inline-block;min-width:1.4em;text-align:center}
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -3269,13 +3274,13 @@ function fxPoly(g,r,c){ const [TL,TR,BR,BL]=g.quad, P=(u,v)=>[0,1].map(a=>Math.r
 async function fxScanPhotos(files, onMsg){
   const O=window.__ocr, PH=O&&O.PH; if(!PH) throw new Error('Lecteur de photos indisponible.');
   if(PH.busy) throw new Error('Le scanner est occupé : attends la fin de la lecture en cours.');
-  const keep={files:PH.files, items:PH.items, quiet:PH.quiet}, cells=new Map(), lostCells=[], photos=[]; let lost=0, read=0;
+  const keep={files:PH.files, items:PH.items, quiet:PH.quiet}, cells=new Map(), lostCells=[], photos=[], grids=[]; let lost=0, read=0;
   const poll=setInterval(()=>{ const s=$('phStatus'); if(s && s.textContent.trim() && onMsg) onMsg(s.textContent.trim()); },400);
   PH.quiet=true;
   try{
     for(let n=0;n<files.length;n++){
       const file=files[n], url=URL.createObjectURL(file), tag=files.length>1?`Photo ${n+1}/${files.length} · `:'';
-      photos.push(await fxPhotoData(file,1000));
+      photos.push(await fxPhotoData(file,1400)); grids.push(null);
       const run=async mode=>{
         const f={file, url, thumb:'', edit:false}; PH.files=[f]; PH.items=[];
         if(mode==='auto') await O.phPrepare(f);
@@ -3283,14 +3288,14 @@ async function fxScanPhotos(files, onMsg){
         const g=f.grid, grid=g.rows+'x'+g.cols; if(onMsg) onMsg(tag+'lecture des cartes…');
         await O.phRunVis();
         const pl=i=>{ try{ return i.cell?fxPoly(g,i.cell[0],i.cell[1]):null; }catch(_){ return null; } };
-        return { grid, cs:PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length).map(i=>({id:i.cands[0].id, conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,5).map(c=>c.id), crop:i.crop||'', poly:pl(i), ph:n})),
+        return { grid, g:{quad:g.quad.map(p=>p.map(v=>Math.round(v*1000)/1000)),rows:g.rows,cols:g.cols}, cs:PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length).map(i=>({id:i.cands[0].id, conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,5).map(c=>c.id), crop:i.crop||'', poly:pl(i), ph:n})),
           lc:PH.items.filter(i=>i.kind==='lost'||i.conf==='lost'||!i.cands.length).map(i=>({ph:n, poly:pl(i), crop:i.crop||''})) };
       };
       const good=r=>r.cs.some(c=>c.conf==='sure'||c.conf==='probable');
       try{
         let r=await run('auto');
         for(const m of ['single','full']){ if(good(r)) break; if(m==='single' && r.grid==='1x1') continue; const r2=await run(m); if(r2.cs.length && (!r.cs.length || good(r2))) r=r2; }
-        read++; lost+=r.lc.length; r.lc.forEach(l=>lostCells.push(l));
+        read++; grids[n]=r.g; lost+=r.lc.length; r.lc.forEach(l=>lostCells.push(l));
         for(const c of r.cs){ if(c.conf!=='sure'&&c.conf!=='probable') continue; const o=cells.get(c.id); if(!o) cells.set(c.id,Object.assign({},c)); else { o.qty=Math.max(o.qty,c.qty); if(c.s1>o.s1) Object.assign(o,{s1:c.s1,conf:c.conf,crop:c.crop,poly:c.poly,ph:c.ph,alt:c.alt}); } }   // même carte sur plusieurs photos : comptée une fois
       } finally { URL.revokeObjectURL(url); }
     }
@@ -3298,14 +3303,14 @@ async function fxScanPhotos(files, onMsg){
     clearInterval(poll); PH.files=keep.files; PH.items=keep.items; PH.quiet=keep.quiet; try{ O.renderPhoto(); }catch(e){}
     const s=$('phStatus'); if(s) s.innerHTML='';
   }
-  return { cells:[...cells.values()], lost, lostCells, read, photos };
+  return { cells:[...cells.values()], lost, lostCells, read, photos, grids };
 }
 async function fxSum(id){ return fxSummary(await tcCard(id,false)); }
 /* titre + photos -> { pick | lot | cands, note } */
 async function fxPhotoDecide(title, files, onMsg){
   const tr=await fxIdentify(title||''), T=tr.pick||null;
   const sc=await fxScanPhotos(files,onMsg), ok=sc.cells, nCards=ok.reduce((a,c)=>a+c.qty,0);
-  const media={ photos:sc.photos, crops:{} }, lotLike=FX_LOT_RE.test(title||'') || nCards>=2;
+  const media={ photos:sc.photos, crops:{}, grids:sc.grids }, lotLike=FX_LOT_RE.test(title||'') || nCards>=2;
   if(!ok.length) return { pick:T, cands:tr.cands||[], media, note: sc.read ? (T?'Photo non concluante : carte prise dans le titre.':'Aucune carte reconnue sur la photo : choisis-la ou cherche-la à la main.') : 'Photo illisible.' };
   if(!lotLike){
     const top=ok.slice().sort((a,b)=>b.s1-a.s1)[0], sCard=id=>{ media.crops.c0=top.crop; return { id, k:'c0', ph:top.ph, poly:top.poly, conf:top.conf, s1:top.s1, alts:[top.id,...top.alt].filter(x=>x!==id).slice(0,4) }; };
@@ -3326,7 +3331,7 @@ async function fxPhotoDecide(title, files, onMsg){
 }
 function fxApplyLot(it, lot){ it.lot=lot; it.cardId=lot.cards[0].id; it.name='Lot · '+lot.n+' cartes reconnues'; it.img=lot.cards[0].img||''; it.mkt=lot.value; it.pt=Date.now(); it.cands=[]; }
 /* --- visionneuse : photos de l'annonce + vérification des cartes détectées, une par une --- */
-const FXV={ it:null, media:{photos:[],crops:{}}, photos:[], ph:0, i:0, res:[], q:'', sums:{}, p:{} };
+const FXV={ edit:null, drag:null, busy:false, busyMsg:'', it:null, media:{photos:[],crops:{}}, photos:[], ph:0, i:0, res:[], q:'', sums:{}, p:{} }; window.__FXV=FXV;
 function fxEntries(it){
   if(it.lot){ it.lot.cards.forEach((c,i)=>{ c.k=c.k||('c'+i); }); return [...it.lot.cards.map(c=>({kind:'card',c})), ...(it.lot.lostCells||[]).map(l=>({kind:'lost',l}))]; }
   if(it.cardId && it.scanCard) return [{kind:'single', c:Object.assign({id:it.cardId,name:it.name,ed:it.ed,number:it.number,img:it.img,q:1,p:it.mkt}, it.scanCard, {k:it.scanCard.k||'c0'})}];
@@ -3337,7 +3342,7 @@ async function fxOpenViewer(id, mode, idx){
   const it=FLUX.items[id]; if(!it) return; let media=null; try{ media=await FXI.get(id); }catch(_){}
   const photos = media&&media.photos&&media.photos.length ? media.photos : (it.photos&&it.photos.length ? it.photos : (it.photo?[it.photo]:[]));
   const ents=fxEntries(it), e=ents[idx||0];
-  Object.assign(FXV,{it, media:media||{photos:[],crops:{}}, photos, ph:(mode==='rev'&&e&&((e.c&&e.c.ph)!=null?e.c.ph:(e.l&&e.l.ph)))||0, i:idx||0, res:[], q:''});
+  Object.assign(FXV,{edit:null, drag:null, busy:false, it, media:media||{photos:[],crops:{}}, photos, ph:(mode==='rev'&&e&&((e.c&&e.c.ph)!=null?e.c.ph:(e.l&&e.l.ph)))||0, i:idx||0, res:[], q:''});
   if(!photos.length && !ents.length){ toast('Aucune photo enregistrée pour cette annonce.'); return; }
   fxViewerBuild(); fxViewerRender();
 }
@@ -3352,11 +3357,12 @@ function fxViewerRender(){
   const it=FXV.it; if(!it||!$('fxMd')) return; const ents=fxEntries(it), P=FXV.photos, n=P.length;
   $('fxMdT').textContent = (it.title||'Annonce').slice(0,70);
   /* photo + cadres des cartes détectées */
+  const ed=FXV.edit&&FXV.edit.ph===FXV.ph?FXV.edit:null, canEd=!!(P[FXV.ph]&&window.__ocr&&window.__ocr.PH);
   const polys=ents.map((e,i)=>({e,i,poly:(e.c||e.l).poly,ph:(e.c||e.l).ph})).filter(o=>o.poly && o.ph===FXV.ph);
   const ov=polys.length?`<svg class="fx-ov" viewBox="0 0 1 1" preserveAspectRatio="none">${polys.map(o=>`<polygon data-fxv="card" data-i="${o.i}" points="${o.poly.map(p=>p.join(',')).join(' ')}" class="${o.i===FXV.i?'cur':''}${o.e.kind==='lost'?' lost':''}${o.e.c&&o.e.c.ok?' ok':''}"></polygon>`).join('')}</svg>`+polys.map(o=>{ const cx=o.poly.reduce((a,p)=>a+p[0],0)/4*100, cy=o.poly.reduce((a,p)=>a+p[1],0)/4*100; return `<span class="fx-lab${o.i===FXV.i?' cur':''}" style="left:${cx}%;top:${cy}%">${o.i+1}</span>`; }).join(''):'';
-  $('fxMdL').innerHTML = n ? `<div class="fx-pw"><img src="${esc(P[FXV.ph])}" alt="Photo ${FXV.ph+1}" referrerpolicy="no-referrer">${ov}${n>1?`<button type="button" class="fx-nav l" data-fxv="pp" aria-label="Photo précédente">‹</button><button type="button" class="fx-nav r" data-fxv="pn" aria-label="Photo suivante">›</button>`:''}</div>
-    <div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
-  $('fxMdR').innerHTML = ents.length ? fxReviewHTML(it,ents) : '<div class="hint">Les cartes lues apparaissent ici quand l\'annonce est analysée sur photo.</div>';
+  $('fxMdL').innerHTML = n ? `<div class="fx-pw"><img src="${esc(P[FXV.ph])}" alt="Photo ${FXV.ph+1}" referrerpolicy="no-referrer">${ed?fxEditOverlay(ed):ov}${n>1&&!ed?`<button type="button" class="fx-nav l" data-fxv="pp" aria-label="Photo précédente">‹</button><button type="button" class="fx-nav r" data-fxv="pn" aria-label="Photo suivante">›</button>`:''}</div>
+    ${canEd&&!ed?`<div class="fx-acts" style="margin:8px 0 0"><button type="button" class="btn small" data-fxv="edit">✂️ Ajuster le découpage de cette photo</button></div>`:''}<div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
+  $('fxMdR').innerHTML = ed ? fxEditPane(ed) : ents.length ? fxReviewHTML(it,ents) : '<div class="hint">Les cartes lues apparaissent ici quand l\'annonce est analysée sur photo.</div>';
 }
 function fxConfLbl(c){ return c.conf==='sure'?'Certaine':c.conf==='probable'?'Probable':c.conf==='manual'?'Choisie à la main':c.conf==='titre'?'Citée dans le titre':'À vérifier'; }
 function fxReviewHTML(it,ents){
@@ -3376,6 +3382,61 @@ function fxReviewHTML(it,ents){
     <div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀</button><button type="button" class="btn primary small" data-fxv="ok">✓ Valider et suivante</button><button type="button" class="btn small" data-fxv="next">▶</button><button type="button" class="btn small danger" data-fxv="rm">🗑 Retirer du lot</button></div>`;
 }
 function fxAltsHTML(c,alts){ return alts.map(id=>{ const s=FXV.sums[id]||(id===c.id?c:null); return `<button type="button" class="fx-alt${id===c.id?' on':''}" data-fxv="alt" data-id="${esc(id)}" title="${esc(id)}">${s&&s.img?`<img src="${esc(s.img)}" alt="" referrerpolicy="no-referrer">`:'<span class="fx-alt-i">…</span>'}<small>${esc(s?(s.ed||'')+' · '+(s.number||''):id)}</small></button>`; }).join(''); }
+/* --- ajustement du découpage d'une photo (coins + lignes/colonnes) puis relecture de cette photo --- */
+const FX_GRID0={quad:[[.04,.04],[.96,.04],[.96,.96],[.04,.96]],rows:3,cols:3};
+function fxGridOf(ph){ const g=(FXV.media.grids||[])[ph]||FX_GRID0; return {quad:g.quad.map(p=>p.slice()),rows:g.rows,cols:g.cols}; }
+function fxGP(q,u,v){ return [0,1].map(a=>q[0][a]*(1-u)*(1-v)+q[1][a]*u*(1-v)+q[2][a]*u*v+q[3][a]*(1-u)*v); }
+function fxEditPath(ed){ const d=[]; for(let r=1;r<ed.rows;r++){ const a=fxGP(ed.quad,0,r/ed.rows), b=fxGP(ed.quad,1,r/ed.rows); d.push(`M${a[0]},${a[1]}L${b[0]},${b[1]}`); } for(let c=1;c<ed.cols;c++){ const a=fxGP(ed.quad,c/ed.cols,0), b=fxGP(ed.quad,c/ed.cols,1); d.push(`M${a[0]},${a[1]}L${b[0]},${b[1]}`); } return d.join(''); }
+function fxEditOverlay(ed){ const nm=['↖','↗','↘','↙'];
+  return `<svg class="fx-ov edit" viewBox="0 0 1 1" preserveAspectRatio="none"><polygon id="fxEdQ" points="${ed.quad.map(p=>p.join(',')).join(' ')}"></polygon><path id="fxEdG" d="${fxEditPath(ed)}"></path></svg>`+ed.quad.map((p,i)=>`<button type="button" class="fx-hd" data-hd="${i}" style="left:${p[0]*100}%;top:${p[1]*100}%" aria-label="Coin ${i+1}">${nm[i]}</button>`).join(''); }
+function fxEditDraw(){ const ed=FXV.edit; if(!ed) return; const q=$('fxEdQ'), g=$('fxEdG'); if(q) q.setAttribute('points',ed.quad.map(p=>p.join(',')).join(' ')); if(g) g.setAttribute('d',fxEditPath(ed)); document.querySelectorAll('.fx-hd').forEach(h=>{ const p=ed.quad[+h.dataset.hd]; h.style.left=p[0]*100+'%'; h.style.top=p[1]*100+'%'; }); }
+function fxEditPane(ed){
+  return `<div class="fx-rv-h"><b>✂️ Ajuster le découpage · photo ${ed.ph+1}</b></div>
+    <div class="hint" style="margin:0 0 10px">Tire les <b>4 coins</b> (↖ ↗ ↘ ↙) pour qu'ils entourent <b>toutes les cartes</b> de la photo, puis règle le nombre de lignes et de colonnes : les traits cyan doivent passer <b>entre</b> les cartes, une carte par case.</div>
+    <div class="fx-steps2"><span>Lignes <button type="button" class="btn small" data-fxv="rows-">−</button> <b>${ed.rows}</b> <button type="button" class="btn small" data-fxv="rows+">+</button></span><span>Colonnes <button type="button" class="btn small" data-fxv="cols-">−</button> <b>${ed.cols}</b> <button type="button" class="btn small" data-fxv="cols+">+</button></span></div>
+    <div class="fx-acts"><button type="button" class="btn small" data-fxv="auto" ${FXV.busy?'disabled':''}>↺ Détection auto</button><button type="button" class="btn primary small" data-fxv="analyse" ${FXV.busy?'disabled':''}>🔍 Analyser avec ce découpage</button><button type="button" class="btn small" data-fxv="cancel" ${FXV.busy?'disabled':''}>Annuler</button></div>
+    <div class="hint" id="fxEdMsg" style="margin-top:10px">${FXV.busy?'<span class="spinner" aria-hidden="true"></span> '+esc(FXV.busyMsg||'Lecture…'):'Les cartes de cette photo seront relues ; celles que tu as choisies à la main sont conservées.'}</div>`; }
+async function fxScanOne(dataUrl, grid, ph, onMsg){
+  const O=window.__ocr, PH=O&&O.PH; if(!PH) throw new Error('Lecteur de photos indisponible.'); if(PH.busy) throw new Error('Le scanner est occupé : réessaie dans un instant.');
+  const blob=await (await fetch(dataUrl)).blob(), file=new File([blob],'p.jpg',{type:blob.type||'image/jpeg'}), url=URL.createObjectURL(file);
+  const keep={files:PH.files, items:PH.items, quiet:PH.quiet}; PH.quiet=true;
+  const poll=setInterval(()=>{ const s=$('phStatus'); if(s && s.textContent.trim() && onMsg) onMsg(s.textContent.trim()); },400);
+  try{
+    const f={file,url,thumb:'',edit:false}; PH.files=[f]; PH.items=[];
+    f.im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Photo illisible.')); i.src=url; });
+    if(grid) f.grid={quad:grid.quad.map(p=>p.slice()),rows:grid.rows,cols:grid.cols}; else await O.phPrepare(f);
+    const g=f.grid; if(grid) await O.phRunVis(); else return { grid:{quad:g.quad.map(p=>p.map(v=>Math.round(v*1000)/1000)),rows:g.rows,cols:g.cols} };
+    const pl=i=>{ try{ return i.cell?fxPoly(g,i.cell[0],i.cell[1]):null; }catch(_){ return null; } };
+    return { grid:{quad:g.quad.map(p=>p.map(v=>Math.round(v*1000)/1000)),rows:g.rows,cols:g.cols},
+      cs:PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length).map(i=>({id:i.cands[0].id, conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,5).map(c=>c.id), crop:i.crop||'', poly:pl(i), ph})),
+      lc:PH.items.filter(i=>i.kind==='lost'||i.conf==='lost'||!i.cands.length).map(i=>({ph, poly:pl(i), crop:i.crop||''})) };
+  } finally { clearInterval(poll); URL.revokeObjectURL(url); PH.files=keep.files; PH.items=keep.items; PH.quiet=keep.quiet; try{ O.renderPhoto(); }catch(e){} const s=$('phStatus'); if(s) s.innerHTML=''; }
+}
+async function fxRescanApply(it, ph, res){
+  const media=FXV.media; media.grids=media.grids||[]; media.grids[ph]=res.grid; media.crops=media.crops||{};
+  const good=res.cs.filter(c=>c.conf==='sure'||c.conf==='probable');
+  if(!it.lot){
+    if(good.length>=2 || FX_LOT_RE.test(it.title||'')){ it.lot={cards:[],lostCells:[],value:0,n:0,lost:0}; delete it.scanCard; it.scan=true; }
+    else { if(good.length===1){ const top=good[0], o=await fxSum(top.id); fxApply(it,o); media.crops.c0=top.crop; it.scanCard={id:o.id,k:'c0',ph,poly:top.poly,conf:top.conf,s1:top.s1,alts:top.alt}; } await FXI.put(it.id,media); await fxSave(it); return; }
+  }
+  const L=it.lot; L.lostCells=L.lostCells||[];
+  L.cards=L.cards.filter(c=>c.ph!==ph || c.conf==='manual'); L.lostCells=L.lostCells.filter(l=>l.ph!==ph);
+  const nk=Date.now().toString(36);
+  for(const c of good){
+    const ex=L.cards.find(x=>x.id===c.id);
+    if(ex){ if(ex.conf!=='manual' && c.s1>(ex.s1||0)){ Object.assign(ex,{s1:c.s1,conf:c.conf,ph,poly:c.poly,alts:c.alt}); media.crops[ex.k]=c.crop; } continue; }
+    const d=await fxSum(c.id).catch(()=>null); if(!d) continue; const k='n'+nk+L.cards.length; media.crops[k]=c.crop;
+    L.cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,q:c.qty,p:d.mkt!=null&&d.mkt>=0.3?d.mkt:0,conf:c.conf,s1:c.s1,alts:c.alt,ph,poly:c.poly,k});
+  }
+  res.lc.forEach((l,i)=>{ const k='l'+nk+i; media.crops[k]=l.crop; L.lostCells.push({k,ph:l.ph,poly:l.poly}); });
+  L.cards.sort((a,b)=>b.p*b.q-a.p*a.q); L.lost=L.lostCells.length; fxLotCalc(it);
+  it.scanNote=`Lot lu sur les photos (découpage ajusté) : ${L.n} carte${L.n>1?'s':''} reconnue${L.n>1?'s':''} ≈ ${L.value.toFixed(2)} €${L.lost?` · ${L.lost} non lue${L.lost>1?'s':''} (comptée${L.lost>1?'s':''} 0 €)`:''}. Vérifie sur les photos.`;
+  await FXI.put(it.id,media); await fxSave(it);
+}
+document.addEventListener('pointerdown',e=>{ const h=e.target.closest&&e.target.closest('.fx-hd'); if(!h) return; e.preventDefault(); FXV.drag=+h.dataset.hd; try{ h.setPointerCapture(e.pointerId); }catch(_){} });
+document.addEventListener('pointermove',e=>{ if(FXV.drag==null||!FXV.edit) return; const img=document.querySelector('.fx-pw>img'); if(!img) return; const r=img.getBoundingClientRect(), x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)), y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)); FXV.edit.quad[FXV.drag]=[Math.round(x*1000)/1000,Math.round(y*1000)/1000]; fxEditDraw(); });
+document.addEventListener('pointerup',()=>{ FXV.drag=null; });
+
 async function fxApplyChoice(s){
   const it=FXV.it, e=fxEntries(it)[FXV.i]; if(!e||!s) return; const p1=s.mkt!=null&&s.mkt>=0.3?s.mkt:0;
   if(e.kind==='lost'){ const L=it.lot, l=e.l, c={id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,q:1,p:p1,conf:'manual',s1:null,alts:[],ph:l.ph,poly:l.poly,k:l.k,ok:true}; L.cards.push(c); L.lostCells=L.lostCells.filter(x=>x!==l); L.lost=Math.max(0,(L.lost||1)-1); fxLotCalc(it); FXV.i=L.cards.length-1; }
@@ -3388,8 +3449,27 @@ async function fxViewerClick(e){
   const b=e.target.closest('[data-fxv]'); if(!b || !$('fxMd')) return; const a=b.dataset.fxv, it=FXV.it, ents=fxEntries(it), N=ents.length;
   const go=j=>{ FXV.i=(j+N)%N; FXV.res=[]; FXV.q=''; const x=ents[FXV.i], ph=x&&(x.c||x.l).ph; if(ph!=null) FXV.ph=ph; fxViewerRender(); };
   if(a==='close'){ fxViewerClose(); return; }
+  if(FXV.busy) return;
+  if(a==='edit'){ FXV.edit=Object.assign({ph:FXV.ph},fxGridOf(FXV.ph)); fxViewerRender(); return; }
+  if(a==='cancel'){ FXV.edit=null; fxViewerRender(); return; }
+  if(FXV.edit && /^(rows|cols)[+-]$/.test(a)){ const k=a.slice(0,4), d=a.endsWith('+')?1:-1; FXV.edit[k]=Math.max(1,Math.min(6,FXV.edit[k]+d)); fxViewerRender(); return; }
+  if(FXV.edit && (a==='auto'||a==='analyse')){
+    const ed=FXV.edit, ph=ed.ph, say=m=>{ FXV.busyMsg=m; const x=$('fxEdMsg'); if(x) x.innerHTML='<span class="spinner" aria-hidden="true"></span> '+esc(m); };
+    FXV.busy=true; say(a==='auto'?'Détection automatique…':'Lecture des cartes…'); fxViewerRender();
+    try{
+      if(a==='auto'){ const r=await fxScanOne(FXV.photos[ph],null,ph,say); FXV.edit=Object.assign({ph},r.grid); }
+      else {
+        const r=await fxScanOne(FXV.photos[ph],{quad:ed.quad,rows:ed.rows,cols:ed.cols},ph,say);
+        await fxRescanApply(it,ph,r); FXV.edit=null;
+        const n2=r.cs.filter(c=>c.conf==='sure'||c.conf==='probable').length;
+        const es=fxEntries(it), j=es.findIndex(x=>(x.c||x.l).ph===ph); FXV.i=Math.max(0,j);
+        toast(n2+' carte'+(n2>1?'s':'')+' reconnue'+(n2>1?'s':'')+(r.lc.length?' · '+r.lc.length+' non lue'+(r.lc.length>1?'s':''):'')+' sur la photo '+(ph+1)+'.');
+      }
+    }catch(err){ toast(String(err&&err.message||err)); }
+    FXV.busy=false; FXV.busyMsg=''; fxViewerRender(); return;
+  }
   if(a==='pp'||a==='pn'){ FXV.ph=(FXV.ph+(a==='pn'?1:-1)+FXV.photos.length)%FXV.photos.length; fxViewerRender(); return; }
-  if(a==='ph'){ FXV.ph=+b.dataset.i; fxViewerRender(); return; }
+  if(a==='ph'){ FXV.ph=+b.dataset.i; FXV.edit=null; fxViewerRender(); return; }
   if(a==='card'){ go(+b.dataset.i); return; }
   if(a==='prev'){ go(FXV.i-1); return; } if(a==='next'){ go(FXV.i+1); return; }
   const cur=ents[FXV.i];
