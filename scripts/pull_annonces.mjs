@@ -29,7 +29,8 @@ function pick(it) {
   const urls = [it.photo_url, it.photo && (it.photo.full_size_url || it.photo.url), ...(Array.isArray(it.photo_urls) ? it.photo_urls : []), ...(Array.isArray(it.photos) ? it.photos.map(x => (x && (x.full_size_url || x.url)) || x) : [])].filter(u => typeof u === 'string' && /^https?:\/\//.test(u));
   const photos = [...new Set(urls)].slice(0, 6), photo = photos[0] || '';
   const t = new Date(it.created_at || it.published_at || it.extraction_datetime || Date.now());
-  return { id, title, ask, shipIn: ship, url, photo, photos, t: isNaN(t) ? new Date().toISOString() : t.toISOString() };
+  const desc = String(it.description || it.desc || '').replace(/\r/g, '').trim().slice(0, 3000);
+  return { id, title, ask, shipIn: ship, url, photo, photos, desc, t: isNaN(t) ? new Date().toISOString() : t.toISOString() };
 }
 
 /* ---------- reconnaissance de la carte (TCGdex) ---------- */
