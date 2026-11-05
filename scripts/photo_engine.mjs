@@ -15,7 +15,7 @@ export async function startEngine({ root = process.cwd(), port = 0, textAssist =
   const browser = await chromium.launch(); const page = await (await browser.newContext({ viewport: { width: 1000, height: 900 } })).newPage();
   page.on('pageerror', e => log('page:', e.message));
   await page.goto(url); await page.waitForFunction(() => window.__ocr && window.__ocr.PH, null, { timeout: 60000 }); await page.waitForTimeout(1500);
-  await page.click('#tab-photo');
+  await page.click('#tab-photo'); await page.evaluate(() => { __ocr.PH.quiet = true; });
   await page.evaluate(ta => { document.getElementById('phAuto').checked = false; document.getElementById('phTxtAssist').checked = ta; }, textAssist);
 
   // Lit une photo (Buffer) et renvoie les cartes reconnues : [{id, name, conf, s1, margin, qty}]

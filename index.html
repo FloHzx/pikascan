@@ -675,7 +675,7 @@
 .fl-note{ width:100%; box-sizing:border-box; padding:7px 10px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; font-size:13px; }
 .fl-acts{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; align-items:center; } .fl-acts .btn.on{ background:var(--accent); color:var(--accent-ink); } .fl-when{ margin-left:auto; font-size:11.5px; color:var(--muted); }
 .fl-cands{ display:flex; gap:8px; flex-wrap:wrap; } .fl-cand{ display:flex; gap:8px; align-items:center; text-align:left; padding:6px 8px; border:1px solid var(--border); border-radius:10px; background:var(--paper); color:var(--ink); cursor:pointer; font:inherit; font-size:12.5px; } .fl-cand img{ width:34px; border-radius:4px; } .fl-cand small{ display:block; color:var(--muted); font-size:11px; }
-.fl-auto{ font-size:12.5px; color:var(--muted); margin:6px 0 2px; line-height:1.4; } .fl-lot{ margin:8px 0 2px; } .fl-lotc{ display:flex; gap:6px; flex-wrap:wrap; } .fl-lc{ display:flex; flex-direction:column; align-items:center; width:74px; text-align:center; padding:4px; border:1px solid var(--border); border-radius:8px; background:var(--paper); } .fl-lc img{ width:48px; border-radius:3px; } .fl-lc b{ font-size:11px; line-height:1.15; margin-top:3px; word-break:break-word; } .fl-lc small{ color:var(--muted); font-size:10.5px; }
+.fl-auto{ font-size:12.5px; color:var(--muted); margin:6px 0 2px; line-height:1.4; } .fx-bm{ margin:8px 0 2px; font-size:13px; } .fx-bm summary{ cursor:pointer; color:var(--muted); } .fx-ph{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0 2px; padding:8px; border:1px dashed var(--border); border-radius:10px; } .fx-ph.over{ background:var(--paper); border-color:var(--ink); } .fx-th{ display:flex; gap:6px; flex-wrap:wrap; width:100%; } .fx-th:empty{ display:none; } .fx-t{ position:relative; } .fx-t img{ height:64px; border-radius:6px; display:block; } .fx-t button{ position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; border:1px solid var(--border); background:var(--paper); color:var(--ink); cursor:pointer; font-size:11px; line-height:1; padding:0; } .fl-lot{ margin:8px 0 2px; } .fl-lotc{ display:flex; gap:6px; flex-wrap:wrap; } .fl-lc{ display:flex; flex-direction:column; align-items:center; width:74px; text-align:center; padding:4px; border:1px solid var(--border); border-radius:8px; background:var(--paper); } .fl-lc img{ width:48px; border-radius:3px; } .fl-lc b{ font-size:11px; line-height:1.15; margin-top:3px; word-break:break-word; } .fl-lc small{ color:var(--muted); font-size:10.5px; }
 .fl-find{ display:flex; gap:6px; margin-top:8px; } .fl-find input{ flex:1; min-width:0; padding:6px 10px; border:1px solid var(--border); border-radius:8px; background:var(--paper); color:var(--ink); font:inherit; }
 @media (max-width:560px){
   .fl-item{ grid-template-columns:56px 1fr; gap:10px; padding:12px; } .fl-img img, .fl-noimg{ width:56px; } .fl-noimg{ height:78px; }
@@ -709,7 +709,7 @@
   <div class="tabs" role="tablist" aria-label="Sections">
     <button class="tab" role="tab" id="tab-scan" data-tab="scan" aria-selected="true">🔎 Repérer une carte</button>
     <button class="tab" role="tab" id="tab-photo" data-tab="photo" aria-selected="false">📷 Scanner photo</button>
-    <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false">📡 Flux <span class="badge" id="badgeFlux" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false">📡 Annonces <span class="badge" id="badgeFlux" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-base" data-tab="base" aria-selected="false">📚 Ma base <span class="badge" id="badgeCards" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false">🔔 Alertes <span class="badge" id="badgeAlerts" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false">⚙️ Réglages</button>
@@ -770,12 +770,18 @@
     <div id="phFiche" hidden><div class="section-head"><div><h2>Fiche de la carte</h2><div class="sub">Comme si tu l'avais repérée : valeur, historique, verdict d'achat, ajout à ta base.</div></div></div></div>
   </section>
 
-  <!-- ===== Flux d'annonces ===== -->
+  <!-- ===== Annonces ===== -->
   <section class="panel" id="panel-flux" role="tabpanel" aria-labelledby="tab-flux" hidden>
     <div class="card-box fl-compose">
-      <h2 style="margin:0 0 4px">Flux d'annonces</h2>
-      <div class="hint" style="margin:0 0 10px">Colle le texte d'une alerte Vinted (titre + prix, une annonce par ligne) ou un lien : PikaScan reconnaît la carte, la compare au prix Cardmarket et donne le verdict. Les annonces s'accumulent ici, les plus récentes en premier.</div>
-      <textarea id="fxText" rows="3" placeholder="Ex. :&#10;Pikachu ex 053/191 — 12,00 €&#10;https://www.vinted.fr/items/…"></textarea>
+      <h2 style="margin:0 0 4px">Annonces</h2>
+      <div class="hint" style="margin:0 0 10px">Colle le lien (ou le titre + prix) d'une annonce Vinted <b>et ajoute ses photos</b> : PikaScan lit les cartes visuellement, comme le scanner photo (carte seule ou lot), les compare au prix Cardmarket et donne le verdict. Vinted interdit qu'une page web lise ses annonces : les photos se joignent donc à la main (capture d'écran, photo enregistrée, ou Ctrl+V).</div>
+      <textarea id="fxText" rows="3" placeholder="Ex. :&#10;https://www.vinted.fr/items/…&#10;Lot cartes Pokémon — 12,00 €"></textarea>
+      <div class="fx-ph" id="fxDrop"><button class="btn small" id="fxPhBtn" type="button">📷 Ajouter les photos de l'annonce</button><input id="fxPhIn" type="file" accept="image/*" multiple hidden><span class="hint" style="margin:0">ou glisse-les ici / colle une capture (Ctrl+V) · 4 max</span><div class="fx-th" id="fxThumbs"></div></div>
+      <details class="fx-bm" id="fxBm"><summary>⚡ Envoi en un clic depuis Vinted (favori à installer une fois)</summary>
+        <div class="hint" style="margin:8px 0 6px"><b>1.</b> Glisse ce bouton dans ta barre de favoris (Ctrl+Maj+B pour l'afficher) : <a class="btn small" id="fxBmLink" href="#" draggable="true">📌 Envoyer à PikaScan</a> <span id="fxBmHint"></span></div>
+        <div class="hint" style="margin:0 0 4px"><b>2.</b> Sur une annonce Vinted, clique sur ce favori : PikaScan s'ouvre, récupère le titre, le prix et les photos, lit les cartes et affiche le verdict. C'est toi qui ouvres la page Vinted, rien n'est automatisé de notre côté.</div>
+        <div class="hint" style="margin:0">Si rien ne s'ouvre : autorise les fenêtres pop-up pour Vinted. Si les photos ne passent pas, ajoute-les à la main avec le bouton ci-dessus.</div>
+      </details>
       <div class="fl-row">
         <label>Frais d'achat par défaut <input id="fxShip" type="number" step="0.1" min="0" inputmode="decimal" value="3"> €</label>
         <label>État <select id="fxCond"><option value="NM">Neuf / quasi neuf</option><option value="EX">Excellent</option><option value="GD">Bon</option><option value="PL">Joué</option></select></label>
@@ -783,9 +789,9 @@
         <span class="hint" id="fxStatus" aria-live="polite" style="margin:0"></span>
       </div>
     </div>
-    <div class="fl-bar"><div class="sort-controls" id="fluxChips" role="group" aria-label="Filtrer le flux"></div><button class="btn small" id="fxRefresh" type="button">↻ Actualiser les valeurs</button></div>
+    <div class="fl-bar"><div class="sort-controls" id="fluxChips" role="group" aria-label="Filtrer les annonces"></div><button class="btn small" id="fxRefresh" type="button">↻ Actualiser les valeurs</button></div>
     <div id="fluxList"></div>
-    <div class="hint">Frais d'achat = port + protection acheteur Vinted (à ajuster selon l'annonce). Alimentation automatique : si un fichier <code>data/annonces.json</code> existe dans le dépôt, son contenu est ajouté au flux à l'ouverture.</div>
+    <div class="hint">Frais d'achat = port + protection acheteur Vinted (à ajuster selon l'annonce). Alimentation automatique : si un fichier <code>data/annonces.json</code> existe dans le dépôt, son contenu est ajouté ici à l'ouverture.</div>
   </section>
 
 
@@ -2962,9 +2968,9 @@ async function phFinish(){
   const rank={sure:0,probable:1,choose:2,lost:3};
   PH.items = merged.sort((a,b)=>rank[a.conf]-rank[b.conf] || a.img-b.img || a.y-b.y || a.x-b.x);
   renderPhoto();
-  await Promise.all(PH.items.filter(it=>it.conf!=='lost').map(it=>phLoadDetail(it)));
+  if(!PH.quiet) await Promise.all(PH.items.filter(it=>it.conf!=='lost').map(it=>phLoadDetail(it)));
   const real = PH.items.filter(i=>i.kind!=='lost' && i.conf!=='lost');
-  if(real.length===1 && real[0].det && real[0].conf!=='choose') phFiche(PH.items.indexOf(real[0]), true);
+  if(!PH.quiet && real.length===1 && real[0].det && real[0].conf!=='choose') phFiche(PH.items.indexOf(real[0]), true);
 }
 
 /* --- éditeur de grille (4 coins déplaçables) --- */
@@ -3052,7 +3058,7 @@ function phZoomClick(e){
 }
 /*VIS-END*/
 
-window.__ocr = { phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
+window.__ocr = { renderPhoto, phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
 phInit();
 /*OCRSCAN-END*/
 window.__imp = { csvToRows, resolveRow, impPreview, impRun, IMP };
@@ -3107,7 +3113,7 @@ async function syncHistory(){
 }
 window.__imgChain = imgChain; window.__imgTag = imgTag;
 document.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.clickable[data-act="gocard"]')){ e.preventDefault(); goToCard(e.target.dataset.id); } });
-/* ---------- Flux d'annonces (Vinted & co) ---------- */
+/* ---------- Annonces (Vinted & co) ---------- */
 const FLUX = { items:{}, filter:'todo', busy:false, pulled:false };
 const FX_NOISE = /\b(carte|cartes|pok[eé]mon|pokemon|neuve?s?|tbe|tr[eè]s bon [eé]tat|[eé]tat|nm|mint|fr|vf|fran[cç]aise?|anglaise?|lot|holo|brillante?|collection|vinted|vends?|vente)\b/gi;
 function fxShipDefault(){ try{ const v=parseFloat(localStorage.getItem('ps_flux_ship')); return isNaN(v)?3:v; }catch(e){ return 3; } }
@@ -3168,23 +3174,102 @@ function fxEval(it){
   if(it.ask==null) return {level:'none', label:'Prix à renseigner', v:Object.assign({},v,{cost:0,margin:0,marginPct:null}), weak};
   return {level:v.level, label:v.label, v, weak};
 }
+/* --- lecture visuelle des photos d'une annonce (même moteur que l'onglet Photo) --- */
+FLUX.files=[];
+const FX_LOT_RE=/\b(lot|lots|collection|bundle|classeur|binder|\d{2,4}\s*cartes|x\s?\d{2,4})\b/i;
+function fxThumbsRender(){
+  const h=$('fxThumbs'); if(!h) return;
+  h.innerHTML=FLUX.files.map((f,i)=>`<span class="fx-t"><img src="${esc(f._u||(f._u=URL.createObjectURL(f)))}" alt="Photo ${i+1}"><button type="button" data-fx-rmph="${i}" aria-label="Retirer cette photo">✕</button></span>`).join('');
+}
+function fxAddFiles(list){
+  const fs=[...list].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name||''));
+  if(!fs.length) return false;
+  for(const f of fs){ if(FLUX.files.length>=4){ toast('4 photos maximum par annonce.'); break; } FLUX.files.push(f); }
+  fxThumbsRender(); return true;
+}
+function fxThumbOf(file){ return new Promise(res=>{ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{ const k=240/Math.max(im.naturalWidth,im.naturalHeight,1), cv=document.createElement('canvas'); cv.width=Math.max(1,Math.round(im.naturalWidth*Math.min(1,k))); cv.height=Math.max(1,Math.round(im.naturalHeight*Math.min(1,k))); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); URL.revokeObjectURL(u); res(cv.toDataURL('image/jpeg',0.7)); }; im.onerror=()=>{ URL.revokeObjectURL(u); res(''); }; im.src=u; }); }
+async function fxScanPhotos(files, onMsg){
+  const O=window.__ocr, PH=O&&O.PH; if(!PH) throw new Error('Lecteur de photos indisponible.');
+  if(PH.busy) throw new Error('Le scanner est occupé : attends la fin de la lecture en cours.');
+  const keep={files:PH.files, items:PH.items, quiet:PH.quiet}, cells=new Map(); let lost=0, read=0;
+  const poll=setInterval(()=>{ const s=$('phStatus'); if(s && s.textContent.trim() && onMsg) onMsg(s.textContent.trim()); },400);
+  PH.quiet=true;
+  try{
+    for(let n=0;n<files.length;n++){
+      const file=files[n], url=URL.createObjectURL(file), tag=files.length>1?`Photo ${n+1}/${files.length} · `:'';
+      const run=async mode=>{
+        const f={file, url, thumb:'', edit:false}; PH.files=[f]; PH.items=[];
+        if(mode==='auto') await O.phPrepare(f);
+        else { const im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Photo illisible.')); i.src=url; }); f.im=im; const tb=mode==='full'?{x0:.03,y0:.03,x1:.97,y1:.97}:O.phTextureBox(im); f.grid={quad:[[tb.x0,tb.y0],[tb.x1,tb.y0],[tb.x1,tb.y1],[tb.x0,tb.y1]],rows:1,cols:1}; }
+        const grid=f.grid.rows+'x'+f.grid.cols; if(onMsg) onMsg(tag+'lecture des cartes…');
+        await O.phRunVis();
+        return { grid, cs:PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length).map(i=>({id:i.cands[0].id, conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,4).map(c=>c.id)})), lo:PH.items.filter(i=>i.kind==='lost'||i.conf==='lost'||!i.cands.length).length };
+      };
+      const good=r=>r.cs.some(c=>c.conf==='sure'||c.conf==='probable');
+      try{
+        let r=await run('auto');
+        for(const m of ['single','full']){ if(good(r)) break; if(m==='single' && r.grid==='1x1') continue; const r2=await run(m); if(r2.cs.length && (!r.cs.length || good(r2))) r=r2; }
+        read++; lost=Math.max(lost,r.lo);
+        for(const c of r.cs){ if(c.conf!=='sure'&&c.conf!=='probable') continue; const o=cells.get(c.id); if(!o) cells.set(c.id,Object.assign({},c)); else { o.qty=Math.max(o.qty,c.qty); if(c.s1>o.s1){ o.s1=c.s1; o.conf=c.conf; } } }   // même carte sur plusieurs photos : comptée une fois
+      } finally { URL.revokeObjectURL(url); }
+    }
+  } finally {
+    clearInterval(poll); PH.files=keep.files; PH.items=keep.items; PH.quiet=keep.quiet; try{ O.renderPhoto(); }catch(e){}
+    const s=$('phStatus'); if(s) s.innerHTML='';
+  }
+  return { cells:[...cells.values()], lost, read };
+}
+async function fxSum(id){ return fxSummary(await tcCard(id,false)); }
+/* titre + photos -> { pick | lot | cands, note } */
+async function fxPhotoDecide(title, files, onMsg){
+  const tr=await fxIdentify(title||''), T=tr.pick||null;
+  const sc=await fxScanPhotos(files,onMsg), ok=sc.cells, nCards=ok.reduce((a,c)=>a+c.qty,0);
+  const lotLike=FX_LOT_RE.test(title||'') || nCards>=2;
+  if(!ok.length) return { pick:T, cands:tr.cands||[], note: sc.read ? (T?'Photo non concluante : carte prise dans le titre.':'Aucune carte reconnue sur la photo : choisis-la ou cherche-la à la main.') : 'Photo illisible.' };
+  if(!lotLike){
+    const top=ok.slice().sort((a,b)=>b.s1-a.s1)[0];
+    if(T){
+      if(ok.some(c=>c.id===T.id||(c.alt||[]).includes(T.id))) return { pick:T, note:'Titre et photo concordent ✓' };
+      if(top.conf==='sure' && top.s1>=0.85 && top.id!==T.id){ const o=await fxSum(top.id); if(o && o.name!==T.name) return { pick:o, note:`⚠ La photo montre ${o.name}, le titre dit ${T.name} : vérifie.` }; }
+      return { pick:T, note:'Photo non concluante : carte prise dans le titre.' };
+    }
+    const o=await fxSum(top.id); return { pick:o, note: top.conf==='sure' ? 'Carte reconnue sur la photo.' : 'Carte probable sur la photo : vérifie.' };
+  }
+  const list=ok.map(c=>({id:c.id,q:c.qty})); if(T && !list.some(c=>c.id===T.id)) list.push({id:T.id,q:1});
+  const cards=[]; let k=0, value=0;
+  await Promise.all(Array.from({length:4},async()=>{ while(k<Math.min(list.length,40)){ const c=list[k++]; try{ const d=await fxSum(c.id); const p1=d.mkt!=null && d.mkt>=0.3 ? d.mkt : 0; cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,q:c.q,p:p1}); }catch(e){} } }));
+  cards.forEach(c=>{ value+=c.p*c.q; }); cards.sort((a,b)=>b.p*b.q-a.p*a.q);
+  const n=cards.reduce((a,c)=>a+c.q,0);
+  return { lot:{cards, value:Math.round(value*100)/100, n, lost:sc.lost}, note:`Lot lu sur la photo : ${n} carte${n>1?'s':''} reconnue${n>1?'s':''} ≈ ${value.toFixed(2)} €${sc.lost?` · ${sc.lost} non lue${sc.lost>1?'s':''} (comptée${sc.lost>1?'s':''} 0 €)`:''}. Vérifie sur les photos.` };
+}
+function fxApplyLot(it, lot){ it.lot=lot; it.cardId=lot.cards[0].id; it.name='Lot · '+lot.n+' cartes reconnues'; it.img=lot.cards[0].img||''; it.mkt=lot.value; it.pt=Date.now(); it.cands=[]; }
 async function fxAddText(){
   if(FLUX.busy) return;
-  const parsed=fxParse($('fxText').value);
+  let parsed=fxParse($('fxText').value); const files=FLUX.files.slice();
+  if(files.length){ if(parsed.length>1){ toast("Avec des photos, ajoute une seule annonce à la fois."); return; } if(!parsed.length) parsed=[{title:'',ask:null,url:''}]; }
   if(!parsed.length){ toast("Colle le texte ou le lien d'une annonce."); return; }
   const ship=num($('fxShip').value)||0; try{ localStorage.setItem('ps_flux_ship', String(ship)); }catch(e){}
-  const cond=$('fxCond').value, st=$('fxStatus'); FLUX.busy=true; $('fxAdd').disabled=true; let added=0, dup=0;
+  const cond=$('fxCond').value, st=$('fxStatus'); FLUX.busy=true; $('fxAdd').disabled=true; let added=0, dup=0, ok=true;
+  const spin=m=>{ st.innerHTML='<span class="spinner" aria-hidden="true"></span> '+esc(m); };
   try{
     for(let i=0;i<parsed.length;i++){
-      const p=parsed[i]; const id=fxHash((p.url||p.title)+'|'+(p.ask==null?'':p.ask));
+      const p=parsed[i]; const id=fxHash((p.url||p.title||files.map(f=>f.name+f.size).join(','))+'|'+(p.ask==null?'':p.ask));
       if(FLUX.items[id]){ dup++; continue; }
-      st.innerHTML='<span class="spinner" aria-hidden="true"></span> Reconnaissance '+(i+1)+'/'+parsed.length+'…';
+      spin('Reconnaissance '+(i+1)+'/'+parsed.length+'…');
       const it={id, t:new Date().toISOString(), title:p.title||'', ask:p.ask, shipIn:ship, cond, url:p.url||'', src:'manuel', status:'new', note:'', cardId:null, cands:[]};
-      const r=await fxIdentify(p.title||'');
-      if(r.pick) fxApply(it,r.pick); else it.cands=r.cands;
+      let done=false;
+      if(files.length){
+        try{
+          const d=await fxPhotoDecide(p.title||'', files, spin);
+          if(d.lot) fxApplyLot(it,d.lot); else if(d.pick) fxApply(it,d.pick); else it.cands=d.cands||[];
+          it.scanNote=d.note||''; it.photo=await fxThumbOf(files[0]); it.scan=true; done=true;
+        }catch(e){ ok=false; toast(mcpErr(e)); }
+      }
+      if(!done){ const r=await fxIdentify(p.title||''); if(r.pick) fxApply(it,r.pick); else it.cands=r.cands; }
       await fxSave(it); FLUX.items[id]=it; added++;
     }
-    $('fxText').value=''; st.textContent = added ? (added+' annonce'+(added>1?'s':'')+' ajoutée'+(added>1?'s':'')+(dup?' ('+dup+' déjà présente'+(dup>1?'s':'')+')':'')+'.') : (dup?'Déjà dans le flux.':'');
+    $('fxText').value=''; FLUX.files=[]; fxThumbsRender();
+    st.textContent = added ? (added+' annonce'+(added>1?'s':'')+' ajoutée'+(added>1?'s':'')+(dup?' ('+dup+' déjà présente'+(dup>1?'s':'')+')':'')+'.') : (dup?'Déjà dans les annonces.':'');
   }catch(e){ st.textContent=mcpErr(e); }
   FLUX.busy=false; $('fxAdd').disabled=false; renderFlux();
 }
@@ -3209,12 +3294,12 @@ async function fluxPull(){
   for(const p of list){
     if(added>=15) break; const id=String(p.id?('v'+String(p.id).replace(/^v/,'')):fxHash((p.url||p.title||'')+'|'+(p.ask==null?'':p.ask)));
     if(FLUX.items[id]) continue;
-    const it={id, t:p.t||new Date().toISOString(), title:p.title||'', ask:p.ask==null?null:num(p.ask), shipIn:p.shipIn!=null?num(p.shipIn):fxShipDefault(), cond:p.cond||'NM', url:p.url||'', src:'auto', status:'new', note:p.note||'', photo:p.photo||'', cardId:null, cands:[]};
+    const it={id, t:p.t||new Date().toISOString(), title:p.title||'', ask:p.ask==null?null:num(p.ask), shipIn:p.shipIn!=null?num(p.shipIn):fxShipDefault(), cond:p.cond||'NM', url:p.url||'', src:'auto', status:'new', note:'', scanNote:p.note||'', photo:p.photo||'', cardId:null, cands:[]};
     if(p.lot&&p.lot.cards&&p.lot.cards.length){ it.lot=p.lot; it.cardId=p.cardId||p.lot.cards[0].id; it.name='Lot · '+p.lot.n+' cartes reconnues'; it.img=p.lot.cards[0].img||''; it.mkt=p.lot.value; it.pt=Date.now(); await fxSave(it); FLUX.items[id]=it; added++; continue; }
     try{ if(p.cardId){ fxApply(it, fxSummary(await tcCard(p.cardId,false))); } else { const r=await fxIdentify(it.title); if(r.pick) fxApply(it,r.pick); else it.cands=r.cands; } }catch(e){}
     await fxSave(it); FLUX.items[id]=it; added++;
   }
-  if(added){ renderFlux(); toast(added+' nouvelle'+(added>1?'s':'')+' annonce'+(added>1?'s':'')+' dans le flux.'); }
+  if(added){ renderFlux(); toast(added+' nouvelle'+(added>1?'s':'')+' annonce'+(added>1?'s':'')+' dans les annonces.'); }
 }
 function fxVinted(it){ return it.url || ('https://www.vinted.fr/catalog?search_text='+encodeURIComponent(((it.name||it.title||'')+' '+(it.number||'')).trim())); }
 function fxItemHTML(it){
@@ -3247,7 +3332,7 @@ function fxItemHTML(it){
         <label>Frais <input type="number" step="0.1" min="0" inputmode="decimal" value="${esc(it.shipIn||0)}" data-fx-f="shipIn" data-id="${esc(it.id)}"> €</label>
         <label>État <select data-fx-f="cond" data-id="${esc(it.id)}">${COND.map(x=>`<option value="${x.k}" ${x.k===(it.cond||'NM')?'selected':''}>${esc(x.l)}</option>`).join('')}</select></label>
       </div>
-      ${it.src==='auto'&&it.note?`<div class="fl-auto">🤖 ${esc(it.note.replace(/\s*⚠.*$/,''))}</div>`:''}
+      ${(it.scanNote||(it.src==='auto'&&it.note))?`<div class="fl-auto">🤖 ${esc(String(it.scanNote||it.note).replace(/\s*⚠ Valeur.*$/,''))}</div>`:''}
       <input class="fl-note" type="text" placeholder="Note (état, vendeur, négociation…)" value="${esc(it.note||'')}" data-fx-f="note" data-id="${esc(it.id)}">
       <div class="fl-acts">
         <a class="btn small" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer">${it.url?'Ouvrir l\'annonce ↗':'Chercher sur Vinted ↗'}</a>
@@ -3268,10 +3353,64 @@ function renderFlux(){
   const chips=[['todo','Toutes'],['good','🔥 Bons plans'],['watch','⭐ Suivies'],['confirm','À confirmer'],['ignored','Ignorées']];
   $('fluxChips').innerHTML=chips.map(([k,l])=>`<button type="button" class="sort-btn" data-fx-filter="${k}" aria-pressed="${FLUX.filter===k}">${l} <span class="num">${cnt(k)}</span></button>`).join('');
   const show=all.filter(F[FLUX.filter]||F.todo);
-  list.innerHTML = show.length ? show.map(fxItemHTML).join('') : `<div class="empty-state"><div class="big">📡</div>${all.length?'Rien dans cette vue.':'Le flux est vide. Colle une annonce ou le texte d\'une alerte Vinted ci-dessus.'}</div>`;
+  list.innerHTML = show.length ? show.map(fxItemHTML).join('') : `<div class="empty-state"><div class="big">📡</div>${all.length?'Rien dans cette vue.':'Aucune annonce pour l\'instant. Colle un lien ou le texte d\'une annonce Vinted, ajoute ses photos, et PikaScan lit les cartes.'}</div>`;
   const n=all.filter(it=>it.status==='new' && ['good','ok'].includes(lv(it))).length, b=$('badgeFlux'); if(b){ b.textContent=n||''; b.dataset.n=String(n); }
 }
-function fluxOpen(){ renderFlux(); fluxRefresh(false); }
+function fluxOpen(){ renderFlux(); fluxRefresh(false); }
+/* --- favori « Envoyer à PikaScan » : s'exécute sur la page Vinted que TU consultes (ton navigateur, ta session) --- */
+function fxBookmarklet(APP){
+  var d=document, q=function(x){ return d.querySelector(x); }, title='', price='', imgs=[];
+  d.querySelectorAll('script[type="application/ld+json"]').forEach(function(sc){ try{ var j=JSON.parse(sc.textContent); (Array.isArray(j)?j:[j]).forEach(function(o){ if(o && /Product/.test(JSON.stringify(o['@type']||''))){ title=title||o.name||''; var of=o.offers; if(Array.isArray(of)) of=of[0]; if(of && of.price!=null && (!of.priceCurrency || of.priceCurrency==='EUR')) price=price||String(of.price); var im=o.image; if(typeof im==='string') im=[im]; if(Array.isArray(im)) im.forEach(function(u){ imgs.push(typeof u==='string'?u:(u&&u.url)); }); } }); }catch(e){} });
+  var mt=function(p){ var e=q('meta[property="'+p+'"]'); return e&&e.content; };
+  title=title||mt('og:title')||((q('h1')||{}).innerText)||d.title; if(mt('og:image')) imgs.push(mt('og:image'));
+  price=price||mt('product:price:amount')||mt('og:price:amount')||'';
+  if(!price){ var x=/(\d{1,4}(?:[.,]\d{1,2})?)\s*€/.exec((d.body.innerText||'').slice(0,4000)); if(x) price=x[1]; }
+  d.querySelectorAll('img').forEach(function(i){ var u=i.currentSrc||i.src; if(u && /vinted/.test(u) && !/avatar|\/users?\/|portrait/.test(u) && (i.naturalWidth||0)>=150) imgs.push(u); });
+  var seen={}, list=[]; imgs.forEach(function(u){ if(!u || typeof u!=='string') return; var k=u.split('?')[0].replace(/\/(t|f\d+|\d+x\d+)\//,'/'); if(!seen[k]){ seen[k]=1; list.push(u); } }); list=list.slice(0,4);
+  var w=window.open(APP+'#annonce','pikascan'); if(!w){ alert('Autorise les fenêtres pop-up pour envoyer l’annonce à PikaScan.'); return; }
+  var origin=new URL(APP).origin, sent=false, n=0;
+  Promise.all(list.map(function(u){ return fetch(u,{credentials:'omit'}).then(function(r){ return r.ok?r.blob():null; }).catch(function(){ return null; }); })).then(function(bl){
+    var payload={ type:'pikascan-annonce', url:location.href.split('?')[0], title:String(title||'').slice(0,200), price:String(price||''), urls:list, blobs:bl.map(function(b){ return b && b.type.indexOf('image/')===0 ? b : null; }) };
+    function onMsg(e){ if(e.origin!==origin || e.source!==w || !e.data || e.data.type!=='pikascan-ready' || sent) return; sent=true; w.postMessage(payload,origin); removeEventListener('message',onMsg); clearInterval(t); }
+    addEventListener('message',onMsg);
+    var t=setInterval(function(){ if(sent || ++n>60){ clearInterval(t); return; } try{ w.postMessage({type:'pikascan-hello'},origin); }catch(e){} },500);
+  });
+}
+function fxBmInit(){
+  const a=$('fxBmLink'); if(!a) return;
+  if(!/^https?:$/.test(location.protocol)){ a.hidden=true; $('fxBmHint').textContent='(disponible quand PikaScan est ouvert depuis son adresse web)'; return; }
+  const app=location.origin+location.pathname.replace(/index\.html$/,'');
+  a.setAttribute('href','javascript:'+encodeURIComponent('('+fxBookmarklet.toString()+')('+JSON.stringify(app)+')'));
+  a.addEventListener('click',e=>{ e.preventDefault(); toast('Ne clique pas ici : glisse ce bouton dans ta barre de favoris.'); });
+}
+const FX_ORIGIN=/^https:\/\/(www\.)?vinted\.[a-z.]+$/;
+window.addEventListener('message', async e=>{
+  if(!FX_ORIGIN.test(e.origin)) return; const d=e.data; if(!d || typeof d!=='object') return;
+  if(d.type==='pikascan-hello'){ try{ e.source.postMessage({type:'pikascan-ready'}, e.origin); }catch(_){} return; }
+  if(d.type!=='pikascan-annonce') return;
+  setTab('flux'); if(FLUX.busy){ toast('Une lecture est déjà en cours : réessaie dans un instant.'); return; }
+  const title=String(d.title||'').replace(/\s+/g,' ').trim().slice(0,200), price=String(d.price||'').replace(',', '.').replace(/[^\d.]/g,'').slice(0,8);
+  const url=/^https:\/\/(www\.)?vinted\.[a-z.]+\/items\/[^\s]*$/.test(String(d.url||'')) ? String(d.url) : '';
+  const files=[]; const bl=Array.isArray(d.blobs)?d.blobs:[], urls=Array.isArray(d.urls)?d.urls:[];
+  for(let i=0;i<Math.min(4,Math.max(bl.length,urls.length));i++){
+    let b=bl[i]; if(!(b instanceof Blob) || !/^image\//.test(b.type) || b.size>12e6) b=null;
+    if(!b && typeof urls[i]==='string' && /^https:\/\//.test(urls[i])){ try{ const r=await fetch(urls[i],{credentials:'omit'}); if(r.ok){ const x=await r.blob(); if(/^image\//.test(x.type) && x.size<12e6) b=x; } }catch(_){} }
+    if(b) files.push(new File([b],'vinted-'+(i+1)+'.'+(/png/.test(b.type)?'png':'jpg'),{type:b.type}));
+  }
+  FLUX.files.forEach(f=>{ if(f._u) URL.revokeObjectURL(f._u); }); FLUX.files=[]; fxThumbsRender();
+  $('fxText').value=[title, price?price+' €':'', url].filter(Boolean).join(' ');
+  if(files.length) fxAddFiles(files); else toast("Les photos n'ont pas pu être récupérées : ajoute-les à la main.");
+  if(title||url) fxAddText();
+});
+window.addEventListener('hashchange',()=>{ if(location.hash==='#annonce') setTab('flux'); });
+fxBmInit(); if(location.hash==='#annonce') setTimeout(()=>setTab('flux'),0);
+document.addEventListener('click', e=>{
+  if(e.target.closest('#fxPhBtn')){ $('fxPhIn').click(); return; }
+  const r=e.target.closest('[data-fx-rmph]'); if(r){ const f=FLUX.files.splice(+r.dataset.fxRmph,1)[0]; if(f&&f._u) URL.revokeObjectURL(f._u); fxThumbsRender(); }
+});
+document.addEventListener('change', e=>{ if(e.target.id==='fxPhIn'){ fxAddFiles(e.target.files); e.target.value=''; } });
+document.addEventListener('paste', e=>{ const p=$('panel-flux'); if(!p||p.hidden) return; const fs=[...(e.clipboardData&&e.clipboardData.files||[])]; if(fs.length && fxAddFiles(fs)) e.preventDefault(); });
+['dragover','dragleave','drop'].forEach(t=>document.addEventListener(t, e=>{ const d=e.target.closest&&e.target.closest('#fxDrop, .fl-compose'); if(!d) return; if(t==='dragover'){ e.preventDefault(); $('fxDrop').classList.add('over'); } else { $('fxDrop').classList.remove('over'); if(t==='drop'){ e.preventDefault(); fxAddFiles(e.dataTransfer.files); } } }));
 document.addEventListener('click', async e=>{
   const fb=e.target.closest('[data-fx-filter]'); if(fb){ FLUX.filter=fb.dataset.fxFilter; renderFlux(); return; }
   if(e.target.closest('#fxAdd')){ fxAddText(); return; }
