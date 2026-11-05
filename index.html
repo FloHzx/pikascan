@@ -2757,7 +2757,8 @@ function phTextureBox(im){
 async function phAutoGrid(vidx, im, onMsg){
   const tb=phTextureBox(im), quad=[[tb.x0,tb.y0],[tb.x1,tb.y0],[tb.x1,tb.y1],[tb.x0,tb.y1]], W=phWork1(im,640);
   const ar=((tb.x1-tb.x0)*W.sw)/((tb.y1-tb.y0)*W.sh), hyps=[];
-  for(let r=1;r<=4;r++) for(let c=1;c<=4;c++){ const cell=ar*r/c; if(cell>0.55 && cell<1.2) hyps.push([r,c]); }
+  for(let r=1;r<=4;r++) for(let c=1;c<=4;c++){ const cell=ar*r/c; if(cell>0.62 && cell<0.95) hyps.push([r,c]); }
+  if(!hyps.length) for(let r=1;r<=4;r++) for(let c=1;c<=4;c++){ const cell=ar*r/c; if(cell>0.55 && cell<1.2) hyps.push([r,c]); }
   /* une seule carte reconnue avec certitude sur toute la zone ? alors c'est une photo de carte seule */
   try{
     if(ar>0.55 && ar<1.2){
@@ -2766,7 +2767,7 @@ async function phAutoGrid(vidx, im, onMsg){
       if(a.list.length && phConfOf(a.s1,a.margin)==='sure' && a.s1>=0.8) return { quad, rows:1, cols:1 };
     }
   }catch(e){ console.warn(e); }
-  try{ const sg=phSeamGrid(im); if(sg){ if(onMsg) onMsg(`Grille détectée : ${sg.rows}×${sg.cols}`); return { quad:sg.quad, rows:sg.rows, cols:sg.cols }; } }catch(e){ console.warn('seam',e); }
+  try{ let sg=phSeamGrid(im); if(sg && phCellAR(im,sg.quad,sg.rows,sg.cols)<0.6) sg=null; if(sg){ if(onMsg) onMsg(`Grille détectée : ${sg.rows}×${sg.cols}`); return { quad:sg.quad, rows:sg.rows, cols:sg.cols }; } }catch(e){ console.warn('seam',e); }
   let best=null;
   for(const [r,c] of hyps){
     if(r*c===1) continue;
@@ -2778,18 +2779,29 @@ async function phAutoGrid(vidx, im, onMsg){
   return { quad, rows:best?best.r:3, cols:best?best.c:3 };
 }
 
+/* autres dispositions plausibles (cases de proportions réalistes) pour le cas où la première lecture est mauvaise */
+async function phAltGrids(im, cur){
+  const vidx=await phLoadIndex(()=>{}), tb=phTextureBox(im), quad=[[tb.x0,tb.y0],[tb.x1,tb.y0],[tb.x1,tb.y1],[tb.x0,tb.y1]], W=phWork1(im,640), ar=((tb.x1-tb.x0)*W.sw)/((tb.y1-tb.y0)*W.sh), out=[];
+  for(let r=1;r<=4;r++) for(let c=1;c<=4;c++){ const cell=ar*r/c; if(r*c<2||(cur&&r===cur.rows&&c===cur.cols)||!(cell>0.62&&cell<0.95)) continue;
+    let tot=0; for(let i=0;i<r;i++) for(let j=0;j<c;j++){ const st=phCellState(quad,r,c,i,j,W), d=phDescQ(W,UNIT,phRectOf(W,st),false), m=phMatchAll(vidx,d.v,2,18); tot+=Math.max(0,m[0][1]-m[1][1]); }
+    out.push({ quad:quad.map(p=>p.slice()), rows:r, cols:c, q:tot/(r*c) }); await new Promise(res=>setTimeout(res,0)); }
+  out.sort((a,b)=>b.q-a.q); const top=out.slice(0,2), res=[];
+  for(const g of top){ try{ res.push(await phRefineGrid(vidx,im,g)); }catch(e){ res.push(g); } }
+  return res;
+}
+function phCellAR(im, quad, rows, cols){ const sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height, P=(u,v)=>phQuadPt(quad,u,v), d=(a,b)=>Math.hypot((a[0]-b[0])*sw,(a[1]-b[1])*sh); return ((d(P(0,0),P(1,0))+d(P(0,1),P(1,1)))/2/cols)/((d(P(0,0),P(0,1))+d(P(1,0),P(1,1)))/2/rows); }
 /* affinage automatique de la grille : on déplace les 4 coins (et on teste les dispositions voisines) tant que les cases ressemblent mieux à de vraies cartes de l'index */
 async function phRefineGrid(vidx, im, g, onMsg){
   if(!g || g.rows*g.cols<2) return g;
   const q0=g.quad.map(p=>p.slice()), W=phWork(im,q0,g.cols), sw=W.sw, sh=W.sh;
   const cellScore=(quad,rows,cols,r,c)=>{ const st=phCellState(quad,rows,cols,r,c,W), rc=phRectOf(W,st); if(!phInImg(rc)) return 0; const d=phDescQ(W,UNIT,rc,false); if(d.sd<22) return 0; const m=phMatchAll(vidx,d.v,2,18); return Math.max(0,m[0][1]+0.5*(m[0][1]-m[1][1])); };
   const gridScore=(quad,rows,cols)=>{ let t=0; for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) t+=cellScore(quad,rows,cols,r,c); return t/(rows*cols); };
-  const cellAR=(quad,rows,cols)=>{ const P=(u,v)=>phQuadPt(quad,u,v), d=(a,b)=>Math.hypot((a[0]-b[0])*sw,(a[1]-b[1])*sh); return ((d(P(0,0),P(1,0))+d(P(0,1),P(1,1)))/2/cols)/((d(P(0,0),P(0,1))+d(P(1,0),P(1,1)))/2/rows); };
+  const cellAR=(quad,rows,cols)=>phCellAR(im,quad,rows,cols), AR0=0.62, AR1=0.95;
   const fresh=q=>q.map(p=>p.slice());
   let best={ quad:fresh(q0), rows:g.rows, cols:g.cols, s:gridScore(q0,g.rows,g.cols) };
   const base=best.s, tick=()=>new Promise(r=>setTimeout(r,0));
   /* dispositions voisines à tester avec le cadre actuel */
-  const dims=[[g.rows,g.cols]]; for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1]]){ const r=g.rows+dr, c=g.cols+dc; if(r>=1&&c>=1&&r<=5&&c<=5&&r*c>=2){ const a=cellAR(q0,r,c); if(a>0.5&&a<1.25) dims.push([r,c]); } }
+  const dims=[[g.rows,g.cols]]; for(const [dr,dc] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1]]){ const r=g.rows+dr, c=g.cols+dc; if(r>=1&&c>=1&&r<=5&&c<=5&&r*c>=2){ const a=cellAR(q0,r,c); if(a>AR0&&a<AR1) dims.push([r,c]); } }
   const starts=[];
   for(const [r,c] of dims){ starts.push({ r, c, s:(r===g.rows&&c===g.cols)?best.s:gridScore(q0,r,c)*0.97 }); await tick(); }
   starts.sort((a,b)=>b.s-a.s);
@@ -2801,10 +2813,10 @@ async function phRefineGrid(vidx, im, g, onMsg){
         let moved=false;
         for(let k=0;k<4;k++) for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
           const nq=fresh(q); nq[k][0]=Math.min(1,Math.max(0,nq[k][0]+dx*step)); nq[k][1]=Math.min(1,Math.max(0,nq[k][1]+dy*step));
-          const a=cellAR(nq,st.r,st.c); if(!(a>0.5&&a<1.25)) continue;
+          const a=cellAR(nq,st.r,st.c); if(!(a>AR0&&a<AR1)) continue; if(Math.abs(nq[k][0]-q0[k][0])>0.08||Math.abs(nq[k][1]-q0[k][1])>0.08) continue;
           const s=gridScore(nq,st.r,st.c); if(s>cur+1e-3){ cur=s; q=nq; moved=true; } }
         if(!moved) break; } }
-    const prior=(st.r===g.rows&&st.c===g.cols)?0:0.025;   /* changer de disposition demande un net progrès */
+    const prior=(st.r===g.rows&&st.c===g.cols)?0:0.06;   /* changer de disposition demande un net progrès */
     if(cur>best.s+prior+0.01 && (cur>base+0.015)) best={ quad:q, rows:st.r, cols:st.c, s:cur };
   }
   g.refined={ before:Math.round(base*1000)/1000, after:Math.round(best.s*1000)/1000 };
@@ -2898,7 +2910,7 @@ async function phPrepare(f){
   if(f.grid) return f.grid;
   const im=await phEnsureImg(f), vidx=await phLoadIndex(m=>phSet(m));
   phSet('Recherche de la disposition des cartes…');
-  let g=await phAutoGrid(vidx, im, m=>phSet(m)); try{ g=await phRefineGrid(vidx, im, g, m=>phSet(m)); }catch(e){ console.warn('refine',e); } f.grid={ quad:g.quad.map(p=>p.slice()), rows:g.rows, cols:g.cols }; f.auto=true;
+  const g=await phAutoGrid(vidx, im, m=>phSet(m)); f.grid={ quad:g.quad.map(p=>p.slice()), rows:g.rows, cols:g.cols }; f.auto=true;
   phSet(''); return f.grid;
 }
 async function phRunVis(only){
@@ -3101,7 +3113,7 @@ function phZoomClick(e){
 }
 /*VIS-END*/
 
-window.__ocr = { renderPhoto, phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phRefineGrid, phAutoGrid, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
+window.__ocr = { renderPhoto, phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phRefineGrid, phAutoGrid, phAltGrids, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
 phInit();
 /*OCRSCAN-END*/
 window.__imp = { csvToRows, resolveRow, impPreview, impRun, IMP };
@@ -3317,6 +3329,7 @@ async function fxScanPhotos(files, onMsg){
       const run=async mode=>{
         const f={file, url, thumb:'', edit:false}; PH.files=[f]; PH.items=[];
         if(mode==='auto') await O.phPrepare(f);
+        else if(mode&&mode.quad){ f.im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Photo illisible.')); i.src=url; }); f.grid={quad:mode.quad.map(p=>p.slice()),rows:mode.rows,cols:mode.cols}; }
         else { const im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Photo illisible.')); i.src=url; }); f.im=im; const tb=mode==='full'?{x0:.03,y0:.03,x1:.97,y1:.97}:O.phTextureBox(im); f.grid={quad:[[tb.x0,tb.y0],[tb.x1,tb.y0],[tb.x1,tb.y1],[tb.x0,tb.y1]],rows:1,cols:1}; }
         const g=f.grid, grid=g.rows+'x'+g.cols; if(onMsg) onMsg(tag+'lecture des cartes…');
         await O.phRunVis();
@@ -3327,6 +3340,16 @@ async function fxScanPhotos(files, onMsg){
       const good=r=>r.cs.some(c=>c.conf==='sure'||c.conf==='probable');
       try{
         let r=await run('auto');
+        const nGood=x=>x.cs.filter(c=>c.conf==='sure'||c.conf==='probable').length, nCells=x=>{ const m=/^(\d+)x(\d+)$/.exec(x.grid||''); return m?m[1]*m[2]:1; };
+        if(nCells(r)>=2 && nGood(r)<0.85*nCells(r) && r.g){   /* lecture incomplète : on teste un cadrage affiné, puis d'autres dispositions, et on garde le meilleur résultat réel */
+          try{
+            if(onMsg) onMsg(tag+'découpage à affiner : nouveaux essais…');
+            const im0=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url; }), vidx=await O.phLoadIndex(()=>{}), cur={rows:r.g.rows,cols:r.g.cols};
+            const rg=await O.phRefineGrid(vidx,im0,{quad:r.g.quad.map(p=>p.slice()),rows:r.g.rows,cols:r.g.cols},()=>{});
+            if(rg && rg.refined && rg.refined.after>rg.refined.before+0.01){ const r2=await run(rg); if(nGood(r2)>=nGood(r)+1) r=r2; }
+            if(nGood(r)<0.6*nCells(r)) for(const ag of await O.phAltGrids(im0,cur)){ const r2=await run(ag); if(nGood(r2)>=nGood(r)+2) r=r2; if(nGood(r)>=0.75*nCells(r)) break; }
+          }catch(e){ console.warn('alt grids',e); }
+        }
         for(const m of ['single','full']){ if(good(r)) break; if(m==='single' && r.grid==='1x1') continue; const r2=await run(m); if(r2.cs.length && (!r.cs.length || good(r2))) r=r2; }
         read++; grids[n]=r.g; lost+=r.lc.length; r.lc.forEach(l=>lostCells.push(l));
         for(const c of r.cs){ if(c.conf!=='sure'&&c.conf!=='probable') continue; const o=cells.get(c.id); if(!o) cells.set(c.id,Object.assign({},c)); else { o.qty=Math.max(o.qty,c.qty); if(c.s1>o.s1) Object.assign(o,{s1:c.s1,conf:c.conf,crop:c.crop,poly:c.poly,ph:c.ph,alt:c.alt}); } }   // même carte sur plusieurs photos : comptée une fois
@@ -3364,7 +3387,7 @@ async function fxPhotoDecide(title, files, onMsg){
 }
 function fxApplyLot(it, lot){ it.lot=lot; it.cardId=lot.cards[0].id; it.name='Lot · '+lot.n+' cartes reconnues'; it.img=lot.cards[0].img||''; it.mkt=lot.value; it.pt=Date.now(); it.cands=[]; }
 /* --- visionneuse : photos de l'annonce + vérification des cartes détectées, une par une --- */
-const FXV={ edit:null, drag:null, busy:false, busyMsg:'', it:null, media:{photos:[],crops:{}}, photos:[], ph:0, i:0, res:[], q:'', sums:{}, p:{} }; window.__FXV=FXV;
+const FXV={ edit:null, drag:null, busy:false, busyMsg:'', it:null, media:{photos:[],crops:{}}, photos:[], ph:0, i:0, res:[], q:'', sums:{}, p:{} }; window.__FXV=FXV; window.__fxScanPhotos=fxScanPhotos;
 function fxEntries(it){
   if(it.lot){ it.lot.cards.forEach((c,i)=>{ c.k=c.k||('c'+i); }); return [...it.lot.cards.map(c=>({kind:'card',c})), ...(it.lot.lostCells||[]).map(l=>({kind:'lost',l}))]; }
   if(it.cardId && it.scanCard) return [{kind:'single', c:Object.assign({id:it.cardId,name:it.name,ed:it.ed,number:it.number,img:it.img,q:1,p:it.mkt}, it.scanCard, {k:it.scanCard.k||'c0'})}];
