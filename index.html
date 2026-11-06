@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.7.0 | 2026-11-05 15:29 UTC">
+<meta name="pikascan-build" content="1.8.1 | 2026-11-06 12:02 UTC">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3Cpath d='M3 32a29 29 0 0 1 58 0z' fill='%23e3350d'/%3E%3Crect x='3' y='29' width='58' height='6' fill='%231a1d24'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -697,6 +697,22 @@
 
 .fx-ov.ctx{pointer-events:none}.fx-ov.ctx polygon{fill:none;stroke:rgba(255,255,255,.45);stroke-width:1.5;vector-effect:non-scaling-stroke;pointer-events:none;cursor:default}
 .fx-hd.mv{background:#ffd23f;color:#000;border-color:#000;width:30px;height:30px;margin:-15px 0 0 -15px;cursor:move}
+
+.fl-desc{ overflow:hidden; } .fl-desc *{ overflow-wrap:anywhere; word-break:break-word; } .fl-ds li{ overflow-wrap:anywhere; } .fl-raw{ overflow-wrap:anywhere; } .fl-sum{ font-size:13px; line-height:1.5; }
+.fl-acts{ gap:8px 8px; margin-top:12px; } .fl-acts .fb{ display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:12.5px; font-weight:600; padding:7px 12px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--ink); cursor:pointer; text-decoration:none; line-height:1.2; }
+.fl-acts .fb:hover{ filter:brightness(1.12); } .fb-logo{ width:16px; height:16px; border-radius:4px; display:block; }
+.fb-vinted{ border-color:rgba(9,177,186,.75)!important; background:rgba(9,177,186,.18)!important; }
+.fb-photos{ border-color:rgba(76,141,255,.7)!important; background:rgba(76,141,255,.16)!important; }
+.fb-check{ border-color:rgba(255,122,69,.85)!important; background:rgba(255,122,69,.24)!important; }
+.fb-analyse{ border-color:rgba(165,107,255,.7)!important; background:rgba(165,107,255,.16)!important; }
+.fb-watch{ border-color:rgba(242,183,5,.7)!important; background:rgba(242,183,5,.12)!important; } .fb-watch.on{ background:rgba(242,183,5,.35)!important; }
+.fb-ign{ border-color:rgba(150,150,160,.55)!important; background:rgba(150,150,160,.12)!important; }
+.fb-del{ border-color:rgba(229,83,61,.6)!important; background:rgba(229,83,61,.1)!important; color:#e5533d!important; }
+.fb-sep{ width:1px; align-self:stretch; background:var(--border); margin:0 2px; }
+
+.fl-lcw{ display:flex; flex-direction:column; align-items:stretch; gap:3px; width:74px; } .fl-lcw .fl-lc{ width:100%; flex:1; } .fl-lcw .fl-cm{ white-space:nowrap; margin-top:auto; }
+.fl-cm{ display:block; text-align:center; font-size:10.5px; font-weight:600; padding:2px 4px; border-radius:6px; border:1px solid rgba(44,120,220,.6); background:rgba(44,120,220,.16); color:var(--ink); text-decoration:none; } .fl-cm:hover{ filter:brightness(1.2); } .fl-cm.inl{ display:inline-block; margin-left:6px; }
+.fb-cm{ display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:12.5px; font-weight:600; padding:7px 12px; border-radius:10px; border:1px solid rgba(44,120,220,.7); background:rgba(44,120,220,.16); color:var(--ink); text-decoration:none; }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -715,7 +731,7 @@
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.7.0</button>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.8.1</button>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -797,7 +813,7 @@
       </div>
       <div class="hint" style="margin:0 0 10px"><b>Sans l'extension (saisie manuelle)</b> : colle le lien (ou titre + prix) d'une annonce <b>et ajoute ses photos</b> (capture d'écran, photo enregistrée ou Ctrl+V) : PikaScan lit les cartes visuellement, comme le scanner photo (carte seule ou lot), les compare au prix Cardmarket et donne le verdict.</div>
       <textarea id="fxText" rows="3" placeholder="Ex. :&#10;https://www.vinted.fr/items/…&#10;Lot cartes Pokémon — 12,00 €"></textarea>
-      <div class="fx-ph" id="fxDrop"><button class="btn small" id="fxPhBtn" type="button">📷 Ajouter les photos de l'annonce</button><input id="fxPhIn" type="file" accept="image/*" multiple hidden><span class="hint" style="margin:0">ou glisse-les ici / colle une capture (Ctrl+V) · 4 max</span><div class="fx-th" id="fxThumbs"></div></div>
+      <div class="fx-ph" id="fxDrop"><button class="btn small" id="fxPhBtn" type="button">📷 Ajouter les photos de l'annonce</button><input id="fxPhIn" type="file" accept="image/*" multiple hidden><span class="hint" style="margin:0">ou glisse-les ici / colle une capture (Ctrl+V) · 24 max</span><div class="fx-th" id="fxThumbs"></div></div>
       <details class="fx-bm" id="fxBm"><summary>Autre méthode : favori (les photos peuvent être bloquées par Vinted)</summary>
         <div class="hint" style="margin:0 0 4px">Glisse <a class="btn small" id="fxBmLink" href="#" draggable="true">📌 Envoyer à PikaScan</a> dans ta barre de favoris, puis clique-le sur une annonce. <span id="fxBmHint"></span></div>
         <div class="hint" style="margin:0">C'est toi qui ouvres la page Vinted : rien n'est automatisé, et rien n'est envoyé ailleurs qu'à PikaScan. Si les photos ne passent pas, ajoute-les à la main avec le bouton ci-dessus.</div>
@@ -3228,7 +3244,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.1.0';
+const FX_EXT_FILES=['manifest.json','background.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.2.0';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
@@ -3274,8 +3290,8 @@ function fxRelToISO(txt, now){
 function fxAgo(iso){ const ms=Date.now()-new Date(iso).getTime(); if(isNaN(ms)) return ''; if(ms<0) return 'à l\'instant'; const mn=Math.round(ms/6e4); if(mn<1) return 'moins d\'une minute'; if(mn<60) return mn+' min'; const h=Math.round(mn/60); if(h<48) return h+' h'; const d=Math.round(h/24); if(d<60) return d+' jours'; return Math.round(d/30)+' mois'; }
 /* --- description restructurée (règles simples, sans IA) --- */
 function fxStructure(raw){
-  const text=String(raw||'').replace(/\r/g,'').trim(); if(!text) return null;
-  const lines=text.split(/\n+|(?<=[.!?])\s+(?=[A-ZÉÈÀÂÎÔ0-9])/).map(x=>x.replace(/^[\s\-–—•·*✔✅→>#]+/,'').trim()).filter(x=>x.length>1);
+  const text=String(raw||'').replace(/\r/g,'').replace(/[^\s]*(?:#[\wÀ-ÿ'’-]+)+/g,' ').replace(/[ \t]{2,}/g,' ').replace(/^\s*(bonjour|salut|hello|bonsoir|coucou)\s*[,!.]*\s*/i,'').trim(); if(!text) return null;
+  const lines=text.split(/\n+|(?<=[.!?])\s+(?=[A-ZÉÈÀÂÎÔ0-9])/).map(x=>x.replace(/^[\s\-–—•·*✔✅→>#]+/,'').trim()).filter(x=>x.length>3 && /[A-Za-zÀ-ÿ]{3}/.test(x));
   const CATS=[ ['envoi','📮','Envoi & remise',/\b(envoi|envoie|envoyé|expédi|colissimo|mondial relay|suivi|lettre verte|lettre|remise en main propre|main propre|livraison|port|frais|retrait|groupé|regroup)/i],
     ['prix','💶','Prix & négociation',/(\bprix\b|négoci|offre|ferme|€|euros?\b|urgent|baisse|dernier prix|raisonnable)/i],
     ['contenu','📦','Contenu',/(\b\d{1,4}\s*(?:cartes?|pokémons?|pokemons?)|\blots?\b|classeur|binder|\bdeck\b|boosters?|display|\betb\b|coffret|\btin\b|collection|holo|reverse|full art|\bex\b|\bgx\b|vmax|vstar|\brares?\b|promo|1[èe]re [ée]dition|série|extension|\d{1,3}\s?\/\s?\d{1,3})/i],
@@ -3293,7 +3309,7 @@ function fxStructure(raw){
 function fxAddFiles(list){
   const fs=[...list].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name||''));
   if(!fs.length) return false;
-  for(const f of fs){ if(FLUX.files.length>=4){ toast('4 photos maximum par annonce.'); break; } FLUX.files.push(f); }
+  for(const f of fs){ if(FLUX.files.length>=24){ toast('24 photos maximum par annonce.'); break; } FLUX.files.push(f); }
   fxThumbsRender(); return true;
 }
 function fxThumbOf(file){ return new Promise(res=>{ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{ const k=240/Math.max(im.naturalWidth,im.naturalHeight,1), cv=document.createElement('canvas'); cv.width=Math.max(1,Math.round(im.naturalWidth*Math.min(1,k))); cv.height=Math.max(1,Math.round(im.naturalHeight*Math.min(1,k))); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); URL.revokeObjectURL(u); res(cv.toDataURL('image/jpeg',0.7)); }; im.onerror=()=>{ URL.revokeObjectURL(u); res(''); }; im.src=u; }); }
@@ -3358,7 +3374,7 @@ async function fxPhotoDecide(title, files, onMsg){
   }
   const list=ok.map(c=>({id:c.id,q:c.qty,src:c})); if(T && !list.some(c=>c.id===T.id)) list.push({id:T.id,q:1,src:null});
   const cards=[]; let k=0, value=0;
-  await Promise.all(Array.from({length:4},async()=>{ while(k<Math.min(list.length,40)){ const c=list[k++]; try{ const d=await fxSum(c.id); const p1=d.mkt!=null && d.mkt>=0.3 ? d.mkt : 0; cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,q:c.q,p:p1, conf:c.src?c.src.conf:'titre', s1:c.src?c.src.s1:null, alts:c.src?c.src.alt:[], ph:c.src?c.src.ph:null, poly:c.src?c.src.poly:null, _crop:c.src?c.src.crop:''}); }catch(e){} } }));
+  await Promise.all(Array.from({length:4},async()=>{ while(k<Math.min(list.length,40)){ const c=list[k++]; try{ const d=await fxSum(c.id); const p1=d.mkt!=null && d.mkt>=0.3 ? d.mkt : 0; cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,cm:d.cm||'',q:c.q,p:p1, conf:c.src?c.src.conf:'titre', s1:c.src?c.src.s1:null, alts:c.src?c.src.alt:[], ph:c.src?c.src.ph:null, poly:c.src?c.src.poly:null, _crop:c.src?c.src.crop:''}); }catch(e){} } }));
   cards.sort((a,b)=>b.p*b.q-a.p*a.q); cards.forEach((c,i)=>{ c.k='c'+i; if(c._crop) media.crops[c.k]=c._crop; delete c._crop; value+=c.p*c.q; });
   const lostCells=sc.lostCells.map((l,i)=>{ if(l.crop) media.crops['l'+i]=l.crop; return { k:'l'+i, ph:l.ph, poly:l.poly }; });
   const n=cards.reduce((a,c)=>a+c.q,0);
@@ -3409,10 +3425,10 @@ function fxReviewHTML(it,ents){
     const cr=crops[e.l.k]; return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="">`:'<div class="fl-noimg">?</div>'}<figcaption>Sur la photo</figcaption></figure></div><div class="hint">Cette carte n'a pas été reconnue (comptée 0 €). Cherche-la par son nom pour l'ajouter au lot.</div>${search}<div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀ Précédente</button><button type="button" class="btn small" data-fxv="next">Suivante ▶</button></div><div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Ajuster ce cadre</button><button type="button" class="btn small danger" data-fxv="rmlost">🗑 Retirer ce cadre</button></div>`;
   }
   const c=e.c, cr=crops[c.k], alts=[c.id,...(c.alts||[])].filter((x,j,a)=>x&&a.indexOf(x)===j).slice(0,6);
-  setTimeout(()=>alts.forEach(id=>{ if(!FXV.sums[id]) fxSumC(id).then(()=>{ const box=$('fxAlts'); if(box&&FXV.i===i) box.innerHTML=fxAltsHTML(c,alts); }); }),0);
+  setTimeout(()=>alts.forEach(id=>{ if(!FXV.sums[id]) fxSumC(id).then(()=>{ const box=$('fxAlts'); if(box&&FXV.i===i) box.innerHTML=fxAltsHTML(c,alts); const a=document.querySelector('.fb-cm'), sm=FXV.sums[c.id]; if(a&&sm&&sm.cm&&FXV.i===i){ a.href=cmUrl(sm.cm); if(!c.cm) c.cm=sm.cm; } }); }),0);
   return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="Carte sur la photo">`:'<div class="fl-noimg">—</div>'}<figcaption>Sur la photo</figcaption></figure><figure>${c.img?`<img src="${esc(c.img)}" alt="Carte trouvée" referrerpolicy="no-referrer">`:'<div class="fl-noimg">?</div>'}<figcaption>Carte trouvée</figcaption></figure></div>
     ${(!cr && !c.poly)?'<div class="fx-warn">ℹ️ Cette annonce a été analysée avant l\'ajout des zones sur la photo. <b>Re-clique sur l\'icône de l\'extension depuis la page Vinted</b> : l\'annonce sera mise à jour (photos relues) avec les cadres et les cartes découpées.</div>':''}
-    <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div></div>
+    <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div><div style="margin-top:6px"><a class="fb-cm" href="${esc(fxCmHref(Object.assign({},c,{cm:(FXV.sums[c.id]&&FXV.sums[c.id].cm)||c.cm})))}" target="_blank" rel="noopener noreferrer" title="Ouvre la fiche de la carte sur Cardmarket pour vérifier le prix">🛒 Vérifier le prix sur Cardmarket ↗</a></div></div>
     ${alts.length>1?`<div class="hint" style="margin:8px 0 4px">Ce n'est pas la bonne impression ? Choisis-en une autre :</div><div class="fx-alts" id="fxAlts">${fxAltsHTML(c,alts)}</div>`:''}${search}
     <div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀</button><button type="button" class="btn primary small" data-fxv="ok">✓ Valider et suivante</button><button type="button" class="btn small" data-fxv="next">▶</button><button type="button" class="btn small danger" data-fxv="rm">🗑 Retirer du lot</button></div>
     <div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Ajuster ce cadre</button></div>`;
@@ -3464,7 +3480,7 @@ async function fxRescanApply(it, ph, res){
     const ex=L.cards.find(x=>x.id===c.id);
     if(ex){ if(ex.conf!=='manual' && c.s1>(ex.s1||0)){ Object.assign(ex,{s1:c.s1,conf:c.conf,ph,poly:c.poly,alts:c.alt}); media.crops[ex.k]=c.crop; } continue; }
     const d=await fxSum(c.id).catch(()=>null); if(!d) continue; const k='n'+nk+L.cards.length; media.crops[k]=c.crop;
-    L.cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,q:c.qty,p:d.mkt!=null&&d.mkt>=0.3?d.mkt:0,conf:c.conf,s1:c.s1,alts:c.alt,ph,poly:c.poly,k});
+    L.cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,cm:d.cm||'',q:c.qty,p:d.mkt!=null&&d.mkt>=0.3?d.mkt:0,conf:c.conf,s1:c.s1,alts:c.alt,ph,poly:c.poly,k});
   }
   res.lc.forEach((l,i)=>{ const k='l'+nk+i; media.crops[k]=l.crop; L.lostCells.push({k,ph:l.ph,poly:l.poly}); });
   L.cards.sort((a,b)=>b.p*b.q-a.p*a.q); L.lost=L.lostCells.length; fxLotCalc(it);
@@ -3496,16 +3512,16 @@ async function fxFrameApply(it, ed, res){
   }
   const L=it.lot; L.lostCells=L.lostCells||[];
   if(ed.ref&&!ed.isNew){ if(ed.ref.kind==='lost') L.lostCells=L.lostCells.filter(x=>x!==ed.ref.l); else if(ed.ref.kind==='card') L.cards=L.cards.filter(x=>x!==ed.ref.c); }
-  if(sum){ media.crops[nk]=crop; L.cards.push({id:sum.id,name:sum.name,ed:sum.ed,number:sum.number,img:sum.img,q:1,p:sum.mkt!=null&&sum.mkt>=0.3?sum.mkt:0,conf:r.conf,s1:r.s1,alts:r.alt,ph,poly,k:nk}); }
+  if(sum){ media.crops[nk]=crop; L.cards.push({id:sum.id,name:sum.name,ed:sum.ed,number:sum.number,img:sum.img,cm:sum.cm||'',q:1,p:sum.mkt!=null&&sum.mkt>=0.3?sum.mkt:0,conf:r.conf,s1:r.s1,alts:r.alt,ph,poly,k:nk}); }
   else { media.crops[nk]=crop; L.lostCells.push({k:nk,ph,poly}); }
   L.cards.sort((a,b)=>b.p*b.q-a.p*a.q); L.lost=L.lostCells.length; if(L.cards.length) fxLotCalc(it); else { L.n=0; L.value=0; it.mkt=0; }
   await FXI.put(it.id,media); await fxSave(it); return nk;
 }
 async function fxApplyChoice(s){
   const it=FXV.it, e=fxEntries(it)[FXV.i]; if(!e||!s) return; const p1=s.mkt!=null&&s.mkt>=0.3?s.mkt:0;
-  if(e.kind==='lost'){ const L=it.lot, l=e.l, c={id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,q:1,p:p1,conf:'manual',s1:null,alts:[],ph:l.ph,poly:l.poly,k:l.k,ok:true}; L.cards.push(c); L.lostCells=L.lostCells.filter(x=>x!==l); L.lost=Math.max(0,(L.lost||1)-1); fxLotCalc(it); FXV.i=L.cards.length-1; }
+  if(e.kind==='lost'){ const L=it.lot, l=e.l, c={id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,cm:s.cm||'',q:1,p:p1,conf:'manual',s1:null,alts:[],ph:l.ph,poly:l.poly,k:l.k,ok:true}; L.cards.push(c); L.lostCells=L.lostCells.filter(x=>x!==l); L.lost=Math.max(0,(L.lost||1)-1); fxLotCalc(it); FXV.i=L.cards.length-1; }
   else if(e.kind==='single'){ const old=it.cardId; fxApply(it,s); it.scanCard=Object.assign({},it.scanCard,{id:s.id,conf:'manual',ok:true,alts:[old,...(it.scanCard.alts||[]).filter(x=>x!==s.id&&x!==old)].slice(0,5)}); }
-  else { const c=e.c, old=c.id; c.alts=[old,...(c.alts||[]).filter(x=>x!==s.id&&x!==old)].slice(0,5); Object.assign(c,{id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,p:p1,conf:'manual',s1:null,ok:true}); fxLotCalc(it); }
+  else { const c=e.c, old=c.id; c.alts=[old,...(c.alts||[]).filter(x=>x!==s.id&&x!==old)].slice(0,5); Object.assign(c,{id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,cm:s.cm||'',p:p1,conf:'manual',s1:null,ok:true}); fxLotCalc(it); }
   FXV.res=[]; FXV.q=''; await fxSave(it); fxViewerRender();
 }
 function fxLotCalc(it){ const L=it.lot; L.n=L.cards.reduce((a,c)=>a+c.q,0); L.value=Math.round(L.cards.reduce((a,c)=>a+c.p*c.q,0)*100)/100; if(L.cards.length){ const b=L.cards.slice().sort((a,b)=>b.p*b.q-a.p*a.q)[0]; it.cardId=b.id; it.img=b.img||it.img; } it.name='Lot · '+L.n+' carte'+(L.n>1?'s':'')+' reconnue'+(L.n>1?'s':''); it.mkt=L.value; it.pt=Date.now(); }
@@ -3623,6 +3639,7 @@ async function fluxPull(){
   if(added){ renderFlux(); toast(added+' nouvelle'+(added>1?'s':'')+' annonce'+(added>1?'s':'')+' dans les annonces.'); }
 }
 function fxVinted(it){ return it.url || ('https://www.vinted.fr/catalog?search_text='+encodeURIComponent(((it.name||it.title||'')+' '+(it.number||'')).trim())); }
+function fxCmHref(c){ return c&&c.cm?cmUrl(c.cm):'https://www.cardmarket.com/fr/Pokemon/Products/Singles?searchString='+encodeURIComponent(((c&&c.name)||'')+' '+String((c&&c.number)||'').split('/')[0])+'&language=2'; }
 function fxMetaHTML(it){
   const bits=[];
   if(it.ask!=null) bits.push(`🏷️ Prix de l'annonce <b class="num">${esc(eur(it.ask))}</b>${it.shipIn?` <span>+ ${esc(eur(it.shipIn))} de frais${it.shipRead?' (lus sur la page)':''}</span>`:''}`);
@@ -3630,17 +3647,31 @@ function fxMetaHTML(it){
   else if(it.postedText) bits.push(`🕒 ${esc(it.postedText)}`);
   return bits.length?`<div class="fl-meta">${bits.map(b=>`<span>${b}</span>`).join('')}</div>`:'';
 }
+function fxContentLine(it, st){
+  const T=((it.title||'')+' '+(it.desc||'')).toLowerCase();
+  const kind=/classeur|binder|portfolio/.test(T)?'Classeur de cartes Pokémon':/\bdeck\b/.test(T)?'Deck Pokémon':/booster|display|\betb\b|coffret/.test(T)?'Produits Pokémon scellés':/\blots?\b|collection|bundle/.test(T)?'Lot de cartes Pokémon':'Carte(s) Pokémon';
+  const parts=[`<b>${esc(kind)}</b>`];
+  if(st&&st.qty) parts.push(`${esc(st.qty)} carte${st.qty>1?'s':''} annoncée${st.qty>1?'s':''} par le vendeur`);
+  if(it.lot){ const L=it.lot, nTot=L.cards.reduce((a,c)=>a+c.q,0)+(L.lostCells||[]).length, nph=it.nph||(it.photos&&it.photos.length)||0;
+    parts.push(`${esc(nTot)} carte${nTot>1?'s':''} repérée${nTot>1?'s':''}${nph?` sur ${esc(nph)} photo${nph>1?'s':''}`:''} : <b>${esc(L.n)}</b> reconnue${L.n>1?'s':''}${L.value?` (≈ ${esc(eur(L.value))})`:''}${L.lost?`, ${esc(L.lost)} non lue${L.lost>1?'s':''}`:''}`);
+    const top=L.cards.filter(c=>c.p>0).slice().sort((a,b)=>b.p*b.q-a.p*a.q).slice(0,3); if(top.length) parts.push('à retenir : '+top.map(c=>`${esc(c.name)} (${esc(eur(c.p))})`).join(', '));
+  } else if(it.cardId&&it.name) parts.push(`${esc(it.name)}${it.ed?' · '+esc(it.ed):''}${it.number?' n° '+esc(it.number):''}`);
+  return parts.join(' · ');
+}
 function fxDescHTML(it){
-  const st=fxStructure(it.desc); if(!st) return '';
-  const sec=st.sections.map(s=>`<div class="fl-ds"><h4>${s.ic} ${esc(s.l)}</h4><ul>${s.items.slice(0,6).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
-  const tg=st.tags.length?`<div class="fl-tg">${st.tags.map(t=>`<span class="${t.bad?'bad':''}">${t.ic} ${esc(t.t)}</span>`).join('')}</div>`:'';
-  const hint=[st.qty?`${st.qty} cartes annoncées${it.lot?` · ${it.lot.n} lues sur les photos`:''}`:'', st.refs.length?'références citées : '+st.refs.join(', '):''].filter(Boolean).join(' · ');
-  return `<details class="fl-desc" open><summary>📝 Description restructurée${hint?` <span class="hint" style="margin:0;font-weight:400">· ${esc(hint)}</span>`:''}</summary>${sec}${tg}<details style="margin-top:8px"><summary class="hint" style="margin:0">Description d'origine</summary><div class="fl-raw">${esc(st.raw)}</div></details></details>`;
+  const ttl=String(it.title||'').trim(), dsc=ttl?String(it.desc||'').replace(new RegExp('^\\s*'+ttl.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\s*[-–—:,]?\\s*','i'),''):String(it.desc||'');
+  const st=fxStructure(dsc); if(!st&&!it.lot) return '';
+  const cut=x=>x.length>170?x.slice(0,167).replace(/\s+\S*$/,'')+'…':x;
+  const secs=st?st.sections.filter(s=>s.k!=='contenu'):[];
+  const sec=secs.map(s=>`<div class="fl-ds"><h4>${s.ic} ${esc(s.l)}</h4><ul>${s.items.slice(0,4).map(x=>`<li>${esc(cut(x))}</li>`).join('')}</ul></div>`).join('');
+  const tg=st&&st.tags.length?`<div class="fl-tg">${st.tags.map(t=>`<span class="${t.bad?'bad':''}">${t.ic} ${esc(t.t)}</span>`).join('')}</div>`:'';
+  const refs=st&&st.refs.length?`<div class="hint" style="margin:6px 0 0">Références citées : ${esc(st.refs.join(', '))}</div>`:'';
+  return `<details class="fl-desc" open><summary>📝 Description</summary><div class="fl-ds"><h4>📦 Contenu</h4><div class="fl-sum">${fxContentLine(it,st)}</div></div>${sec}${tg}${refs}${st?`<details style="margin-top:8px"><summary class="hint" style="margin:0">Description d'origine</summary><div class="fl-raw">${esc(st.raw)}</div></details>`:''}</details>`;
 }
 function fxItemHTML(it){
   const ev=fxEval(it), v=ev.v, when=dtFmt(it.t);
   const img = it.img ? `<img src="${esc(it.img)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.visibility='hidden'">` : `<div class="fl-noimg">?</div>`;
-  const head = it.lot ? `<b>Lot · ${esc(it.lot.n)} carte${it.lot.n>1?'s':''} reconnue${it.lot.n>1?'s':''}</b>` : it.cardId ? `<b>${esc(it.name)}</b> <span class="fl-ed">${esc(it.ed||'')} · ${esc(it.number||'')}</span>` : `<b>Carte à confirmer</b>`;
+  const head = it.lot ? `<b>Lot · ${esc(it.lot.n)} carte${it.lot.n>1?'s':''} reconnue${it.lot.n>1?'s':''}</b>` : it.cardId ? `<b>${esc(it.name)}</b> <span class="fl-ed">${esc(it.ed||'')} · ${esc(it.number||'')}</span> <a class="fl-cm inl" href="${esc(fxCmHref(it))}" target="_blank" rel="noopener noreferrer" title="Vérifier le prix sur Cardmarket">Cardmarket ↗</a>` : `<b>Carte à confirmer</b>`;
   const flags=[]; if(ev.weak) flags.push(`<span class="flag warn">▼ marché en baisse${it.mom7!=null?' ('+esc(pctS(it.mom7))+' / 7 j)':''}</span>`);
   if(it.lot && v && v.cost>0 && v.marketEur>8*v.cost) flags.push(`<span class="flag warn">⚠ Valeur très supérieure au prix : vérifie sur les photos (fausses cartes, photos d'écran…)</span>`);
   if(v && v.cost>0 && v.marketEur>0 && it.ask!=null && it.ask > v.marketEur) flags.push(`<span class="flag bad">Prix demandé au-dessus de la valeur</span>`);
@@ -3649,7 +3680,7 @@ function fxItemHTML(it){
       <span><i>Valeur</i><b class="num">${esc(eur(v.marketEur))}</b><small>${it.lot?'somme des cartes lues':'Cardmarket'}${it.mom30!=null?' · '+esc(pctS(it.mom30))+' / 30 j':''}</small></span>
       <span><i>Marge</i><b class="num ${v.margin>=0?'up':'down'}">${v.cost>0?(v.margin>=0?'+':'−')+esc(eur(Math.abs(v.margin))):'—'}</b><small>${v.marginPct!=null?esc(pctS(v.marginPct)):''}</small></span>
       <span><i>Achat max</i><b class="num">${esc(eur(Math.max(0,v.maxBuy)))}</b><small>marge ${S.settings.targetMargin} %</small></span></div>` : '';
-  const lotBox = it.lot ? `<div class="fl-lot"><div class="hint" style="margin:0 0 6px">Cartes lues sur la photo (valeur Cardmarket) · ${it.lot.cards.filter(c=>c.ok).length}/${it.lot.cards.length} vérifiées${it.lot.lost?` · ${esc(it.lot.lost)} non lue${it.lot.lost>1?'s':''}, comptée${it.lot.lost>1?'s':''} 0 €`:''}</div><div class="fl-lotc">${it.lot.cards.slice(0,12).map((c,ci)=>`<button type="button" class="fl-lc" data-fx="rev" data-id="${esc(it.id)}" data-i="${ci}" title="${esc(c.name)} · ${esc(c.ed||'')} ${esc(c.number||'')}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<b>${esc(c.name)}${c.q>1?' ×'+esc(c.q):''}</b><small>${c.p?esc(eur(c.p*c.q)):'< 0,30 €'}</small>${c.ok?'<em class="fl-v">✔</em>':''}</button>`).join('')}</div></div>` : '';
+  const lotBox = it.lot ? `<div class="fl-lot"><div class="hint" style="margin:0 0 6px">Cartes lues sur la photo (valeur Cardmarket) · ${it.lot.cards.filter(c=>c.ok).length}/${it.lot.cards.length} vérifiées${it.lot.lost?` · ${esc(it.lot.lost)} non lue${it.lot.lost>1?'s':''}, comptée${it.lot.lost>1?'s':''} 0 €`:''}</div><div class="fl-lotc">${it.lot.cards.slice(0,12).map((c,ci)=>`<div class="fl-lcw"><button type="button" class="fl-lc" data-fx="rev" data-id="${esc(it.id)}" data-i="${ci}" title="${esc(c.name)} · ${esc(c.ed||'')} ${esc(c.number||'')}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<b>${esc(c.name)}${c.q>1?' ×'+esc(c.q):''}</b><small>${c.p?esc(eur(c.p*c.q)):'< 0,30 €'}</small>${c.ok?'<em class="fl-v">✔</em>':''}</button><a class="fl-cm" href="${esc(fxCmHref(c))}" target="_blank" rel="noopener noreferrer" title="Vérifier le prix de ${esc(c.name)} sur Cardmarket">Prix CM ↗</a></div>`).join('')}</div></div>` : '';
   let pick='';
   if(!it.cardId){
     pick = `<div class="fl-pick">${(it.cands||[]).length?'<div class="hint" style="margin:0 0 6px">Quelle carte ?</div><div class="fl-cands">'+it.cands.map((c,i)=>`<button type="button" class="fl-cand" data-fx="pick" data-id="${esc(it.id)}" data-i="${i}" title="${esc(c.name)}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<span>${esc(c.name)}<small>${esc(c.ed||'')} · ${esc(c.number||'')}</small></span></button>`).join('')+'</div>':'<div class="hint" style="margin:0 0 6px">Aucune carte reconnue dans le titre.</div>'}
@@ -3671,12 +3702,13 @@ function fxItemHTML(it){
       ${(it.scanNote||(it.src==='auto'&&it.note))?`<div class="fl-auto">🤖 ${esc(String(it.scanNote||it.note).replace(/\s*⚠ Valeur.*$/,''))}</div>`:''}
       <input class="fl-note" type="text" placeholder="Note (état, vendeur, négociation…)" value="${esc(it.note||'')}" data-fx-f="note" data-id="${esc(it.id)}">
       <div class="fl-acts">
-        <a class="btn small" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer">${it.url?'Ouvrir l\'annonce ↗':'Chercher sur Vinted ↗'}</a>
-        ${(it.nph||(it.photos&&it.photos.length))?`<button class="btn small" type="button" data-fx="photos" data-id="${esc(it.id)}">🖼️ Photos (${esc(it.nph||it.photos.length)})</button>`:''}${fxEntries(it).length?`<button class="btn small" type="button" data-fx="rev" data-i="0" data-id="${esc(it.id)}">🔍 Vérifier les cartes (${fxEntries(it).length})</button>`:''}
-        ${it.cardId&&!it.lot?`<button class="btn small" type="button" data-fx="analyse" data-id="${esc(it.id)}">🔎 Analyser</button>`:''}
-        <button class="btn small${watch?' on':''}" type="button" data-fx="watch" data-id="${esc(it.id)}">${watch?'⭐ Suivie':'☆ Suivre'}</button>
-        <button class="btn small" type="button" data-fx="${it.status==='ignored'?'unignore':'ignore'}" data-id="${esc(it.id)}">${it.status==='ignored'?'↩ Rétablir':'🚫 Ignorer'}</button>
-        <button class="btn small" type="button" data-fx="del" data-id="${esc(it.id)}">Retirer</button>
+        <a class="fb fb-vinted" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer"><img class="fb-logo" src="https://www.google.com/s2/favicons?domain=vinted.fr&sz=64" alt="" onerror="this.remove()">${it.url?'Ouvrir l\'annonce':'Chercher sur Vinted'} <span aria-hidden="true">↗</span></a>
+        ${(it.nph||(it.photos&&it.photos.length))?`<button class="fb fb-photos" type="button" data-fx="photos" data-id="${esc(it.id)}">🖼️ Photos (${esc(it.nph||it.photos.length)})</button>`:''}${fxEntries(it).length?`<button class="fb fb-check" type="button" data-fx="rev" data-i="0" data-id="${esc(it.id)}">🔍 Vérifier les cartes (${fxEntries(it).length})</button>`:''}
+        <span class="fb-sep" aria-hidden="true"></span>
+        ${it.cardId&&!it.lot?`<button class="fb fb-analyse" type="button" data-fx="analyse" data-id="${esc(it.id)}">🔎 Analyser</button>`:''}
+        <button class="fb fb-watch${watch?' on':''}" type="button" data-fx="watch" data-id="${esc(it.id)}">${watch?'⭐ Suivie':'☆ Suivre'}</button>
+        <button class="fb fb-ign" type="button" data-fx="${it.status==='ignored'?'unignore':'ignore'}" data-id="${esc(it.id)}">${it.status==='ignored'?'↩ Rétablir':'🚫 Ignorer'}</button>
+        <button class="fb fb-del" type="button" data-fx="del" data-id="${esc(it.id)}">🗑 Retirer</button>
         <span class="fl-when">${esc(when)}${it.src==='auto'?' · auto':''}</span>
       </div>
     </div></article>`;
@@ -3732,7 +3764,7 @@ window.addEventListener('message', async e=>{
   const url=/^https:\/\/(www\.)?vinted\.[a-z.]+\/items\/[^\s]*$/.test(String(d.url||'')) ? String(d.url) : '';
   const files=[]; const bl=Array.isArray(d.blobs)?d.blobs:[], urls=Array.isArray(d.urls)?d.urls:[], du=Array.isArray(d.dataUrls)?d.dataUrls:[];
   const found=(d.dbg&&+d.dbg.found)||urls.length||du.length;
-  for(let i=0;i<Math.min(4,Math.max(bl.length,urls.length,du.length));i++){
+  for(let i=0;i<Math.min(24,Math.max(bl.length,urls.length,du.length));i++){
     let b=bl[i]; if(!(b instanceof Blob) || !/^image\//.test(b.type) || b.size>12e6) b=null;
     if(!b && typeof du[i]==='string' && /^data:image\/(jpeg|png|webp);base64,/.test(du[i]) && du[i].length<16e6){ try{ b=await (await fetch(du[i])).blob(); }catch(_){} }
     if(!b && !ext && typeof urls[i]==='string' && /^https:\/\//.test(urls[i])){ try{ const r=await fetch(urls[i],{credentials:'omit'}); if(r.ok){ const x=await r.blob(); if(/^image\//.test(x.type) && x.size<12e6) b=x; } }catch(_){} }
@@ -3743,7 +3775,7 @@ window.addEventListener('message', async e=>{
     posted: (d.postedAt && !isNaN(new Date(d.postedAt))) ? new Date(d.postedAt).toISOString() : fxRelToISO(d.postedText), ship:(feeN!=null||shpN!=null)?Math.round(((feeN||0)+(shpN||0))*100)/100:null };
   FLUX.files.forEach(f=>{ if(f._u) URL.revokeObjectURL(f._u); }); FLUX.files=[]; fxThumbsRender();
   $('fxText').value=[title, price?price+' €':'', url].filter(Boolean).join(' ');
-  if(files.length){ fxAddFiles(files); toast(files.length+' photo'+(files.length>1?'s':'')+' reçue'+(files.length>1?'s':'')+' — lecture des cartes…'); }
+  if(files.length){ fxAddFiles(files); toast(files.length+' photo'+(files.length>1?'s':'')+' reçue'+(files.length>1?'s':'')+(d.dbg&&d.dbg.dropped?' ('+d.dbg.dropped+' écartée'+(d.dbg.dropped>1?'s':'')+' : autres articles du vendeur)':'')+' — lecture des cartes…'); }
   else toast(found ? `${found} photo${found>1?'s':''} trouvée${found>1?'s':''} sur la page, mais Vinted refuse qu'un favori les lise. Installe l'extension (dossier « extension ») ou ajoute-les à la main.` : "Aucune photo trouvée sur la page : ajoute-les à la main.");
   if(title||url) fxAddText();
 });

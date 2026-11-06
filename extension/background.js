@@ -30,14 +30,25 @@ function extract() {
   if (!postedAt) { const m = /"(?:created_at_ts|created_at|upload_date|uploaded_at|published_at)"\s*:\s*"(\d{4}-\d\d-\d\d[T ][^"]{4,40})"/.exec(html); if (m && !isNaN(new Date(m[1]))) { postedAt = new Date(m[1]).toISOString(); postedSrc = 'page'; } }
   if (!postedAt) { const m = /"(?:created_at_ts|created_at|upload_date|uploaded_at|published_at)"\s*:\s*"?(1[5-9]\d{8})"?/.exec(html); if (m) { postedAt = new Date(+m[1] * 1000).toISOString(); postedSrc = 'page'; } }
   const pm = /(?:Ajouté|Mis en ligne|Publié|Posté)\s*(?:le|il y a)?\s*:?\s*\n?\s*([^\n]{2,40})/i.exec(bodyText); const postedText = pm ? pm[0].replace(/\s+/g, ' ').trim().slice(0, 60) : '';
-  d.querySelectorAll('img').forEach(i => { const u = i.currentSrc || i.src; if (u && /vinted/.test(u) && !/avatar|\/users?\/|portrait/.test(u) && (i.naturalWidth || 0) >= 150) imgs.push(u); });
-  const seen = {}, list = [];
-  imgs.forEach(u => { if (!u || typeof u !== 'string') return; const k = u.split('?')[0].replace(/\/(t|f\d+|\d+x\d+)\//, '/'); if (!seen[k]) { seen[k] = 1; list.push(u); } });
+  /* photos de l'annonce : toutes celles de la galerie (y compris les miniatures pas encore chargées), sans mélanger avec les autres articles du vendeur */
+  const srcOf = i => { let u = i.currentSrc || i.src || i.getAttribute('data-src') || i.getAttribute('data-lazy-src') || ''; if (!u) { const ss = i.getAttribute('srcset') || i.getAttribute('data-srcset') || ''; const last = ss.split(',').map(x => x.trim().split(/\s+/)[0]).filter(Boolean).pop(); if (last) u = last; } return u; };
+  let pageImgs = 0;
+  d.querySelectorAll('img').forEach(i => { const u = srcOf(i); if (u && /vinted/.test(u) && !/avatar|\/users?\/|portrait|\/assets\/|logo|icon/.test(u) && (/\/t\//.test(u) || (i.naturalWidth || 0) >= 150)) { imgs.push(u); pageImgs++; } });
+  const sizeOf = u => { const m = /\/(?:f|c)?(\d{3,4})(?:x\d+)?\//.exec(u.split('?')[0]); return m ? +m[1] : 0; };
+  const keyOf = u => u.split('?')[0].replace(/\/(?:f\d+|\d+x\d+)\//, '/');
+  const tsOf = u => { const m = /\/(1[3-9]\d{8})\.(?:jpe?g|png|webp)/.exec(u); return m ? +m[1] : 0; };
+  const best = {}, order = [];
+  imgs.forEach(u => { if (!u || typeof u !== 'string') return; const k = keyOf(u); if (!best[k]) { best[k] = u; order.push(k); } else if (sizeOf(u) > sizeOf(best[k])) best[k] = u; });
+  let list = order.map(k => best[k]);
+  /* les photos d'une même annonce sont envoyées à quelques minutes d'écart : on écarte celles des autres articles (horodatage dans le nom du fichier) */
+  const refTs = tsOf(mt('og:image') || '') || (list.length ? tsOf(list[0]) : 0);
+  let dropped = 0; if (refTs) { const keep = list.filter(u => { const t = tsOf(u); return !t || Math.abs(t - refTs) <= 1800; }); dropped = list.length - keep.length; list = keep; }
+  const seen = {};
   if (!postedAt && !postedText) { for (const u of list) { const m = /\/(1[3-9]\d{8})\.(?:jpe?g|png|webp)/.exec(u); if (m && +m[1] * 1000 < Date.now()) { postedAt = new Date(+m[1] * 1000).toISOString(); postedSrc = 'photo'; break; } } }
   /* frais lus sur la page (protection acheteurs, livraison) : repérage simple, à vérifier */
   const money = r => { const m = r.exec(bodyText); return m ? parseFloat(m[1].replace(',', '.')) : null; };
   const fee = money(/Protection acheteurs?[^\d\n]{0,40}(\d+[.,]\d{2})\s*€/i), shipping = money(/(?:Livraison|Frais de port|Envoi)[^\d\n]{0,40}(\d+[.,]\d{2})\s*€/i);
-  return { title: String(title || '').slice(0, 200), price: String(price || ''), url: location.href.split('?')[0], urls: list.slice(0, 4), desc: String(desc || '').slice(0, 4000), postedAt, postedSrc, postedText, fee, shipping };
+  return { title: String(title || '').slice(0, 200), price: String(price || ''), url: location.href.split('?')[0], urls: list.slice(0, 24), desc: String(desc || '').slice(0, 4000), postedAt, postedSrc, postedText, fee, shipping, pageImgs, dropped };
 }
 function b64(buf) { let s = ''; const a = new Uint8Array(buf); for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); }
 const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -51,7 +62,7 @@ async function sendFromTab(tab) {
     for (const u of info.urls) {
       try { const r = await fetch(u, { credentials: 'omit' }); if (!r.ok) continue; const buf = await r.arrayBuffer(); const t = (r.headers.get('content-type') || 'image/jpeg').split(';')[0]; if (!/^image\/(jpeg|png|webp)$/.test(t) || buf.byteLength > 8e6) continue; dataUrls.push('data:' + t + ';base64,' + b64(buf)); } catch (e) {}
     }
-    const payload = { type: 'pikascan-annonce', ext: true, url: info.url, title: info.title, price: info.price, desc: info.desc, postedAt: info.postedAt, postedSrc: info.postedSrc, postedText: info.postedText, fee: info.fee, shipping: info.shipping, dataUrls, dbg: { found: info.urls.length } };
+    const payload = { type: 'pikascan-annonce', ext: true, url: info.url, title: info.title, price: info.price, desc: info.desc, postedAt: info.postedAt, postedSrc: info.postedSrc, postedText: info.postedText, fee: info.fee, shipping: info.shipping, dataUrls, dbg: { found: info.urls.length, pageImgs: info.pageImgs, dropped: info.dropped } };
     let [app] = await chrome.tabs.query({ url: APP + '*' }), fresh = false;
     if (app) { await chrome.tabs.update(app.id, { active: true }); await chrome.windows.update(app.windowId, { focused: true }); }
     else { app = await chrome.tabs.create({ url: APP + '#annonce' }); fresh = true; }
