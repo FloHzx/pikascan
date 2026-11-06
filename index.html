@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.9.0 | 2026-11-06 12:54 UTC">
+<meta name="pikascan-build" content="1.9.1 | 2026-11-06 14:03 UTC">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3Cpath d='M3 32a29 29 0 0 1 58 0z' fill='%23e3350d'/%3E%3Crect x='3' y='29' width='58' height='6' fill='%231a1d24'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -719,6 +719,11 @@
 .fb-cm,.fb-ebay{ display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:10px; border:1px solid; color:var(--ink); text-decoration:none; line-height:1.2; }
 .fb-cm{ border-color:rgba(44,120,220,.8); background:rgba(44,120,220,.2); } .fb-ebay{ border-color:rgba(245,175,2,.85); background:rgba(245,175,2,.2); }
 .fb-cm:hover,.fb-ebay:hover{ filter:brightness(1.18); }
+
+.fx-pwo{ position:relative; } .fx-pwz{ overflow:auto; max-height:66vh; border-radius:8px; } .fx-pw.z{ max-width:none; margin:0; } .fx-pw.z>img{ max-height:none; width:100%; max-width:none; }
+.fx-zb{ position:absolute; top:6px; right:6px; display:flex; align-items:center; gap:2px; background:rgba(0,0,0,.65); border-radius:10px; padding:2px; z-index:4; } .fx-zb button{ border:0; background:transparent; color:#fff; font-size:17px; line-height:1; width:30px; height:30px; border-radius:8px; cursor:pointer; } .fx-zb button:hover{ background:rgba(255,255,255,.18); } .fx-zb span{ color:#fff; font-size:11.5px; min-width:38px; text-align:center; }
+.fx-md-box.big{ width:min(1700px,99vw); max-height:99vh; } .fx-md-box.big .fx-md-b{ grid-template-columns:minmax(0,2.3fr) minmax(0,1fr); } .fx-md-box.big .fx-pwz{ max-height:80vh; } .fx-md-box.big .fx-pw>img{ max-height:80vh; } .fx-md-box.big .fx-pw.z>img{ max-height:none; }
+@media (max-width:820px){ .fx-md-box.big .fx-md-b{ grid-template-columns:1fr; } .fx-pwz{ max-height:48vh; } }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -737,7 +742,7 @@
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.9.0</button>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.9.1</button>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -3459,7 +3464,7 @@ async function fxPhotoDecide(title, files, onMsg){
 }
 function fxApplyLot(it, lot){ it.lot=lot; it.cardId=lot.cards[0].id; it.name='Lot · '+lot.n+' cartes reconnues'; it.img=lot.cards[0].img||''; it.mkt=lot.value; it.pt=Date.now(); it.cands=[]; }
 /* --- visionneuse : photos de l'annonce + vérification des cartes détectées, une par une --- */
-const FXV={ edit:null, drag:null, busy:false, busyMsg:'', it:null, media:{photos:[],crops:{}}, photos:[], ph:0, i:0, res:[], q:'', sums:{}, p:{} }; window.__FXV=FXV; window.__fxScanPhotos=fxScanPhotos;
+const FXV={ zoom:1, big:false, delArm:null, focus:false, edit:null, drag:null, busy:false, busyMsg:'', it:null, media:{photos:[],crops:{}}, photos:[], ph:0, i:0, res:[], q:'', sums:{}, p:{} }; window.__FXV=FXV; window.__fxScanPhotos=fxScanPhotos;
 function fxEntries(it){
   if(it.lot){ it.lot.cards.forEach((c,i)=>{ c.k=c.k||('c'+i); }); return [...it.lot.cards.map(c=>({kind:'card',c})), ...(it.lot.lostCells||[]).map(l=>({kind:'lost',l}))]; }
   if(it.cardId && it.scanCard) return [{kind:'single', c:Object.assign({id:it.cardId,name:it.name,ed:it.ed,number:it.number,img:it.img,q:1,p:it.mkt}, it.scanCard, {k:it.scanCard.k||'c0'})}];
@@ -3470,7 +3475,7 @@ async function fxOpenViewer(id, mode, idx){
   const it=FLUX.items[id]; if(!it) return; let media=null; try{ media=await FXI.get(id); }catch(_){}
   const photos = media&&media.photos&&media.photos.length ? media.photos : (it.photos&&it.photos.length ? it.photos : (it.photo?[it.photo]:[]));
   const ents=fxEntries(it), e=ents[idx||0];
-  Object.assign(FXV,{edit:null, drag:null, busy:false, it, media:media||{photos:[],crops:{}}, photos, ph:(mode==='rev'&&e&&((e.c&&e.c.ph)!=null?e.c.ph:(e.l&&e.l.ph)))||0, i:idx||0, res:[], q:''});
+  Object.assign(FXV,{zoom:1, delArm:null, focus:false, edit:null, drag:null, busy:false, it, media:media||{photos:[],crops:{}}, photos, ph:(mode==='rev'&&e&&((e.c&&e.c.ph)!=null?e.c.ph:(e.l&&e.l.ph)))||0, i:idx||0, res:[], q:''});
   if(!photos.length && !ents.length){ toast('Aucune photo enregistrée pour cette annonce.'); return; }
   fxViewerBuild(); fxViewerRender();
 }
@@ -3488,8 +3493,10 @@ function fxViewerRender(){
   const ed=FXV.edit&&FXV.edit.ph===FXV.ph?FXV.edit:null, canEd=!!(P[FXV.ph]&&window.__ocr&&window.__ocr.PH);
   const polys=ents.map((e,i)=>({e,i,poly:(e.c||e.l).poly,ph:(e.c||e.l).ph})).filter(o=>o.poly && o.ph===FXV.ph);
   const ov=polys.length?`<svg class="fx-ov" viewBox="0 0 1 1" preserveAspectRatio="none">${polys.map(o=>`<polygon data-fxv="card" data-i="${o.i}" points="${o.poly.map(p=>p.join(',')).join(' ')}" class="${o.i===FXV.i?'cur':''}${o.e.kind==='lost'?' lost':''}${o.e.c&&o.e.c.ok?' ok':''}"></polygon>`).join('')}</svg>`+polys.map(o=>{ const cx=o.poly.reduce((a,p)=>a+p[0],0)/4*100, cy=o.poly.reduce((a,p)=>a+p[1],0)/4*100; return `<span class="fx-lab${o.i===FXV.i?' cur':''}" style="left:${cx}%;top:${cy}%">${o.i+1}</span>`; }).join(''):'';
-  $('fxMdL').innerHTML = n ? `<div class="fx-pw"><img src="${esc(P[FXV.ph])}" alt="Photo ${FXV.ph+1}" referrerpolicy="no-referrer">${ed?(ed.frame?fxFrameCtx(ents,FXV.ph,ed.ref&&(ed.ref.c||ed.ref.l)):'')+fxEditOverlay(ed):ov}${n>1&&!ed?`<button type="button" class="fx-nav l" data-fxv="pp" aria-label="Photo précédente">‹</button><button type="button" class="fx-nav r" data-fxv="pn" aria-label="Photo suivante">›</button>`:''}</div>
-    ${canEd&&!ed?`<div class="fx-acts" style="margin:8px 0 0"><button type="button" class="btn small" data-fxv="edit">✂️ Ajuster le découpage de cette photo</button><button type="button" class="btn small" data-fxv="fnew">➕ Ajouter un cadre</button><button type="button" class="btn small" data-fxv="seg" title="Pour les cartes posées sur une table, sans grille : repère chaque groupe de cartes puis les relit">🧭 Détection libre</button></div>`:''}${FXV.busy&&!ed?`<div class="hint" style="margin:8px 0 0"><span class="spinner" aria-hidden="true"></span> ${esc(FXV.busyMsg||'Lecture…')}</div>`:''}<div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
+  const z=FXV.zoom||1, w0=$('fxPwz'), sx=w0?w0.scrollLeft:0, sy=w0?w0.scrollTop:0, box=document.querySelector('#fxMd .fx-md-box'); if(box) box.classList.toggle('big',!!FXV.big);
+  $('fxMdL').innerHTML = n ? `<div class="fx-pwo"><div class="fx-pwz" id="fxPwz"><div class="fx-pw${z>1?' z':''}"${z>1?` style="width:${Math.round(z*100)}%"`:''}><img src="${esc(P[FXV.ph])}" alt="Photo ${FXV.ph+1}" referrerpolicy="no-referrer">${ed?(ed.frame?fxFrameCtx(ents,FXV.ph,ed.ref&&(ed.ref.c||ed.ref.l)):'')+fxEditOverlay(ed):ov}</div></div>${n>1&&!ed?`<button type="button" class="fx-nav l" data-fxv="pp" aria-label="Photo précédente">‹</button><button type="button" class="fx-nav r" data-fxv="pn" aria-label="Photo suivante">›</button>`:''}<div class="fx-zb"><button type="button" data-fxv="zout" aria-label="Dézoomer" title="Dézoomer">−</button><span>${Math.round(z*100)} %</span><button type="button" data-fxv="zin" aria-label="Zoomer" title="Zoomer (ou Ctrl + molette)">＋</button><button type="button" data-fxv="big" aria-label="Agrandir la fenêtre" title="${FXV.big?'Réduire':'Agrandir'} la fenêtre">${FXV.big?'⤡':'⤢'}</button></div></div>
+    ${canEd&&!ed?`<div class="fx-acts" style="margin:8px 0 0"><button type="button" class="btn small" data-fxv="edit">✂️ Ajuster le découpage de cette photo</button><button type="button" class="btn small" data-fxv="fnew">➕ Ajouter un cadre</button><button type="button" class="btn small" data-fxv="seg" title="Pour les cartes posées sur une table, sans grille : repère chaque groupe de cartes puis les relit">🧭 Détection libre</button>${n>1?`<button type="button" class="btn small danger" data-fxv="delph">${FXV.delArm===FXV.ph?'⚠ Confirmer : supprimer la photo '+(FXV.ph+1):'🗑 Supprimer cette photo'}</button>`:''}</div>`:''}${FXV.busy&&!ed?`<div class="hint" style="margin:8px 0 0"><span class="spinner" aria-hidden="true"></span> ${esc(FXV.busyMsg||'Lecture…')}</div>`:''}<div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
+  { const w1=$('fxPwz'); if(w1){ if(FXV.focus&&z>1){ FXV.focus=false; const cur=ents[FXV.i], po=cur&&(cur.c||cur.l)&&(cur.c||cur.l).poly, im=w1.querySelector('img'); if(po&&im){ const go=()=>{ const cx=po.reduce((a,p)=>a+p[0],0)/4, cy=po.reduce((a,p)=>a+p[1],0)/4; w1.scrollLeft=cx*im.clientWidth-w1.clientWidth/2; w1.scrollTop=cy*im.clientHeight-w1.clientHeight/2; }; if(im.complete&&im.clientHeight) go(); else im.addEventListener('load',go,{once:true}); } } else { w1.scrollLeft=sx; w1.scrollTop=sy; } } }
   $('fxMdR').innerHTML = ed ? (ed.frame?fxFramePane(ed):fxEditPane(ed)) : ents.length ? fxReviewHTML(it,ents) : '<div class="hint">Les cartes lues apparaissent ici quand l\'annonce est analysée sur photo.</div>';
 }
 function fxConfLbl(c){ return c.conf==='sure'?'Certaine':c.conf==='probable'?'Probable':c.conf==='manual'?'Choisie à la main':c.conf==='titre'?'Citée dans le titre':'À vérifier'; }
@@ -3594,6 +3601,18 @@ async function fxFrameApply(it, ed, res){
   L.cards.sort((a,b)=>b.p*b.q-a.p*a.q); L.lost=L.lostCells.length; if(L.cards.length) fxLotCalc(it); else { L.n=0; L.value=0; it.mkt=0; }
   await FXI.put(it.id,media); await fxSave(it); return nk;
 }
+async function fxDeletePhoto(it, ph){
+  const media=FXV.media, useMedia=!!(media&&media.photos&&media.photos.length), arr=useMedia?media.photos:(it.photos||[]); if(arr.length<=1) throw new Error('Il faut garder au moins une photo.');
+  arr.splice(ph,1); if(useMedia&&media.grids) media.grids.splice(ph,1); if(!useMedia) it.photos=arr;
+  const shift=o=>{ if(o&&o.ph!=null&&o.ph>ph) o.ph--; };
+  if(it.lot){ const L=it.lot; L.cards=L.cards.filter(c=>c.ph!==ph); L.lostCells=(L.lostCells||[]).filter(l=>l.ph!==ph); L.cards.forEach(shift); L.lostCells.forEach(shift); L.lost=L.lostCells.length;
+    if(L.cards.length) fxLotCalc(it); else { L.n=0; L.value=0; it.mkt=0; } }
+  else if(it.scanCard){ if(it.scanCard.ph===ph) delete it.scanCard; else shift(it.scanCard); }
+  it.nph=arr.length;
+  if(ph===0){ try{ it.photo=await new Promise(res=>{ const im=new Image(); im.onload=()=>{ const k=Math.min(1,240/Math.max(im.naturalWidth,im.naturalHeight,1)), cv=document.createElement('canvas'); cv.width=Math.max(1,Math.round(im.naturalWidth*k)); cv.height=Math.max(1,Math.round(im.naturalHeight*k)); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); res(cv.toDataURL('image/jpeg',0.7)); }; im.onerror=()=>res(it.photo||''); im.src=arr[0]; }); }catch(_){} }
+  FXV.photos=arr; FXV.ph=Math.min(ph,arr.length-1); FXV.edit=null; const es=fxEntries(it); FXV.i=Math.max(0,Math.min(FXV.i,es.length-1));
+  if(useMedia) await FXI.put(it.id,media); await fxSave(it);
+}
 async function fxApplyChoice(s){
   const it=FXV.it, e=fxEntries(it)[FXV.i]; if(!e||!s) return; const p1=s.mkt!=null&&s.mkt>=0.3?s.mkt:0;
   if(e.kind==='lost'){ const L=it.lot, l=e.l, c={id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,cm:s.cm||'',q:1,p:p1,conf:'manual',s1:null,alts:[],ph:l.ph,poly:l.poly,k:l.k,ok:true}; L.cards.push(c); L.lostCells=L.lostCells.filter(x=>x!==l); L.lost=Math.max(0,(L.lost||1)-1); fxLotCalc(it); FXV.i=L.cards.length-1; }
@@ -3603,9 +3622,11 @@ async function fxApplyChoice(s){
 }
 function fxLotCalc(it){ const L=it.lot; L.n=L.cards.reduce((a,c)=>a+c.q,0); L.value=Math.round(L.cards.reduce((a,c)=>a+c.p*c.q,0)*100)/100; if(L.cards.length){ const b=L.cards.slice().sort((a,b)=>b.p*b.q-a.p*a.q)[0]; it.cardId=b.id; it.img=b.img||it.img; } it.name='Lot · '+L.n+' carte'+(L.n>1?'s':'')+' reconnue'+(L.n>1?'s':''); it.mkt=L.value; it.pt=Date.now(); }
 async function fxViewerClick(e){
-  const b=e.target.closest('[data-fxv]'); if(!b || !$('fxMd')) return; const a=b.dataset.fxv, it=FXV.it, ents=fxEntries(it), N=ents.length;
-  const go=j=>{ FXV.i=(j+N)%N; FXV.res=[]; FXV.q=''; const x=ents[FXV.i], ph=x&&(x.c||x.l).ph; if(ph!=null) FXV.ph=ph; fxViewerRender(); };
+  const b=e.target.closest('[data-fxv]'); if(!b || !$('fxMd')) return; const a=b.dataset.fxv, it=FXV.it, ents=fxEntries(it), N=ents.length, n0=FXV.photos.length;
+  const go=j=>{ FXV.i=(j+N)%N; FXV.res=[]; FXV.q=''; FXV.focus=true; const x=ents[FXV.i], ph=x&&(x.c||x.l).ph; if(ph!=null) FXV.ph=ph; fxViewerRender(); };
   if(a==='close'){ fxViewerClose(); return; }
+  if(a==='zin'||a==='zout'){ FXV.zoom=Math.min(5,Math.max(1,(FXV.zoom||1)*(a==='zin'?1.4:1/1.4))); if(FXV.zoom<1.05) FXV.zoom=1; FXV.focus=FXV.zoom>1&&!FXV.edit; fxViewerRender(); return; }
+  if(a==='big'){ FXV.big=!FXV.big; fxViewerRender(); return; }
   if(FXV.busy) return;
   if(a==='edit'){ FXV.edit=Object.assign({ph:FXV.ph},fxGridOf(FXV.ph)); fxViewerRender(); return; }
   if(a==='seg'){
@@ -3616,6 +3637,11 @@ async function fxViewerClick(e){
       toast(n2+' carte'+(n2>1?'s':'')+' reconnue'+(n2>1?'s':'')+(r.lc.length?' · '+r.lc.length+' non lue'+(r.lc.length>1?'s':''):'')+' sur la photo '+(ph+1)+' ('+r.grid.replace('zones:','')+' zone'+(+r.grid.replace('zones:','')>1?'s':'')+').');
     }catch(err){ toast(String(err&&err.message||err)); }
     FXV.busy=false; FXV.busyMsg=''; fxViewerRender(); return;
+  }
+  if(a==='delph'){
+    if(n0<=1) return;
+    if(FXV.delArm!==FXV.ph){ FXV.delArm=FXV.ph; fxViewerRender(); setTimeout(()=>{ if(FXV.delArm!=null){ FXV.delArm=null; if($('fxMd')) fxViewerRender(); } },4500); return; }
+    const ph=FXV.ph; FXV.delArm=null; try{ await fxDeletePhoto(it,ph); toast('Photo '+(ph+1)+' supprimée (et ses cartes retirées du lot).'); }catch(err){ toast(String(err&&err.message||err)); } fxViewerRender(); return;
   }
   if(a==='fnew'){ FXV.edit={ph:FXV.ph,quad:fxDefaultFrame(),rows:1,cols:1,frame:true,isNew:true,ref:null}; fxViewerRender(); return; }
   if(a==='fedit'){ const c0=ents[FXV.i]; if(!c0) return; const o=c0.c||c0.l, ph=(o.ph!=null?o.ph:FXV.ph); FXV.ph=ph; FXV.edit={ph,quad:(o.poly?o.poly.map(p=>p.slice()):fxDefaultFrame()),rows:1,cols:1,frame:true,isNew:false,ref:c0}; fxViewerRender(); return; }
@@ -3648,8 +3674,8 @@ async function fxViewerClick(e){
     }catch(err){ toast(String(err&&err.message||err)); }
     FXV.busy=false; FXV.busyMsg=''; fxViewerRender(); return;
   }
-  if(a==='pp'||a==='pn'){ FXV.ph=(FXV.ph+(a==='pn'?1:-1)+FXV.photos.length)%FXV.photos.length; fxViewerRender(); return; }
-  if(a==='ph'){ FXV.ph=+b.dataset.i; FXV.edit=null; fxViewerRender(); return; }
+  if(a==='pp'||a==='pn'){ FXV.delArm=null; FXV.ph=(FXV.ph+(a==='pn'?1:-1)+FXV.photos.length)%FXV.photos.length; fxViewerRender(); return; }
+  if(a==='ph'){ FXV.delArm=null; FXV.ph=+b.dataset.i; FXV.edit=null; fxViewerRender(); return; }
   if(a==='card'){ go(+b.dataset.i); return; }
   if(a==='prev'){ go(FXV.i-1); return; } if(a==='next'){ go(FXV.i+1); return; }
   const cur=ents[FXV.i];
@@ -3660,6 +3686,7 @@ async function fxViewerClick(e){
   if(a==='pickres'){ const s=FXV.res[+b.dataset.i]; if(s) await fxApplyChoice(s); return; }
 }
 document.addEventListener('click', fxViewerClick);
+document.addEventListener('wheel',e=>{ const w=e.target.closest&&e.target.closest('#fxPwz'); if(!w||!e.ctrlKey||!$('fxMd')) return; e.preventDefault(); FXV.zoom=Math.min(5,Math.max(1,(FXV.zoom||1)*(e.deltaY<0?1.15:1/1.15))); if(FXV.zoom<1.05) FXV.zoom=1; fxViewerRender(); },{passive:false});
 document.addEventListener('keydown', e=>{ const m=$('fxMd'); if(!m) return; if(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)){ if(e.key==='Enter'&&e.target.id==='fxvQ'){ e.preventDefault(); const bt=m.querySelector('[data-fxv="search"]'); if(bt) bt.click(); } if(e.key!=='Escape') return; }
   if(e.key==='Escape'){ if(FXV.edit&&!FXV.busy){ FXV.edit=null; fxViewerRender(); } else if(!FXV.busy) fxViewerClose(); return; } if(FXV.edit) return; const ents=fxEntries(FXV.it); if(!ents.length) return;
   if(e.key==='ArrowRight'||e.key==='ArrowLeft'){ const d=e.key==='ArrowRight'?1:-1, j=(FXV.i+d+ents.length)%ents.length; FXV.i=j; FXV.res=[]; FXV.q=''; const x=ents[j], ph=(x.c||x.l).ph; if(ph!=null) FXV.ph=ph; fxViewerRender(); e.preventDefault(); } });
