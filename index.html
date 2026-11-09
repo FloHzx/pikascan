@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.11.0 | 2026-11-09 08:00 UTC">
+<meta name="pikascan-build" content="1.12.0 | 2026-11-09 08:26 UTC">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3Cpath d='M3 32a29 29 0 0 1 58 0z' fill='%23e3350d'/%3E%3Crect x='3' y='29' width='58' height='6' fill='%231a1d24'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -773,7 +773,7 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.11.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.12.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -3354,7 +3354,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','ebay.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.3.2';
+const FX_EXT_FILES=['manifest.json','background.js','ebay.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.3.3';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
@@ -3426,9 +3426,10 @@ function fxThumbOf(file){ return new Promise(res=>{ const u=URL.createObjectURL(
 /* --- images de l'annonce et crops des cartes : stockés à part (IndexedDB), pas dans la base principale --- */
 const FXI={ _db:null,
   open(){ return this._db||(this._db=new Promise((res,rej)=>{ if(!window.indexedDB) return rej(new Error('IndexedDB indisponible')); const r=indexedDB.open('pikascan_imgs',1); r.onupgradeneeded=()=>r.result.createObjectStore('imgs',{keyPath:'id'}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); },
-  async put(id,v){ const d=await this.open(); return new Promise((res,rej)=>{ const t=d.transaction('imgs','readwrite'); t.objectStore('imgs').put(Object.assign({id},v)); t.oncomplete=res; t.onerror=()=>rej(t.error); }); },
+  async put(id,v,noSync){ const d=await this.open(); await new Promise((res,rej)=>{ const t=d.transaction('imgs','readwrite'); t.objectStore('imgs').put(Object.assign({id},v)); t.oncomplete=res; t.onerror=()=>rej(t.error); }); if(!noSync){ try{ CloudSync.mediaPush(id,v); }catch(_){} } },
+  async keys(){ const d=await this.open(); return new Promise((res,rej)=>{ const r=d.transaction('imgs').objectStore('imgs').getAllKeys(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>rej(r.error); }); },
   async get(id){ const d=await this.open(); return new Promise((res,rej)=>{ const r=d.transaction('imgs').objectStore('imgs').get(id); r.onsuccess=()=>res(r.result||null); r.onerror=()=>rej(r.error); }); },
-  async del(id){ try{ const d=await this.open(); d.transaction('imgs','readwrite').objectStore('imgs').delete(id); }catch(_){} } };
+  async del(id,noSync){ try{ const d=await this.open(); d.transaction('imgs','readwrite').objectStore('imgs').delete(id); }catch(_){} if(!noSync){ try{ CloudSync.mediaDel(id); }catch(_){} } } };
 function fxPhotoData(file, edge){ return new Promise(res=>{ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{ const k=Math.min(1,(edge||1000)/Math.max(im.naturalWidth,im.naturalHeight,1)), cv=document.createElement('canvas'); cv.width=Math.max(1,Math.round(im.naturalWidth*k)); cv.height=Math.max(1,Math.round(im.naturalHeight*k)); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); URL.revokeObjectURL(u); res(cv.toDataURL('image/jpeg',0.8)); }; im.onerror=()=>{ URL.revokeObjectURL(u); res(''); }; im.src=u; }); }
 function fxPoly(g,r,c){ const [TL,TR,BR,BL]=g.quad, P=(u,v)=>[0,1].map(a=>Math.round((TL[a]*(1-u)*(1-v)+TR[a]*u*(1-v)+BR[a]*u*v+BL[a]*(1-u)*v)*1000)/1000);
   const u0=c/g.cols,u1=(c+1)/g.cols,v0=r/g.rows,v1=(r+1)/g.rows; return [P(u0,v0),P(u1,v0),P(u1,v1),P(u0,v1)]; }
@@ -3535,6 +3536,7 @@ function fxEntries(it){
 async function fxSumC(id){ if(!FXV.p[id]) FXV.p[id]=fxSum(id).then(x=>{ FXV.sums[id]=x; return x; }).catch(()=>null); return FXV.p[id]; }
 async function fxOpenViewer(id, mode, idx){
   const it=FLUX.items[id]; if(!it) return; let media=null; try{ media=await FXI.get(id); }catch(_){}
+  if((!media||!(media.photos||[]).length) && CloudSync.user()){ toast('Téléchargement des photos depuis ton compte…'); try{ const m=await CloudSync.mediaPull(id); if(m){ await FXI.put(id,m,true); media=m; } }catch(_){} }
   const photos = media&&media.photos&&media.photos.length ? media.photos : (it.photos&&it.photos.length ? it.photos : (it.photo?[it.photo]:[]));
   const ents=fxEntries(it), e=ents[idx||0];
   Object.assign(FXV,{zoom:1, delArm:null, focus:false, edit:null, drag:null, busy:false, it, media:media||{photos:[],crops:{}}, photos, ph:(mode==='rev'&&e&&((e.c&&e.c.ph)!=null?e.c.ph:(e.l&&e.l.ph)))||0, i:idx||0, res:[], q:''});
@@ -4111,7 +4113,7 @@ const CloudSync=(function(){
     pop.innerHTML = state==='off'
       ? '<b>Synchro non configurée</b><p class="hint">Renseigne ta configuration Firebase dans <code>firebase-config.js</code> (voir les étapes dans le chat), puis publie le site.</p>'
       : !user ? '<b>Retrouve tes données partout</b><p class="hint">Connecte-toi avec Google : tes annonces, ton suivi et ton historique seront recopiés sur tous tes appareils.</p><button type="button" class="btn small primary" data-sync="login">Se connecter avec Google</button>'
-      : `<b>${esc(user.displayName||user.email||'Connecté')}</b><div class="hint" style="margin:2px 0 8px">${esc(user.email||'')}</div><div class="hint" style="margin:0 0 8px">${state==='err'?'⚠ '+esc(msg):state==='sync'?'Recopie en cours…':'✔ À jour'+(inflight?'':'')}</div><div class="fx-acts"><button type="button" class="btn small" data-sync="resync">↻ Forcer la synchro</button><button type="button" class="btn small danger" data-sync="logout">Se déconnecter</button></div><p class="hint" style="margin:8px 0 0">Les photos des annonces restent sur l'appareil où tu les as scannées pour l'instant.</p>`;
+      : `<b>${esc(user.displayName||user.email||'Connecté')}</b><div class="hint" style="margin:2px 0 8px">${esc(user.email||'')}</div><div class="hint" style="margin:0 0 8px">${state==='err'?'⚠ '+esc(msg):state==='sync'?'Recopie en cours…':'✔ À jour'}${mp.err?'<br>⚠ Photos : '+esc(mp.err):mp.total&&mp.done<mp.total?'<br>📷 Photos : envoi '+mp.done+'/'+mp.total+'…':''}</div><div class="fx-acts"><button type="button" class="btn small" data-sync="resync">↻ Forcer la synchro</button><button type="button" class="btn small danger" data-sync="logout">Se déconnecter</button></div><p class="hint" style="margin:8px 0 0">Les photos des annonces sont copiées (réduites) et se téléchargent à l'ouverture d'une annonce sur un autre appareil.</p>`;
   }
   function flushSoon(){ clearTimeout(timer); timer=setTimeout(flush,350); }
   function enqueue(n,id,d,del){ if(!user||applying||!COLS.includes(n)) return; q.set(n+'/'+id,{n,id,d,del}); set('sync'); flushSoon(); }
@@ -4131,7 +4133,7 @@ const CloudSync=(function(){
     try{
       snap.docChanges().forEach(ch=>{
         const id=ch.doc.id, loc=LocalDB.get(n,id);
-        if(ch.type==='removed'){ if(loc!==undefined) LocalDB.applyRemote(n,id,null,true); return; }
+        if(ch.type==='removed'){ if(loc!==undefined) LocalDB.applyRemote(n,id,null,true); if(n==='listings'){ try{ FXI.del(id,true); }catch(_){} } return; }
         const d=ch.doc.data(); if(!d||typeof d.j!=='string') return;
         if(loc===undefined || (d.u||0)>(loc._u||0)){ try{ const v=JSON.parse(d.j); v._u=d.u||0; LocalDB.applyRemote(n,id,v,false); }catch(_){} }
       });
@@ -4142,15 +4144,54 @@ const CloudSync=(function(){
       if(q.size){ set('sync'); flushSoon(); }
     }
     if(Object.keys(firstDone).length===COLS.length && !q.size && state!=='err') set('ok');
+    if(n==='listings') setTimeout(()=>mediaBackfill(),1500);
   }
   function start(){
-    stop(); firstDone={}; set('sync');
+    stop(); firstDone={}; backfilled=false; set('sync');
     COLS.forEach(n=>{ unsubs.push(M.fs.onSnapshot(colRef(n),snap=>onSnap(n,snap),e=>set('err',e&&e.code==='permission-denied'?'Règles Firestore non publiées (étape 3).':String(e&&e.message||e)))); });
   }
   function stop(){ unsubs.forEach(f=>{ try{ f(); }catch(_){} }); unsubs=[]; }
   async function login(){
     try{ await M.au.signInWithPopup(auth,new M.au.GoogleAuthProvider()); }
     catch(e){ if(e&&/popup-blocked|operation-not-supported/.test(e.code||'')){ try{ await M.au.signInWithRedirect(auth,new M.au.GoogleAuthProvider()); return; }catch(_){} } if(!e||e.code!=='auth/popup-closed-by-user') toast('Connexion impossible : '+String(e&&e.message||e)); }
+  }
+  /* photos et cadres des annonces : copiés dans Firestore (photos réduites ≈ 1100 px) pour apparaître sur tous les appareils */
+  const MS_KEY='pikascan_mediasync'; let mq=Promise.resolve(), mp={done:0,total:0,err:''}, backfilled=false;
+  const msRead=()=>{ try{ return JSON.parse(localStorage.getItem(MS_KEY)||'{}')||{}; }catch(_){ return {}; } }, msWrite=o=>{ try{ localStorage.setItem(MS_KEY,JSON.stringify(o)); }catch(_){} };
+  const hsh=x=>{ x=String(x||''); let h=x.length; const st=Math.max(1,(x.length/400)|0); for(let i=0;i<x.length;i+=st) h=(h*31+x.charCodeAt(i))|0; return x.length+':'+h; };
+  function shrink(url){ return new Promise(res=>{ if(typeof url!=='string'||!url) return res(''); if(url.length<300000&&/^data:image\/jpeg/.test(url)) return res(url);
+    const im=new Image(); im.onload=()=>{ try{ const go=(edge,q)=>{ const k=Math.min(1,edge/Math.max(im.naturalWidth,im.naturalHeight,1)), cv=document.createElement('canvas'); cv.width=Math.max(8,Math.round(im.naturalWidth*k)); cv.height=Math.max(8,Math.round(im.naturalHeight*k)); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); return cv.toDataURL('image/jpeg',q); }; let o=go(1100,0.72); if(o.length>900000) o=go(900,0.55); res(o.length<=950000?o:''); }catch(_){ res(''); } }; im.onerror=()=>res(''); im.src=url; }); }
+  async function commitAll(writes,dels){ for(let i=0;i<writes.length;i+=5){ const b=M.fs.writeBatch(fdb); writes.slice(i,i+5).forEach(w=>b.set(w.ref,w.d)); await b.commit(); } for(let i=0;i<dels.length;i+=200){ const b=M.fs.writeBatch(fdb); dels.slice(i,i+200).forEach(r=>b.delete(r)); await b.commit(); } }
+  async function doPush(id,media){
+    const ms=msRead(), rec=ms[id]||{h:[],c:'',nc:0}, photos=Array.isArray(media.photos)?media.photos:[], hs=photos.map(hsh), writes=[], dels=[];
+    for(let i=0;i<photos.length;i++){ if(rec.h[i]===hs[i]) continue; const j=await shrink(photos[i]); if(j) writes.push({ref:docRef('media',id+'__p'+i),d:{j,u:Date.now()}}); }
+    for(let i=photos.length;i<rec.h.length;i++) dels.push(docRef('media',id+'__p'+i));
+    const crops=media.crops||{}, keys=Object.keys(crops), chunks=[]; for(let i=0;i<keys.length;i+=40){ const o={}; keys.slice(i,i+40).forEach(k=>{ o[k]=crops[k]; }); chunks.push(JSON.stringify(o)); }
+    const ch=chunks.map(hsh).join(',');
+    if(ch!==rec.c){ chunks.forEach((j,i)=>writes.push({ref:docRef('media',id+'__c'+i),d:{j,u:Date.now()}})); for(let i=chunks.length;i<(rec.nc||0);i++) dels.push(docRef('media',id+'__c'+i)); }
+    const rest=Object.assign({},media); delete rest.photos; delete rest.crops; delete rest.id;
+    writes.push({ref:docRef('media',id),d:{j:JSON.stringify({np:photos.length,nc:chunks.length,rest}),u:Date.now()}});
+    await commitAll(writes,dels); ms[id]={h:hs,c:ch,nc:chunks.length}; msWrite(ms);
+  }
+  function mediaPush(id,media){ if(!user||!M||!media) return; mq=mq.then(()=>doPush(id,media)).then(()=>{ mp.err=''; render(); }).catch(e=>{ mp.err=String(e&&e.message||e); render(); }); }
+  function mediaDel(id){ if(!user||!M) return; mq=mq.then(async()=>{ const ms=msRead(), rec=ms[id]; let np=rec?rec.h.length:0, nc=rec?rec.nc||0:0;
+      if(!rec){ try{ const m=await M.fs.getDoc(docRef('media',id)); if(m.exists()){ const x=JSON.parse(m.data().j); np=x.np||0; nc=x.nc||0; } }catch(_){} }
+      const dels=[docRef('media',id)]; for(let i=0;i<np;i++) dels.push(docRef('media',id+'__p'+i)); for(let i=0;i<nc;i++) dels.push(docRef('media',id+'__c'+i));
+      await commitAll([],dels); delete ms[id]; msWrite(ms); }).catch(()=>{}); }
+  async function mediaPull(id){
+    if(!user||!M) return null; const m=await M.fs.getDoc(docRef('media',id)); if(!m.exists()) return null; const x=JSON.parse(m.data().j);
+    const get=async n=>{ const d=await M.fs.getDoc(docRef('media',n)); return d.exists()?d.data().j:null; };
+    const photos=await Promise.all(Array.from({length:x.np||0},(_,i)=>get(id+'__p'+i))), cs=await Promise.all(Array.from({length:x.nc||0},(_,i)=>get(id+'__c'+i))), crops={};
+    cs.forEach(c=>{ if(c){ try{ Object.assign(crops,JSON.parse(c)); }catch(_){} } });
+    const out=Object.assign({},x.rest||{},{photos:photos.filter(Boolean),crops});
+    const ms=msRead(); ms[id]={h:out.photos.map(hsh),c:Object.keys(crops).length?'pulled':'',nc:x.nc||0}; msWrite(ms); return out;
+  }
+  async function mediaBackfill(){
+    if(backfilled||!user||!M) return; backfilled=true;
+    try{ const ids=(await FXI.keys()).filter(id=>FLUX.items&&FLUX.items[id]), ms=msRead(), todo=ids.filter(id=>!ms[id]); mp.total=todo.length; mp.done=0; render();
+      for(const id of todo.slice(0,60)){ const media=await FXI.get(id); if(media){ await (mq=mq.then(()=>doPush(id,media)).catch(e=>{ mp.err=String(e&&e.message||e); })); } mp.done++; render(); }
+      if(todo.length>60) backfilled=false; }catch(e){ mp.err=String(e&&e.message||e); }
+    render();
   }
   async function init(){
     if(!cfg()){ set('off'); return; }
@@ -4168,7 +4209,7 @@ const CloudSync=(function(){
     const a=e.target.closest('[data-sync]'); if(a){ const k=a.dataset.sync; if(k==='login') login(); else if(k==='logout'){ M.au.signOut(auth); if(pop) pop.hidden=true; } else if(k==='resync'){ start(); } return; }
     if(pop&&!pop.hidden&&!e.target.closest('#syncPop')) pop.hidden=true;
   });
-  return { init, render, state:()=>state, user:()=>user };
+  return { init, render, state:()=>state, user:()=>user, mediaPush, mediaDel, mediaPull };
 })();
 async function init(){
   renderAll(); setTab('scan'); renderSettings();
