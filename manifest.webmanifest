@@ -1,0 +1,25 @@
+{
+  "name": "PikaScan",
+  "short_name": "PikaScan",
+  "description": "Scanne tes lots de cartes Pokémon, estime leur valeur (Cardmarket + ventes eBay) et suis le marché.",
+  "lang": "fr",
+  "id": "./",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#12151c",
+  "theme_color": "#12151c",
+  "categories": ["shopping", "utilities"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Scanner un lot", "short_name": "Scanner", "url": "./?tab=photo", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Annonces", "short_name": "Annonces", "url": "./?tab=flux", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Ma base", "short_name": "Ma base", "url": "./?tab=base", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ],
+  "share_target": { "action": "./", "method": "GET", "params": { "title": "title", "text": "text", "url": "url" } }
+}
