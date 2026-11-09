@@ -3,6 +3,7 @@
 //  2. télécharge les photos (l'extension a le droit de lire les images de Vinted, contrairement à un simple favori) ;
 //  3. les transmet à PikaScan, qui lit les cartes visuellement et affiche le verdict.
 // Rien n'est envoyé ailleurs que vers PikaScan (adresse ci-dessous).
+importScripts('ebay.js');
 const APP = 'https://flohzx.github.io/pikascan/';
 
 function extract() {
@@ -83,3 +84,21 @@ async function sendFromTab(tab) {
 }
 self.sendFromTab = sendFromTab;
 chrome.action.onClicked.addListener(tab => { sendFromTab(tab); });
+
+// Prix des ventes eBay terminées : PikaScan (page ouverte) demande, l'extension charge la page de résultats eBay.fr dans TON navigateur
+// (une seule page par demande, uniquement quand tu cliques) et ne renvoie à PikaScan que les prix lus.
+chrome.runtime.onMessage.addListener((m, sender, send) => {
+  if (!m || m.type !== 'ebay') return;
+  if (!sender.tab || !String(sender.tab.url || '').startsWith(APP)) { send({ error: 'origine' }); return; }
+  const q = String(m.q || '').replace(/\s+/g, ' ').trim().slice(0, 140);
+  if (!q) { send({ error: 'requête vide' }); return; }
+  (async () => {
+    try {
+      const url = 'https://www.ebay.fr/sch/i.html?_nkw=' + encodeURIComponent(q) + '&LH_Sold=1&LH_Complete=1&_sop=13&_ipg=60';
+      const r = await fetch(url, { credentials: 'include', headers: { 'Accept-Language': 'fr-FR,fr;q=0.9' } });
+      if (!r.ok) { send({ error: 'eBay a répondu ' + r.status }); return; }
+      const res = ebayParse(await r.text()); res.q = q; res.url = url; send(res);
+    } catch (e) { send({ error: String(e && e.message || e) }); }
+  })();
+  return true;
+});
