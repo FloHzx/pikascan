@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.10.0 | 2026-11-09 07:34 UTC">
+<meta name="pikascan-build" content="1.10.2 | 2026-11-09 07:52 UTC">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3Cpath d='M3 32a29 29 0 0 1 58 0z' fill='%23e3350d'/%3E%3Crect x='3' y='29' width='58' height='6' fill='%231a1d24'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -745,6 +745,8 @@ a.btn[href*="cardmarket"],a.btn.ph-cm{ --tbg:rgba(44,120,220,.2); --tbd:rgba(44,
 a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
 .btn.primary:not(:disabled):hover{ box-shadow:0 4px 14px rgba(232,69,44,.4); }
 
+.fx-barr{ display:inline-flex; align-items:center; gap:4px; flex-wrap:wrap; } .eb-det{ margin-top:8px; font-size:12.5px; } .eb-det summary{ cursor:pointer; color:var(--muted); } .eb-det ul{ list-style:none; margin:6px 0 0; padding:0; display:flex; flex-direction:column; gap:4px; } .eb-det li{ display:flex; gap:8px; align-items:baseline; } .eb-det li span{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .eb-det small{ color:var(--muted); white-space:nowrap; }
+.fx-autoeb{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; margin-right:10px; cursor:pointer; color:var(--ink); } .fx-autoeb input{ accent-color:#f5af02; }
 .fb-ebay2,.fb-ebb{ border-color:rgba(245,175,2,.85)!important; background:rgba(245,175,2,.2)!important; }
 .fx-eb{ margin:10px 0 0; padding:10px 12px; border:1px solid rgba(245,175,2,.45); border-radius:12px; background:rgba(245,175,2,.07); }
 .eb-cmp{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; } .eb-cmp>div{ display:flex; flex-direction:column; gap:2px; } .eb-cmp i{ font-style:normal; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); } .eb-cmp b{ font-size:17px; } .eb-cmp small{ font-size:11px; color:var(--muted); } .eb-cmp .eb b{ color:#f5af02; }
@@ -768,7 +770,7 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.10.0</button>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.10.2</button>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -862,7 +864,7 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
         <span class="hint" id="fxStatus" aria-live="polite" style="margin:0"></span>
       </div>
     </div>
-    <div class="fl-bar"><div class="sort-controls" id="fluxChips" role="group" aria-label="Filtrer les annonces"></div><button class="btn small" id="fxRefresh" type="button">↻ Actualiser les valeurs</button></div>
+    <div class="fl-bar"><div class="sort-controls" id="fluxChips" role="group" aria-label="Filtrer les annonces"></div><span class="fx-barr"><label class="fx-autoeb" title="Lit automatiquement les prix des ventes eBay terminées après chaque scan et à l'ouverture d'une carte (extension PikaScan v1.3.1)"><input type="checkbox" id="fxAutoEb"> 🏷️ Prix eBay automatiques</label><button class="btn small" id="fxRefresh" type="button">↻ Actualiser les valeurs</button></span></div>
     <div id="fluxList"></div>
     <div class="hint">Frais d'achat = port + protection acheteur Vinted (à ajuster selon l'annonce). Alimentation automatique : si un fichier <code>data/annonces.json</code> existe dans le dépôt, son contenu est ajouté ici à l'ouverture.</div>
   </section>
@@ -3346,7 +3348,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','ebay.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.3.0';
+const FX_EXT_FILES=['manifest.json','background.js','ebay.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.3.2';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
@@ -3688,29 +3690,33 @@ const FX_EB_KEY='pikascan_ebay_v1', FX_EB_TTL=12*3600*1000;
 function fxEbQuery(c){ const num=String((c&&c.number)||'').split('/')[0]; return (((c&&c.name)||'')+' '+num+' pokemon -lot -psa -cgc -bgs -proxy -custom').replace(/\s+/g,' ').trim(); }
 function fxEbRead(){ try{ return JSON.parse(localStorage.getItem(FX_EB_KEY)||'{}')||{}; }catch(_){ return {}; } }
 function fxEbGet(c){ return fxEbRead()[fxEbQuery(c)]||null; }
-function fxEbStore(q,r){ try{ const o=fxEbRead(); o[q]={t:Date.now(),n:r.n||0,med:r.median,mean:r.mean,min:r.min,max:r.max,items:r.items||[],url:r.url||'',h:r.htmlLen,b:r.blocks}; const ks=Object.keys(o); if(ks.length>400) ks.sort((a,b)=>o[a].t-o[b].t).slice(0,ks.length-400).forEach(k=>delete o[k]); localStorage.setItem(FX_EB_KEY,JSON.stringify(o)); }catch(_){} }
-function fxEbExtOk(){ const v=document.documentElement.dataset.pikascanExt; if(!v) return false; const a=String(v).split('.').map(Number); return (a[0]||0)>1||((a[0]||0)===1&&(a[1]||0)>=3); }
+function fxEbStore(q,r){ try{ const o=fxEbRead(); o[q]={t:Date.now(),n:r.n||0,med:r.median,mean:r.mean,min:r.min,max:r.max,items:r.items||[],url:r.url||'',h:r.htmlLen,b:r.blocks,tot:r.total||r.n||0,loose:!!r.loose,soldN:r.soldN}; const ks=Object.keys(o); if(ks.length>400) ks.sort((a,b)=>o[a].t-o[b].t).slice(0,ks.length-400).forEach(k=>delete o[k]); localStorage.setItem(FX_EB_KEY,JSON.stringify(o)); }catch(_){} }
+function fxEbExtOk(){ const v=document.documentElement.dataset.pikascanExt; if(!v) return false; const a=String(v).split('.').map(Number); return (a[0]||0)>1||((a[0]||0)===1&&((a[1]||0)>3||((a[1]||0)===3&&(a[2]||0)>=1))); }
+let fxEbPause=0;
+function fxEbAutoOn(){ try{ return localStorage.getItem('pikascan_autoeb')!=='0'; }catch(_){ return true; } }
+function fxEbFresh(c){ const e=fxEbGet(c); return !!(e&&Date.now()-e.t<FX_EB_TTL); }
 function fxEbFetch(c,force){
   return new Promise(res=>{
     const q=fxEbQuery(c), hit=fxEbGet(c); if(hit && !force && Date.now()-hit.t<FX_EB_TTL) return res(hit);
     if(!fxEbExtOk()) return res({err:'ext'});
     const id='eb'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
     const done=r=>{ window.removeEventListener('message',on); clearTimeout(tm); res(r); };
-    const on=e=>{ const d=e.data; if(e.origin!==location.origin||!d||d.type!=='pikascan-ebay-res'||d.id!==id) return; if(d.error) return done({err:d.error}); if(d.blocked) return done({err:'blocked'}); fxEbStore(q,d); done(fxEbGet(c)||{err:'?'}); };
+    const on=e=>{ const d=e.data; if(e.origin!==location.origin||!d||d.type!=='pikascan-ebay-res'||d.id!==id) return; if(d.error) return done({err:d.error}); if(d.blocked){ fxEbPause=Date.now()+10*60000; return done({err:'blocked'}); } fxEbStore(q,d); done(fxEbGet(c)||{err:'?'}); };
     window.addEventListener('message',on); const tm=setTimeout(()=>done({err:'délai dépassé'}),25000);
-    window.postMessage({type:'pikascan-ebay-req',id,q},location.origin);
+    window.postMessage({type:'pikascan-ebay-req',id,q,name:c.name||'',num:String(c.number||'')},location.origin);
   });
 }
-function fxEbErr(r){ return r.err==='ext'?'Prix eBay : il faut l\'extension PikaScan v1.3.0 (remplace le dossier « extension » puis ↻ Recharger dans chrome://extensions).':r.err==='blocked'?'eBay demande une vérification anti-robot : ouvre une recherche eBay dans Chrome, valide-la, puis réessaie.':'Prix eBay indisponible : '+r.err; }
+function fxEbErr(r){ return r.err==='ext'?'Prix eBay : il faut l\'extension PikaScan v1.3.1 (remplace le dossier « extension » puis ↻ Recharger dans chrome://extensions).':r.err==='blocked'?'eBay demande une vérification anti-robot : ouvre une recherche eBay dans Chrome, valide-la, puis réessaie.':'Prix eBay indisponible : '+r.err; }
 function fxEbAge(e){ const m=Math.round((Date.now()-e.t)/60000); return m<2?'à l\'instant':m<90?'il y a '+m+' min':m<2160?'il y a '+Math.round(m/60)+' h':'il y a '+Math.round(m/1440)+' j'; }
 function fxEbBox(c){
-  const e=fxEbGet(c), ok=fxEbExtOk();
+  const e=fxEbGet(c), ok=fxEbExtOk(); if(!e&&ok&&!FXV.ebBusy) setTimeout(()=>fxEbViewerAuto(c),0);
   if(FXV.ebBusy) return `<div class="fx-eb"><span class="spinner" aria-hidden="true"></span> Lecture des ventes eBay…</div>`;
-  if(!e) return `<div class="fx-eb"><button type="button" class="btn small fb-ebb" data-fxv="ebay" title="${ok?'Lit les ventes terminées sur eBay.fr (via l\'extension)':'Nécessite l\'extension PikaScan v1.3.0'}">🏷️ Prix de vente eBay</button>${ok?'':'<span class="hint" style="margin-left:8px">extension v1.3.0 requise</span>'}</div>`;
+  if(!e) return `<div class="fx-eb"><button type="button" class="btn small fb-ebb" data-fxv="ebay" title="${ok?'Lit les ventes terminées sur eBay.fr (via l\'extension)':'Nécessite l\'extension PikaScan v1.3.1'}">🏷️ Prix de vente eBay</button>${ok?'':'<span class="hint" style="margin-left:8px">extension v1.3.1 requise</span>'}</div>`;
   if(!e.n) return `<div class="fx-eb"><div class="hint" style="margin:0 0 6px">Aucune vente eBay trouvée pour « ${esc(fxEbQuery(c))} »${e.h?` (page lue : ${Math.round(e.h/1024)} Ko, ${e.b||0} blocs)`:''}.</div><button type="button" class="btn small fb-ebb" data-fxv="ebayr">↻ Réessayer</button></div>`;
   const cm=c.p||0, d=cm>0?(e.med-cm)/cm*100:null;
-  return `<div class="fx-eb"><div class="eb-cmp"><div><i>Cardmarket</i><b class="num">${cm?esc(eur(cm)):'—'}</b><small>prix du marché</small></div><div class="eb"><i>eBay · ventes</i><b class="num">${esc(eur(e.med))}</b><small>médiane · moy. ${esc(eur(e.mean))} · ${e.n} vente${e.n>1?'s':''}</small></div><div><i>Écart</i><b class="num ${d==null?'':d>=0?'up':'down'}">${d==null?'—':esc(pctS(d))}</b><small>eBay vs Cardmarket</small></div></div>
-    <div class="hint" style="margin:6px 0 0">Fourchette ${esc(eur(e.min))} – ${esc(eur(e.max))} · lu ${esc(fxEbAge(e))} · <a href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer">voir sur eBay ↗</a> · <button type="button" class="lnk" data-fxv="ebayr">↻ actualiser</button></div></div>`;
+  return `<div class="fx-eb"><div class="eb-cmp"><div><i>Cardmarket</i><b class="num">${cm?esc(eur(cm)):'—'}</b><small>prix du marché</small></div><div class="eb"><i>eBay · ventes</i><b class="num">${esc(eur(e.med))}</b><small>médiane · moy. ${esc(eur(e.mean))} · ${e.n} vente${e.n>1?'s':''}${e.tot&&e.tot>e.n&&!e.loose?' (sur '+e.tot+' résultats)':''}</small></div><div><i>Écart</i><b class="num ${d==null?'':d>=0?'up':'down'}">${d==null?'—':esc(pctS(d))}</b><small>eBay vs Cardmarket</small></div></div>
+    <div class="hint" style="margin:6px 0 0">${e.soldN===0?'<span class="flag bad" style="margin:0 6px 0 0">⚠ ventes non confirmées par eBay : ne pas se fier à ce prix</span>':''}${e.loose?'<span class="flag warn" style="margin:0 6px 0 0">résultats larges : titres non vérifiés</span>':''}Fourchette ${esc(eur(e.min))} – ${esc(eur(e.max))} · lu ${esc(fxEbAge(e))} · <a href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer">voir sur eBay ↗</a> · <button type="button" class="lnk" data-fxv="ebayr">↻ actualiser</button></div>
+    ${(e.items&&e.items.length)?`<details class="eb-det"><summary>Voir les ${e.items.length} ventes lues (vérification)</summary><ul>${e.items.map(x=>`<li><b class="num">${esc(eur(x.p))}</b> <span>${esc(x.t||'(titre non lu)')}</span> <small>${esc(x.d||'')}</small></li>`).join('')}</ul></details>`:''}</div>`;
 }
 function fxEbItems(it,v){ return it.lot ? it.lot.cards.map(c=>({c,cm:(c.p||0)*(c.q||1),q:c.q||1})) : it.cardId ? [{c:it,cm:v?v.marketEur:0,q:1}] : []; }
 function fxEbSummary(it,v){
@@ -3719,19 +3725,31 @@ function fxEbSummary(it,v){
   const cm=got.reduce((a,x)=>a+x.cm,0), eb=got.reduce((a,x)=>a+fxEbGet(x.c).med*x.q,0), d=cm>0?(eb-cm)/cm*100:null;
   return `<div class="fl-ebs"><span>🏷️ <b>Comparatif</b></span><span>Cardmarket <b class="num">${esc(eur(cm))}</b></span><span>eBay (médiane des ventes) <b class="num">${esc(eur(eb))}</b></span><span>${d==null?'':`<b class="num ${d>=0?'up':'down'}">${esc(pctS(d))}</b>`}</span>${L.length>1?`<span class="hint" style="margin:0">${got.length}/${L.length} cartes lues sur eBay</span>`:''}</div>`;
 }
-async function fxEbAll(it){
+async function fxEbAuto(it){
+  if(!it||!fxEbAutoOn()||!fxEbExtOk()||FLUX.ebBusy||Date.now()<fxEbPause) return;
+  const v=fxEval(it).v; if(!fxEbItems(it,v).some(x=>(it.lot?(x.c.p||0)>=0.3:true)&&!fxEbFresh(x.c))) return;
+  await fxEbAll(it,true);
+}
+async function fxEbViewerAuto(c){
+  const q=fxEbQuery(c); FXV.ebTried=FXV.ebTried||{};
+  if(!fxEbAutoOn()||!fxEbExtOk()||FXV.ebBusy||FLUX.ebBusy||FXV.ebTried[q]||fxEbFresh(c)||Date.now()<fxEbPause) return;
+  FXV.ebTried[q]=1; FXV.ebBusy=true; fxViewerRender();
+  const r=await fxEbFetch(c,false); FXV.ebBusy=false; if(r.err&&r.err==='blocked') toast(fxEbErr(r));
+  if($('fxMd')) fxViewerRender(); renderFlux();
+}
+async function fxEbAll(it,quiet){
   const v=fxEval(it).v, L=fxEbItems(it,v).filter(x=>it.lot?(x.c.p||0)>=0.3:true), seen=new Set(), todo=[];
   L.forEach(x=>{ const q=fxEbQuery(x.c); if(!seen.has(q)){ seen.add(q); todo.push(x.c); } });
-  if(!todo.length){ toast('Aucune carte à comparer.'); return; }
-  if(!fxEbExtOk()){ toast(fxEbErr({err:'ext'})); return; }
+  if(!todo.length){ if(!quiet) toast('Aucune carte à comparer.'); return; }
+  if(!fxEbExtOk()){ if(!quiet) toast(fxEbErr({err:'ext'})); return; }
   FLUX.ebBusy=it.id; renderFlux(); let n=0, stop=null;
   for(const c of todo.slice(0,40)){
-    n++; toast(`Prix eBay ${n}/${Math.min(40,todo.length)} · ${c.name}…`);
+    n++; if(!quiet) toast(`Prix eBay ${n}/${Math.min(40,todo.length)} · ${c.name}…`);
     const had=fxEbGet(c), r=await fxEbFetch(c,false);
     if(r.err){ stop=r; break; }
     if(!(had&&Date.now()-had.t<FX_EB_TTL)) await new Promise(r2=>setTimeout(r2,1300));
   }
-  FLUX.ebBusy=null; renderFlux(); toast(stop?fxEbErr(stop):'Prix eBay lus pour '+n+' carte'+(n>1?'s':'')+'.');
+  FLUX.ebBusy=null; renderFlux(); if(stop) toast(fxEbErr(stop)); else if(!quiet) toast('Prix eBay lus pour '+n+' carte'+(n>1?'s':'')+'.');
 }
 function fxLotCalc(it){ const L=it.lot; L.n=L.cards.reduce((a,c)=>a+c.q,0); L.value=Math.round(L.cards.reduce((a,c)=>a+c.p*c.q,0)*100)/100; if(L.cards.length){ const b=L.cards.slice().sort((a,b)=>b.p*b.q-a.p*a.q)[0]; it.cardId=b.id; it.img=b.img||it.img; } it.name='Lot · '+L.n+' carte'+(L.n>1?'s':'')+' reconnue'+(L.n>1?'s':''); it.mkt=L.value; it.pt=Date.now(); }
 async function fxViewerClick(e){
@@ -3824,7 +3842,7 @@ async function fxAddText(){
   if(files.length){ if(parsed.length>1){ toast("Avec des photos, ajoute une seule annonce à la fois."); return; } if(!parsed.length) parsed=[{title:'',ask:null,url:''}]; }
   if(!parsed.length){ toast("Colle le texte ou le lien d'une annonce."); return; }
   const pend=FLUX.pending; FLUX.pending=null; const ship=(pend&&pend.ship!=null)?pend.ship:(num($('fxShip').value)||0); if(!(pend&&pend.ship!=null)){ try{ localStorage.setItem('ps_flux_ship', String(ship)); }catch(e){} }
-  const cond=$('fxCond').value, st=$('fxStatus'); FLUX.busy=true; $('fxAdd').disabled=true; let added=0, dup=0, upd=0, ok=true;
+  const cond=$('fxCond').value, st=$('fxStatus'); FLUX.busy=true; $('fxAdd').disabled=true; let added=0, dup=0, upd=0, ok=true; const newIds=[];
   const spin=m=>{ st.innerHTML='<span class="spinner" aria-hidden="true"></span> '+esc(m); };
   try{
     for(let i=0;i<parsed.length;i++){
@@ -3843,13 +3861,14 @@ async function fxAddText(){
         }catch(e){ ok=false; toast(mcpErr(e)); }
       }
       if(!done){ const r=await fxIdentify(p.title||''); if(r.pick) fxApply(it,r.pick); else it.cands=(FX_LOT_RE.test(p.title||'')&&!/\d\s*\/\s*\d/.test(p.title||''))?[]:r.cands; }
-      await fxSave(it); FLUX.items[id]=it; if(!prev) added++;
+      await fxSave(it); FLUX.items[id]=it; if(!prev) added++; if(it.lot||it.cardId) newIds.push(id);
       if(media){ try{ await FXI.put(id,media); }catch(e){ console.warn('images non conservées',e); } }
     }
     $('fxText').value=''; FLUX.files=[]; fxThumbsRender();
     st.textContent = (added||upd) ? ((added?added+' annonce'+(added>1?'s':'')+' ajoutée'+(added>1?'s':''):'')+(added&&upd?' · ':'')+(upd?upd+' annonce'+(upd>1?'s':'')+' mise'+(upd>1?'s':'')+' à jour (photos relues)':'')+(dup?' ('+dup+' déjà présente'+(dup>1?'s':'')+')':'')+'.') : (dup?'Déjà dans les annonces.':'');
   }catch(e){ st.textContent=mcpErr(e); }
   FLUX.busy=false; $('fxAdd').disabled=false; renderFlux();
+  setTimeout(async()=>{ for(const id of newIds){ try{ await fxEbAuto(FLUX.items[id]); }catch(_){} } },400);
 }
 async function fluxRefresh(force){
   const ids=[...new Set(Object.values(FLUX.items).filter(it=>it.cardId&&!it.lot).map(it=>it.cardId))];
@@ -4026,6 +4045,7 @@ window.addEventListener('message', async e=>{
 window.addEventListener('hashchange',()=>{ if(location.hash==='#annonce') setTab('flux'); });
 document.addEventListener('click',e=>{ if(e.target.closest('#fxExtZip')){ e.preventDefault(); fxExtDownload(); return; } if(e.target.closest('#fxExtDl')){ if(FX_EXT_STORE && !document.documentElement.dataset.pikascanExt) window.open(FX_EXT_STORE,'_blank','noopener'); else fxExtDownload(); } });
 fxExtState(); setTimeout(fxExtState,800); setTimeout(fxExtState,2500); document.addEventListener('visibilitychange',fxExtState);
+(function(){ const cb=$('fxAutoEb'); if(cb){ cb.checked=fxEbAutoOn(); cb.addEventListener('change',()=>{ try{ localStorage.setItem('pikascan_autoeb',cb.checked?'1':'0'); }catch(_){} toast(cb.checked?'Prix eBay automatiques activés.':'Prix eBay automatiques désactivés.'); }); } })();
 fxBmInit(); if(location.hash==='#annonce') setTimeout(()=>setTab('flux'),0);
 document.addEventListener('click', e=>{
   if(e.target.closest('#fxPhBtn')){ $('fxPhIn').click(); return; }

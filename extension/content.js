@@ -7,7 +7,7 @@ window.addEventListener('message', e => {
   if (e.source !== window || !d || d.type !== 'pikascan-ebay-req' || typeof d.q !== 'string') return;
   const id = d.id;
   try {
-    chrome.runtime.sendMessage({ type: 'ebay', q: d.q.slice(0, 140) }, res => {
+    chrome.runtime.sendMessage({ type: 'ebay', q: d.q.slice(0, 140), name: String(d.name || '').slice(0, 80), num: String(d.num || '').slice(0, 12) }, res => {
       const err = chrome.runtime.lastError;
       window.postMessage(Object.assign({ type: 'pikascan-ebay-res', id, ext: true }, err ? { error: err.message } : (res || { error: 'pas de réponse' })), location.origin);
     });

@@ -1,5 +1,5 @@
 // Lecture des prix des ventes terminées d'une page de résultats eBay.fr (HTML brut, sans DOM : utilisable dans le service worker).
-function ebayParse(html) {
+function ebayParse(html, opt) {
   const out = { n: 0, items: [], htmlLen: html.length, blocks: 0, blocked: false };
   const hasList = /\b(?:s-item|s-card)\b/.test(html);
   if (!hasList && /captcha|Pardon Our Interruption|splashui\/challenge|n.êtes pas un robot/i.test(html)) { out.blocked = true; return out; }
@@ -21,14 +21,23 @@ function ebayParse(html) {
     const sold = /\bVendu\b|vendu le/i.test(chunk), dm = chunk.match(/Vendu(?:e)?\s+le\s+([^<]{3,24})/i);
     items.push({ p, t: title.replace(/^Nouvelle annonce\s*/i, '').slice(0, 90), d: dm ? text(dm[1]) : '', sold });
   }
-  const sold = items.filter(x => x.sold), use = sold.length ? sold : items;
-  const list = use.slice(0, 60); if (!list.length) return out;
+  const sold = items.filter(x => x.sold), use = sold.length ? sold : items; out.soldN = sold.length;
+  let list = use.slice(0, 60); if (!list.length) return out;
+  out.total = list.length;
+  if (opt && (opt.name || opt.num)) {                                                      // ne garde que les annonces qui parlent bien de cette carte
+    const nz = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const toks = nz(opt.name).split(/[^a-z0-9]+/).filter(t => t.length >= 3), N = String(opt.num || '').split('/')[0].replace(/\D/g, '').replace(/^0+/, '');
+    const ok = x => { const t = nz(x.t); if (!t) return false; if (!toks.every(k => t.includes(k))) return false;
+      if (N) { const m = t.match(/(\d{1,3})\s*\/\s*\d{1,3}/); if (m && String(+m[1]) !== N) return false; }
+      return true; };
+    const fl = list.filter(ok); if (fl.length >= 3) list = fl; else out.loose = true;
+  }
   const srt = list.map(x => x.p).sort((a, b) => a - b), q = f => srt[Math.min(srt.length - 1, Math.floor(f * (srt.length - 1) + 0.5))], med = q(0.5);
   const keep = srt.length >= 4 ? list.filter(x => x.p >= med * 0.4 && x.p <= med * 2.5) : list, ks = keep.map(x => x.p), r2 = v => Math.round(v * 100) / 100;
   out.n = keep.length; out.dropped = list.length - keep.length;
   const ss = ks.slice().sort((a, b) => a - b); out.median = r2(ss.length % 2 ? ss[(ss.length - 1) / 2] : (ss[ss.length / 2 - 1] + ss[ss.length / 2]) / 2);
   out.mean = r2(ks.reduce((a, b) => a + b, 0) / ks.length); out.min = r2(ss[0]); out.max = r2(ss[ss.length - 1]);
-  out.items = keep.slice(0, 6).map(x => ({ p: x.p, t: x.t, d: x.d }));
+  out.items = keep.slice(0, 10).map(x => ({ p: x.p, t: x.t, d: x.d }));
   return out;
 }
 if (typeof self !== 'undefined') self.ebayParse = ebayParse;

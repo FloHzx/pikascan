@@ -97,7 +97,7 @@ chrome.runtime.onMessage.addListener((m, sender, send) => {
       const url = 'https://www.ebay.fr/sch/i.html?_nkw=' + encodeURIComponent(q) + '&LH_Sold=1&LH_Complete=1&_sop=13&_ipg=60';
       const r = await fetch(url, { credentials: 'include', headers: { 'Accept-Language': 'fr-FR,fr;q=0.9' } });
       if (!r.ok) { send({ error: 'eBay a répondu ' + r.status }); return; }
-      const res = ebayParse(await r.text()); res.q = q; res.url = url; send(res);
+      const res = ebayParse(await r.text(), { name: String(m.name || '').slice(0, 80), num: String(m.num || '').slice(0, 12) }); res.q = q; res.url = url; send(res);
     } catch (e) { send({ error: String(e && e.message || e) }); }
   })();
   return true;
