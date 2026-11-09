@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.14.1 | 2026-11-09 12:40 UTC">
+<meta name="pikascan-build" content="1.15.1 | 2026-11-09 15:05 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -764,6 +764,16 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
 .fx-barr{ display:inline-flex; align-items:center; gap:4px; flex-wrap:wrap; } .eb-det{ margin-top:8px; font-size:12.5px; } .eb-det summary{ cursor:pointer; color:var(--muted); } .eb-det ul{ list-style:none; margin:6px 0 0; padding:0; display:flex; flex-direction:column; gap:4px; } .eb-det li{ display:flex; gap:8px; align-items:baseline; } .eb-det li span{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .eb-det small{ color:var(--muted); white-space:nowrap; }
 .fx-autoeb{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; margin-right:10px; cursor:pointer; color:var(--ink); } .fx-autoeb input{ accent-color:#f5af02; }
 .fb-ebay2,.fb-ebb{ border-color:rgba(245,175,2,.85)!important; background:rgba(245,175,2,.2)!important; }
+.fb-cm2{ --tbg:rgba(44,120,220,.2); --tbd:rgba(44,120,220,.8); }
+.fx-cm{ margin:10px 0 0; padding:10px 12px; border:1px solid rgba(44,120,220,.45); border-radius:12px; background:rgba(44,120,220,.07); }
+.cm-h{ display:block; font-weight:800; font-size:13px; margin:0 0 6px; }
+.cm-cmp{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.cm-cmp>div{ display:flex; flex-direction:column; gap:2px; padding:6px 8px; border-radius:9px; background:var(--card); border:1px solid var(--hairline); }
+.cm-cmp>div.on{ border-color:rgba(44,120,220,.7); box-shadow:inset 0 -2px 0 rgba(44,120,220,.7); }
+.cm-cmp i{ font-style:normal; font-size:11.5px; color:var(--muted); }
+.cm-cmp b{ font-size:17px; } .cm-cmp small{ font-size:11px; color:var(--muted); }
+.cm-cmp .up{ color:var(--good); } .cm-cmp .down{ color:var(--bad); }
+@media (max-width:560px){ .cm-cmp{ grid-template-columns:1fr; } }
 .fx-eb{ margin:10px 0 0; padding:10px 12px; border:1px solid rgba(245,175,2,.45); border-radius:12px; background:rgba(245,175,2,.07); }
 .eb-cmp{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; } .eb-cmp>div{ display:flex; flex-direction:column; gap:2px; } .eb-cmp i{ font-style:normal; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); } .eb-cmp b{ font-size:17px; } .eb-cmp small{ font-size:11px; color:var(--muted); } .eb-cmp .eb b{ color:#f5af02; }
 .fl-ebs{ display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center; margin:8px 0 0; padding:8px 12px; border:1px solid rgba(245,175,2,.45); border-radius:10px; background:rgba(245,175,2,.07); font-size:13px; }
@@ -903,7 +913,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.14.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.15.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -1359,7 +1369,9 @@ function cardPoints(c, range){
 function refPrice(p){ const m=p.marketPrice; if(m!=null && p.avg7>0 && m>1.5*p.avg7) return p.avg7; return m; }
 function computeVerdict(p){
   const st=S.settings, fxv=fx();
-  const marketEur = p.marketUsd * fxv * p.condF;
+  /* p.marketEur0 : moyenne des offres françaises en Near Mint (déjà en €). Sinon, prix tendance converti. */
+  const marketEur = (p.marketEur0!=null && p.marketEur0>0) ? p.marketEur0 * p.condF : p.marketUsd * fxv * p.condF;
+  const src = (p.marketEur0!=null && p.marketEur0>0) ? 'fr' : 'trend';
   const sellGross = marketEur * (1 - st.haircut/100);
   const fee = sellGross * st.feePct/100;
   const net = sellGross - fee - st.shipOut;
@@ -1375,7 +1387,7 @@ function computeVerdict(p){
     else if(marginPct>=0){level='low';label='Marge trop faible';}
     else {level='bad';label='À éviter';}
   }
-  return {marketEur,sellGross,fee,net,cost,margin,marginPct,maxBuy,breakEven,level,label};
+  return {marketEur,sellGross,fee,net,cost,margin,marginPct,maxBuy,breakEven,level,label,src};
 }
 function ladderHTML(v, ask){
   const scaleMax = Math.max(v.breakEven*1.35, (ask||0)*1.15, v.maxBuy*1.5, 1);
@@ -1783,7 +1795,7 @@ function renderAnalysis(){
   const mom = p.mom30, mom7 = p.mom7;
   const cond = COND.find(x=>x.k===FORM.cond)||COND[0];
   const ask = num(FORM.ask), shipIn = num(FORM.shipIn)||0;
-  const v = computeVerdict({marketUsd:refPrice(p), condF:cond.f, ask, shipIn});
+  const v = computeVerdict({marketUsd:refPrice(p), condF:cond.f, ask, shipIn, marketEur0:cmRef(c)});
   const flags=[];
   const fl = (v, lab)=>{ if(v==null) return; if(v<=-15) flags.push(`<span class="flag bad">▼ ${esc(pctS(v))} vs moyenne ${lab} — marché en baisse</span>`); else if(v<=-5) flags.push(`<span class="flag warn">▼ ${esc(pctS(v))} vs moyenne ${lab}</span>`); else if(v>=10) flags.push(`<span class="flag good">▲ ${esc(pctS(v))} vs moyenne ${lab}</span>`); else flags.push(`<span class="flag">${esc(pctS(v))} vs moyenne ${lab} · stable</span>`); };
   fl(mom7,'7 j'); fl(mom,'30 j');
@@ -1808,6 +1820,7 @@ function renderAnalysis(){
         <div class="field"><label for="f-ask">Prix demandé (€)</label><input id="f-ask" type="number" inputmode="decimal" step="0.1" min="0" placeholder="ex. 4" value="${esc(FORM.ask)}"></div>
         <div class="field"><label for="f-ship">Port à l'achat (€)</label><input id="f-ship" type="number" inputmode="decimal" step="0.1" min="0" value="${esc(FORM.shipIn)}"></div>
       </div>
+      ${cmBoxHTML(c, refPrice(p)*fx(), 'fiche')}
       <div class="verdict ${v.level}" id="verdictBox" aria-live="polite">${verdictInner(v,ask,shipIn)}</div>
       <div id="mlinksBox">${marketLinksHTML({name:frCardName(c.name), number:c.number, official:c.expansion&&c.expansion.official, edition:frEdition(c.expansion&&c.expansion.name), maxBuy:v.maxBuy})}</div>
       <div class="form-grid" style="margin-top:16px">
@@ -1828,7 +1841,7 @@ function verdictInner(v, ask, shipIn){
   return `<div class="vhead"><span class="vlabel">${v.level==='good'?'✅ ':v.level==='bad'?'⛔ ':v.level==='none'?'':'⚠️ '}${esc(v.label)}</span>${v.cost>0?`<span class="vmargin num">marge ${v.margin>=0?'+':'−'}${esc(eur(Math.abs(v.margin)))} (${esc(pctS(v.marginPct))})</span>`:''}</div>
     ${ladderHTML(v, ask!=null?ask+shipIn:0)}
     <ul class="vlist">
-      <li>Valeur marché en €, état pris en compte : <b>${esc(eur(v.marketEur))}</b> → après décote ${S.settings.haircut} % : ${esc(eur(v.sellGross))}</li>
+      <li>Valeur marché en €, état pris en compte : <b>${esc(eur(v.marketEur))}</b> <span class="chip">${v.src==='fr'?'offres françaises NM+':'prix tendance'}</span> → après décote ${S.settings.haircut} % : ${esc(eur(v.sellGross))}</li>
       <li>Revente nette (frais ${S.settings.feePct} % + envoi ${esc(eur(S.settings.shipOut))}) : <b>${esc(eur(v.net))}</b></li>
       <li>Pour viser ${S.settings.targetMargin} % de marge, n'achète pas au-dessus de <b>${esc(eur(Math.max(0,v.maxBuy)))}</b> (port compris dans le calcul).</li>
     </ul>`;
@@ -1838,7 +1851,7 @@ function updateVerdict(){
   const p = pickPrice(c, FORM.variant); if(!p) return;
   const cond = COND.find(x=>x.k===FORM.cond)||COND[0];
   const ask = num(FORM.ask), shipIn = num(FORM.shipIn)||0;
-  const v = computeVerdict({marketUsd:refPrice(p), condF:cond.f, ask, shipIn});
+  const v = computeVerdict({marketUsd:refPrice(p), condF:cond.f, ask, shipIn, marketEur0:cmRef(c)});
   const box=$('verdictBox'); if(!box) return;
   box.className='verdict '+v.level; box.innerHTML=verdictInner(v,ask,shipIn);
   const ml=$('mlinksBox'); if(ml) ml.innerHTML=marketLinksHTML({name:frCardName(c.name), number:c.number, official:c.expansion&&c.expansion.official, edition:frEdition(c.expansion&&c.expansion.name), maxBuy:v.maxBuy});
@@ -3454,7 +3467,7 @@ async function syncHistory(){
 window.__imgChain = imgChain; window.__imgTag = imgTag;
 document.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.clickable[data-act="gocard"]')){ e.preventDefault(); goToCard(e.target.dataset.id); } });
 /* ---------- Annonces (Vinted & co) ---------- */
-const FLUX = { items:{}, filter:'todo', busy:false, pulled:false };
+const FLUX = { items:{}, filter:'todo', busy:false, pulled:false, cmBusy:null };
 const FX_NOISE = /\b(carte|cartes|pok[eé]mon|pokemon|neuve?s?|tbe|tr[eè]s bon [eé]tat|[eé]tat|nm|mint|fr|vf|fran[cç]aise?|anglaise?|lot|holo|brillante?|collection|vinted|vends?|vente)\b/gi;
 function fxShipDefault(){ try{ const v=parseFloat(localStorage.getItem('ps_flux_ship')); return isNaN(v)?3:v; }catch(e){ return 3; } }
 function fxHash(s){ let h=0; s=String(s); for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return 'l'+(h>>>0).toString(36); }
@@ -3523,7 +3536,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','ebay.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.3.3';
+const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.4.0';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
@@ -3745,7 +3758,7 @@ function fxReviewHTML(it,ents){
   setTimeout(()=>alts.forEach(id=>{ if(!FXV.sums[id]) fxSumC(id).then(()=>{ const box=$('fxAlts'); if(box&&FXV.i===i) box.innerHTML=fxAltsHTML(c,alts); const a=document.querySelector('.fb-cm'), sm=FXV.sums[c.id]; if(a&&sm&&sm.cm&&FXV.i===i){ a.href=cmUrl(sm.cm); if(!c.cm) c.cm=sm.cm; } }); }),0);
   return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="Carte sur la photo">`:'<div class="fl-noimg">—</div>'}<figcaption>Sur la photo</figcaption></figure><figure>${c.img?`<img src="${esc(c.img)}" alt="Carte trouvée" referrerpolicy="no-referrer">`:'<div class="fl-noimg">?</div>'}<figcaption>Carte trouvée</figcaption></figure></div>
     ${(!cr && !c.poly)?'<div class="fx-warn">ℹ️ Cette annonce a été analysée avant l\'ajout des zones sur la photo. <b>Re-clique sur l\'icône de l\'extension depuis la page Vinted</b> : l\'annonce sera mise à jour (photos relues) avec les cadres et les cartes découpées.</div>':''}
-    <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div><div class="fb-pair"><a class="fb-cm" href="${esc(fxCmHref(Object.assign({},c,{cm:(FXV.sums[c.id]&&FXV.sums[c.id].cm)||c.cm})))}" target="_blank" rel="noopener noreferrer" title="Ouvre la fiche de la carte sur Cardmarket pour vérifier le prix">🛒 Prix Cardmarket <span aria-hidden="true">↗</span></a><a class="fb-ebay" href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer" title="Ventes terminées sur eBay.fr pour cette carte (prix réellement payés)">🏷️ Ventes eBay <span aria-hidden="true">↗</span></a></div>${fxEbBox(c)}</div>
+    <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div><div class="fb-pair"><a class="fb-cm" href="${esc(fxCmHref(Object.assign({},c,{cm:(FXV.sums[c.id]&&FXV.sums[c.id].cm)||c.cm})))}" target="_blank" rel="noopener noreferrer" title="Ouvre la fiche de la carte sur Cardmarket pour vérifier le prix">🛒 Prix Cardmarket <span aria-hidden="true">↗</span></a><a class="fb-ebay" href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer" title="Ventes terminées sur eBay.fr pour cette carte (prix réellement payés)">🏷️ Ventes eBay <span aria-hidden="true">↗</span></a></div>${cmBoxHTML(c, c.p||0, 'viewer')}${fxEbBox(c)}</div>
     ${alts.length>1?`<div class="hint" style="margin:8px 0 4px">Ce n'est pas la bonne impression ? Choisis-en une autre :</div><div class="fx-alts" id="fxAlts">${fxAltsHTML(c,alts)}</div>`:''}${search}
     <div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀</button><button type="button" class="btn primary small" data-fxv="ok">✓ Valider et suivante</button><button type="button" class="btn small" data-fxv="next">▶</button><button type="button" class="btn small danger" data-fxv="rm">🗑 Retirer du lot</button></div>
     <div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Déplacer / ajuster le cadre</button></div>`;
@@ -3861,6 +3874,133 @@ async function fxApplyChoice(s){
   else if(e.kind==='single'){ const old=it.cardId; fxApply(it,s); it.scanCard=Object.assign({},it.scanCard,{id:s.id,conf:'manual',ok:true,alts:[old,...(it.scanCard.alts||[]).filter(x=>x!==s.id&&x!==old)].slice(0,5)}); }
   else { const c=e.c, old=c.id; c.alts=[old,...(c.alts||[]).filter(x=>x!==s.id&&x!==old)].slice(0,5); Object.assign(c,{id:s.id,name:s.name,ed:s.ed,number:s.number,img:s.img,cm:s.cm||'',p:p1,conf:'manual',s1:null,ok:true}); fxLotCalc(it); }
   FXV.res=[]; FXV.q=''; await fxSave(it); fxViewerRender();
+}
+/* ===== offres Cardmarket filtrées : cartes en français, état Near Mint ou mieux =====
+   Lues par l'extension dans TON navigateur, une page à la fois. Le prix tendance de Cardmarket
+   (relayé par TCGdex) est calculé toutes langues et tous états confondus : ces offres-ci sont
+   le vrai marché français en bon état, donc bien plus proche de ce que tu peux revendre. */
+const FX_CM_KEY='pikascan_cmfr_v1', FX_CM_TTL=12*3600*1000, FX_CM_K=5, FX_CM_MAXAGE=7*864e5;
+function cmPid(x){ const m=/idProduct=(\d+)/.exec(String((x&&(x.cm||x.canonicalUrl))||'')); return m?m[1]:''; }
+function cmRead(){ try{ return JSON.parse(localStorage.getItem(FX_CM_KEY)||'{}')||{}; }catch(_){ return {}; } }
+function cmGet(x){ const id=cmPid(x); return id?(cmRead()[id]||null):null; }
+function cmStore(id,r){
+  try{ const o=cmRead();
+    o[id]={t:Date.now(),n:r.n||0,nAll:r.nAll||r.n||0,avg:r.avg,min:r.min,max:r.max,med:r.med,k:r.k||0,
+           offers:(r.offers||[]).slice(0,12),empty:!!r.empty,url:r.finalUrl||r.url||'',dropped:r.dropped||0,
+           rows:r.rows||0,hl:r.htmlLen||0,dbg:r.dbg?String(r.dbg).slice(0,2400):''};
+    const ks=Object.keys(o); if(ks.length>900) ks.sort((a,b)=>o[a].t-o[b].t).slice(0,ks.length-900).forEach(k=>delete o[k]);
+    localStorage.setItem(FX_CM_KEY,JSON.stringify(o));
+  }catch(_){}
+}
+function cmFresh(x){ const e=cmGet(x); return !!(e&&Date.now()-e.t<FX_CM_TTL); }
+/* prix de référence français / Near Mint, utilisé pour le verdict quand il est connu et pas trop vieux */
+function cmRef(x){ const e=cmGet(x); return (e&&e.n>0&&e.avg>0&&Date.now()-e.t<FX_CM_MAXAGE)?e.avg:null; }
+let cmPause=0, cmBusy=null, cmAutoTried={};
+function cmAutoOn(){ try{ return localStorage.getItem('pikascan_autocm')!=='0'; }catch(_){ return true; } }
+function cmExtOk(){ const v=document.documentElement.dataset.pikascanExt; if(!v) return false;
+  const a=String(v).split('.').map(Number); return (a[0]||0)>1 || ((a[0]||0)===1 && (a[1]||0)>=4); }
+function cmFetch(x,force){
+  return new Promise(res=>{
+    const id=cmPid(x); if(!id) return res({err:'noid'});
+    const hit=cmRead()[id]; if(hit && !force && Date.now()-hit.t<FX_CM_TTL) return res(hit);
+    if(!cmExtOk()) return res({err:'ext'});
+    if(Date.now()<cmPause) return res({err:'blocked'});
+    const rid='cm'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    const done=r=>{ window.removeEventListener('message',on); clearTimeout(tm); res(r); };
+    const on=e=>{
+      const d=e.data; if(e.origin!==location.origin||!d||d.type!=='pikascan-cm-res'||d.id!==rid) return;
+      if(d.error) return done({err:d.error});
+      if(d.blocked){ cmPause=Date.now()+10*60000; return done({err:'blocked'}); }
+      if(d.needLogin) return done({err:'login'});
+      cmStore(id,d); done(cmRead()[id]||{err:'cache'});
+    };
+    window.addEventListener('message',on);
+    const tm=setTimeout(()=>done({err:'délai dépassé'}),30000);
+    window.postMessage({type:'pikascan-cm-req',id:rid,idProduct:id,k:FX_CM_K},location.origin);
+  });
+}
+function cmErr(r){
+  return r.err==='ext' ? "Prix Cardmarket FR : il faut l'extension PikaScan v1.4.0 (remplace le dossier « extension » puis ↻ Recharger dans chrome://extensions)."
+  : r.err==='noid' ? "Cette carte n'a pas de fiche Cardmarket connue."
+  : r.err==='blocked' ? "Cardmarket demande une vérification anti-robot : ouvre cardmarket.com dans un onglet, passe la vérification, puis réessaie dans quelques minutes."
+  : r.err==='login' ? "Cardmarket demande une connexion : connecte-toi sur cardmarket.com dans le navigateur, puis réessaie."
+  : 'Prix Cardmarket FR : '+esc(String(r.err||'échec'));
+}
+function cmAge(e){ const m=Math.round((Date.now()-e.t)/60000);
+  return m<2?'à l\'instant':m<90?'il y a '+m+' min':m<2160?'il y a '+Math.round(m/60)+' h':'il y a '+Math.round(m/1440)+' j'; }
+/* encart affiché sous une carte : x = objet avec .cm (annonce) ou .canonicalUrl (fiche) ; ref = prix tendance en € */
+function cmBoxHTML(x, ref, tag){
+  const id=cmPid(x); if(!id) return '';
+  const e=cmRead()[id]||null, ok=cmExtOk(), busy=cmBusy===id;
+  const head='<span class="cm-h">🇫🇷 Cardmarket · français · Near Mint ou mieux</span>';
+  if(busy) return `<div class="fx-cm">${head}<div><span class="spinner" aria-hidden="true"></span> Lecture des offres françaises…</div></div>`;
+  if(!e && ok && !cmBusy) setTimeout(()=>cmAuto({cm:'idProduct='+id}, tag),0);
+  if(!e) return `<div class="fx-cm">${head}<div class="hint" style="margin:4px 0 6px">Le prix tendance ci-dessus mélange toutes les langues et tous les états.</div>
+    <button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" ${ok?'':'disabled'} title="${ok?'Lit les offres françaises en Near Mint sur Cardmarket (via l\'extension)':'Nécessite l\'extension PikaScan v1.4.0'}">🇫🇷 Lire les offres françaises</button>
+    ${ok?'':'<div class="hint" style="margin:6px 0 0">Nécessite l\'extension PikaScan v1.4.0.</div>'}</div>`;
+  if(e.empty || !e.n) return `<div class="fx-cm">${head}<div class="hint" style="margin:4px 0 6px">Aucune offre française en Near Mint pour cette carte (${esc(cmAge(e))}${e.rows?` · ${e.rows} ligne${e.rows>1?'s':''} vue${e.rows>1?'s':''} sur la page`:''}${e.hl?` · page de ${Math.round(e.hl/1024)} Ko`:''}). Le prix tendance reste la seule référence.</div>
+    ${e.dbg?`<details class="eb-det"><summary>Diagnostic de lecture (à m'envoyer si le chiffre semble faux)</summary><textarea readonly rows="5" style="width:100%;font-size:11px">${esc(e.dbg)}</textarea></details>`:''}
+    <button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" data-cmforce="1">↻ Relire</button></div>`;
+  const d = (ref>0 && e.avg>0) ? (e.avg-ref)/ref*100 : null;
+  return `<div class="fx-cm">${head}
+    <div class="cm-cmp">
+      <div><i>Tendance (toutes langues)</i><b class="num">${ref>0?esc(eur(ref)):'—'}</b><small>référence Cardmarket</small></div>
+      <div class="on"><i>Français · NM+</i><b class="num">${esc(eur(e.avg))}</b><small>moyenne des ${e.k||5} moins chères</small></div>
+      <div><i>Écart</i><b class="num ${d==null?'':d>0?'up':d<0?'down':''}">${d==null?'—':(d>0?'+':'')+Math.round(d)+' %'}</b><small>à partir de ${esc(eur(e.min))}</small></div>
+    </div>
+    <div class="hint" style="margin:6px 0 0">${e.nAll||e.n} offre${(e.nAll||e.n)>1?'s':''} française${(e.nAll||e.n)>1?'s':''} en NM ou mieux · lu ${esc(cmAge(e))} · <b>prix demandés, hors frais de port</b>${e.dropped?` · ${e.dropped} offre${e.dropped>1?'s':''} aberrante${e.dropped>1?'s':''} écartée${e.dropped>1?'s':''}`:''}</div>
+    ${(e.offers&&e.offers.length)?`<details class="eb-det"><summary>Voir les ${e.offers.length} offres lues (vérification)</summary><ul>${e.offers.map(o=>`<li><b class="num">${esc(eur(o.p))}</b> <span>${esc(o.c||'')}${o.f?' · '+esc(o.f):''}${o.s?' · '+esc(o.s):''}${o.q?' · ×'+esc(o.q):''}</span></li>`).join('')}</ul>${e.url?`<a class="btn small" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">Ouvrir la page Cardmarket ↗</a>`:''}</details>`:''}
+    <div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" data-cmforce="1">↻ Relire les offres</button></div>
+  </div>`;
+}
+/* un seul point d'entrée pour les boutons et la lecture automatique */
+async function cmRun(id, force, tag){
+  if(cmBusy) return;
+  cmBusy=id; cmRepaint(tag);
+  const r=await cmFetch({cm:'idProduct='+id}, !!force);
+  cmBusy=null;
+  if(r && r.err) toast(cmErr(r));
+  cmRepaint(tag);
+}
+function cmRepaint(tag){
+  if(tag==='fiche'){ if($('analysis')&&S.sel) renderAnalysis(); }
+  else if(tag==='viewer'){ if($('fxMd')) fxViewerRender(); }
+}
+document.addEventListener('click', e=>{
+  const b=e.target.closest('.cm-go'); if(!b) return;
+  e.preventDefault(); cmRun(b.dataset.cmid, b.dataset.cmforce==='1', b.dataset.cmtag);
+});
+/* lecture automatique, une carte à la fois, uniquement quand la fiche est ouverte */
+function cmAuto(x, tag){
+  const id=cmPid(x); if(!id||!cmAutoOn()||!cmExtOk()||cmBusy||Date.now()<cmPause) return;
+  if(cmFresh({cm:'idProduct='+id})) return;
+  if(cmAutoTried[id]) return; cmAutoTried[id]=1;
+  setTimeout(()=>cmRun(id,false,tag),300);
+}
+
+/* toutes les cartes d'une annonce, une par une (même rythme lent que pour une carte seule) */
+async function cmAll(it,quiet){
+  const v=fxEval(it).v, L=fxEbItems(it,v).filter(x=>it.lot?(x.c.p||0)>=0.3:true), seen=new Set(), todo=[];
+  L.forEach(x=>{ const id=cmPid(x.c); if(id&&!seen.has(id)){ seen.add(id); todo.push(x.c); } });
+  if(!todo.length){ if(!quiet) toast('Aucune carte avec une fiche Cardmarket connue.'); return; }
+  if(!cmExtOk()){ if(!quiet) toast(cmErr({err:'ext'})); return; }
+  FLUX.cmBusy=it.id; renderFlux(); let n=0, stop=null;
+  for(const c of todo.slice(0,40)){
+    n++; if(!quiet) toast(`Offres françaises ${n}/${Math.min(40,todo.length)} · ${c.name}…`);
+    const had=cmFresh(c), r=await cmFetch(c,false);
+    if(r&&r.err){ stop=r; break; }
+    if(!had) await new Promise(z=>setTimeout(z,300));
+  }
+  FLUX.cmBusy=null; renderFlux(); if($('fxMd')) fxViewerRender();
+  if(stop) toast(cmErr(stop)); else if(!quiet) toast('Offres françaises lues pour '+n+' carte'+(n>1?'s':'')+'.');
+}
+/* récapitulatif d'une annonce : total tendance vs total des offres françaises NM+ */
+function cmSummary(it,v){
+  const L=fxEbItems(it,v); if(!L.length) return '';
+  const got=L.filter(x=>{ const e=cmGet(x.c); return e&&e.n>0; }); if(!got.length) return '';
+  const ref=got.reduce((a,x)=>a+x.cm,0), fr=got.reduce((a,x)=>a+cmGet(x.c).avg*x.q,0), d=ref>0?(fr-ref)/ref*100:null;
+  const part=got.length<L.length?` <span class="hint" style="margin:0">(${got.length}/${L.length} carte${L.length>1?'s':''})</span>`:'';
+  return `<div class="fl-ebs"><span>🇫🇷 <b>Marché français NM+</b>${part}</span><span>Tendance <b class="num">${esc(eur(ref))}</b></span><span>Français NM+ <b class="num">${esc(eur(fr))}</b></span><span>${d==null?'':`<b class="num ${d>0?'up':d<0?'down':''}">${(d>0?'+':'')+Math.round(d)} %</b>`}</span></div>`;
 }
 /* ===== prix de vente eBay (ventes terminées) : lus par l'extension, comparés à Cardmarket ===== */
 const FX_EB_KEY='pikascan_ebay_v1', FX_EB_TTL=12*3600*1000;
@@ -4131,7 +4271,7 @@ function fxItemHTML(it){
       <div class="fl-top">${head}<span class="fl-badge ${ev.level}">${ev.level==='good'?'🔥 ':ev.level==='bad'?'⛔ ':''}${esc(ev.label)}</span></div>
       ${it.title?`<div class="fl-title">« ${esc(it.title)} »</div>`:''}
       ${fxMetaHTML(it)}
-      ${nums}${fxEbSummary(it,v)}${flags.length?`<div>${flags.join('')}</div>`:''}${lotBox}${pick}${fxDescHTML(it)}
+      ${nums}${cmSummary(it,v)}${fxEbSummary(it,v)}${flags.length?`<div>${flags.join('')}</div>`:''}${lotBox}${pick}${fxDescHTML(it)}
       <div class="fl-edit">
         <label>Prix <input type="number" step="0.1" min="0" inputmode="decimal" value="${it.ask==null?'':esc(it.ask)}" data-fx-f="ask" data-id="${esc(it.id)}"> €</label>
         <label>Frais <input type="number" step="0.1" min="0" inputmode="decimal" value="${esc(it.shipIn||0)}" data-fx-f="shipIn" data-id="${esc(it.id)}"> €</label>
@@ -4143,6 +4283,7 @@ function fxItemHTML(it){
         <a class="fb fb-vinted" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer"><img class="fb-logo" src="https://www.google.com/s2/favicons?domain=vinted.fr&sz=64" alt="" onerror="this.remove()">${it.url?'Ouvrir l\'annonce':'Chercher sur Vinted'} <span aria-hidden="true">↗</span></a>
         ${(it.nph||(it.photos&&it.photos.length))?`<button class="fb fb-photos" type="button" data-fx="photos" data-id="${esc(it.id)}">🖼️ Photos (${esc(it.nph||it.photos.length)})</button>`:''}${fxEntries(it).length?`<button class="fb fb-check" type="button" data-fx="rev" data-i="0" data-id="${esc(it.id)}">🔍 Vérifier les cartes (${fxEntries(it).length})</button>`:''}
         <span class="fb-sep" aria-hidden="true"></span>
+        ${(it.lot||it.cardId)?`<button class="fb fb-cm2" type="button" data-fx="cmall" data-id="${esc(it.id)}" ${FLUX.cmBusy===it.id?'disabled':''} title="Lit les offres Cardmarket en français, état Near Mint ou mieux, pour chaque carte">${FLUX.cmBusy===it.id?'⏳ Cardmarket…':'🇫🇷 Offres françaises NM+'}</button>`:''}
         ${(it.lot||it.cardId)?`<button class="fb fb-ebay2" type="button" data-fx="ebayall" data-id="${esc(it.id)}" ${FLUX.ebBusy===it.id?'disabled':''} title="Lit les prix des ventes eBay terminées et les compare à Cardmarket">${FLUX.ebBusy===it.id?'⏳ eBay…':'🏷️ Comparer avec eBay'}</button>`:''}
         ${it.cardId&&!it.lot?`<button class="fb fb-analyse" type="button" data-fx="analyse" data-id="${esc(it.id)}">🔎 Analyser</button>`:''}
         <button class="fb fb-watch${watch?' on':''}" type="button" data-fx="watch" data-id="${esc(it.id)}">${watch?'⭐ Suivie':'☆ Suivre'}</button>
@@ -4237,6 +4378,7 @@ document.addEventListener('click', async e=>{
   if(e.target.closest('#fxRefresh')){ fluxRefresh(true); fluxPull(); return; }
   const b=e.target.closest('[data-fx]'); if(!b) return; const it=FLUX.items[b.dataset.id]; if(!it) return; const a=b.dataset.fx;
   if(a==='photos'||a==='rev'){ fxOpenViewer(it.id,a,+b.dataset.i||0); return; }
+  if(a==='cmall'){ if(!FLUX.cmBusy) await cmAll(it); return; }
   if(a==='ebayall'){ if(!FLUX.ebBusy) await fxEbAll(it); return; }
   if(a==='watch'){ it.status = it.status==='watch'?'seen':'watch'; }
   else if(a==='ignore'){ it.status='ignored'; } else if(a==='unignore'){ it.status='seen'; }

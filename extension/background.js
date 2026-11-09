@@ -3,7 +3,7 @@
 //  2. télécharge les photos (l'extension a le droit de lire les images de Vinted, contrairement à un simple favori) ;
 //  3. les transmet à PikaScan, qui lit les cartes visuellement et affiche le verdict.
 // Rien n'est envoyé ailleurs que vers PikaScan (adresse ci-dessous).
-importScripts('ebay.js');
+importScripts('ebay.js', 'cardmarket.js');
 const APP = 'https://flohzx.github.io/pikascan/';
 
 function extract() {
@@ -100,5 +100,28 @@ chrome.runtime.onMessage.addListener((m, sender, send) => {
       const res = ebayParse(await r.text(), { name: String(m.name || '').slice(0, 80), num: String(m.num || '').slice(0, 12) }); res.q = q; res.url = url; send(res);
     } catch (e) { send({ error: String(e && e.message || e) }); }
   })();
+  return true;
+});
+
+// Offres Cardmarket filtrées « français + Near Mint ou mieux » : PikaScan (page ouverte) demande, l'extension
+// charge UNE page produit dans TON navigateur, une à la fois et espacées, puis ne renvoie que les prix lus.
+let cmLast = 0, cmChain = Promise.resolve();
+chrome.runtime.onMessage.addListener((m, sender, send) => {
+  if (!m || m.type !== 'cardmarket') return;
+  if (!sender.tab || !String(sender.tab.url || '').startsWith(APP)) { send({ error: 'origine' }); return; }
+  const id = String(m.idProduct || '').replace(/\D/g, '').slice(0, 12);
+  if (!id) { send({ error: 'carte sans identifiant Cardmarket' }); return; }
+  const k = Math.min(10, Math.max(1, +m.k || 5));
+  cmChain = cmChain.then(async () => {
+    try {
+      const gap = 1500 - (Date.now() - cmLast); if (gap > 0) await wait(gap);     // une page à la fois, espacée
+      cmLast = Date.now();
+      const url = 'https://www.cardmarket.com/fr/Pokemon/Products?idProduct=' + id + '&language=2&minCondition=2';
+      const r = await fetch(url, { credentials: 'include', headers: { 'Accept-Language': 'fr-FR,fr;q=0.9' } });
+      if (!r.ok) { send({ error: 'Cardmarket a répondu ' + r.status, status: r.status }); return; }
+      const res = cmParse(await r.text(), { idProduct: id, k });
+      res.url = url; res.finalUrl = r.url || url; res.idProduct = id; send(res);
+    } catch (e) { send({ error: String(e && e.message || e) }); }
+  });
   return true;
 });
