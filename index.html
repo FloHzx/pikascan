@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.10.2 | 2026-11-09 07:52 UTC">
+<meta name="pikascan-build" content="1.11.0 | 2026-11-09 08:00 UTC">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3Cpath d='M3 32a29 29 0 0 1 58 0z' fill='%23e3350d'/%3E%3Crect x='3' y='29' width='58' height='6' fill='%231a1d24'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -752,6 +752,9 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
 .eb-cmp{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; } .eb-cmp>div{ display:flex; flex-direction:column; gap:2px; } .eb-cmp i{ font-style:normal; font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); } .eb-cmp b{ font-size:17px; } .eb-cmp small{ font-size:11px; color:var(--muted); } .eb-cmp .eb b{ color:#f5af02; }
 .fl-ebs{ display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center; margin:8px 0 0; padding:8px 12px; border:1px solid rgba(245,175,2,.45); border-radius:10px; background:rgba(245,175,2,.07); font-size:13px; }
 .fl-ebv{ color:#f5af02!important; font-size:10.5px!important; } .lnk{ font:inherit; background:none; border:0; padding:0; color:var(--accent,#e8452c); cursor:pointer; text-decoration:underline; }
+
+.ver[data-state="ok"]{ border-color:rgba(42,157,58,.7); color:#2a9d3a; } .ver[data-state="err"]{ border-color:rgba(229,83,61,.7); color:#e5533d; } .ver[data-state="sync"]{ border-color:rgba(76,141,255,.7); color:#4c8dff; } .ver[data-state="out"]{ border-color:rgba(245,175,2,.8); color:#f5af02; }
+.sync-pop{ position:absolute; z-index:50; margin-top:6px; width:min(320px,86vw); padding:12px 14px; border:1px solid var(--border); border-radius:12px; background:var(--card); box-shadow:0 10px 30px rgba(0,0,0,.4); font-size:13px; } .sync-pop p{ margin:6px 0 10px; }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -770,7 +773,7 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.10.2</button>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.11.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -964,6 +967,7 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
   </footer>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
+<script src="firebase-config.js"></script>
 <script>
 /* version du site : compare la page ouverte, le site publié (GitHub Pages) et le dépôt GitHub (branche main) */
 (function(){
@@ -1951,20 +1955,22 @@ const LocalDB = (function(){
   function notify(){ if(nt) return; nt=setTimeout(()=>{ nt=null; L.slice().forEach(f=>f()); },60); }
   window.addEventListener('pagehide', ()=>{ if(st) saveNow(); });
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && st) saveNow(); });
-  const col = n => (mem[n] = mem[n] || {});
+  const col = n => (mem[n] = mem[n] || {}); const CH=[]; const emit=(n,id,d,del)=>{ CH.forEach(f=>{ try{ f(n,id,d,del); }catch(_){} }); };
   load();
   return {
     isEmpty(){ return !Object.keys(col('cards')).length && !mem.__seeded; },
     markSeeded(){ mem.__seeded = true; save(); },
     exportJSON(){ return JSON.stringify(mem); },
-    importJSON(t){ const o=JSON.parse(t); if(!o || typeof o!=='object') throw new Error('bad'); mem=o; saveNow(); notify(); },
+    get(n,id){ return col(n)[id]; }, all(n){ return col(n); }, onChange(f){ CH.push(f); },
+    applyRemote(n,id,v,del){ if(del) delete col(n)[id]; else col(n)[id]=v; save(); notify(); },
+    importJSON(t){ const o=JSON.parse(t); if(!o || typeof o!=='object') throw new Error('bad'); mem=o; saveNow(); notify(); emit('*','',null,false); },
     flush(){ if(st) saveNow(); },
-    setMany(n, docs){ const c=col(n); Object.keys(docs).forEach(id=>{ c[id]=JSON.parse(JSON.stringify(docs[id])); }); saveNow(); notify(); },
+    setMany(n, docs){ const c=col(n), u=Date.now(); Object.keys(docs).forEach(id=>{ const v=JSON.parse(JSON.stringify(docs[id])); v._u=u; c[id]=v; emit(n,id,v,false); }); saveNow(); notify(); },
     collection(n){ return {
       doc(id){ return {
-        async set(d){ col(n)[id]=JSON.parse(JSON.stringify(d)); save(); notify(); },
-        async update(d){ col(n)[id]=Object.assign({}, col(n)[id], d); save(); notify(); },
-        async delete(){ delete col(n)[id]; save(); notify(); },
+        async set(d){ const v=JSON.parse(JSON.stringify(d)); v._u=Date.now(); col(n)[id]=v; save(); notify(); emit(n,id,v,false); },
+        async update(d){ const v=Object.assign({}, col(n)[id], d); v._u=Date.now(); col(n)[id]=v; save(); notify(); emit(n,id,v,false); },
+        async delete(){ delete col(n)[id]; save(); notify(); emit(n,id,null,true); },
         onSnapshot(next){ const f=()=>{ const v=col(n)[id]; next({id, exists:v!==undefined, data:()=>v}); }; L.push(f); setTimeout(f,0); return ()=>{}; }
       }; },
       onSnapshot(next){ const f=()=>next({docs:Object.entries(col(n)).map(([id,v])=>({id, exists:true, data:()=>v}))}); L.push(f); setTimeout(f,0); return ()=>{}; }
@@ -4087,10 +4093,87 @@ document.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.matches
 
 /* ---------- démarrage ---------- */
 try{ MOB_Q.addEventListener('change', ()=>{ try{ renderAll(); }catch(e){} }); }catch(e){}
+/* ===== synchronisation entre appareils (Firebase) : la base locale reste la référence rapide, le cloud la recopie ===== */
+const CloudSync=(function(){
+  const COLS=['cards','alerts','listings','settings'], SDK='https://www.gstatic.com/firebasejs/10.14.1/';
+  let M=null, auth=null, fdb=null, user=null, unsubs=[], applying=false, state='off', msg='', q=new Map(), timer=null, inflight=0, firstDone={};
+  const cfg=()=>{ const c=window.PIKA_FIREBASE; return c&&c.apiKey&&c.projectId?c:null; };
+  const colRef=n=>M.fs.collection(fdb,'users',user.uid,n), docRef=(n,id)=>M.fs.doc(fdb,'users',user.uid,n,id);
+  function set(st,m){ state=st; msg=m||''; render(); }
+  function render(){
+    const b=document.getElementById('syncBtn'); if(!b) return;
+    const t={off:'☁️ Synchro non configurée',out:'☁️ Se connecter',sync:'☁️ Synchronisation…',ok:'☁️ Synchronisé',err:'☁️ Erreur de synchro'}[state]||'☁️ Synchro';
+    b.textContent=t; b.dataset.state=state; b.title=msg||(user?user.email:'Synchronise tes annonces et ton suivi entre tes appareils');
+    const pop=document.getElementById('syncPop'); if(pop&&!pop.hidden) renderPop();
+  }
+  function renderPop(){
+    const pop=document.getElementById('syncPop'); if(!pop) return;
+    pop.innerHTML = state==='off'
+      ? '<b>Synchro non configurée</b><p class="hint">Renseigne ta configuration Firebase dans <code>firebase-config.js</code> (voir les étapes dans le chat), puis publie le site.</p>'
+      : !user ? '<b>Retrouve tes données partout</b><p class="hint">Connecte-toi avec Google : tes annonces, ton suivi et ton historique seront recopiés sur tous tes appareils.</p><button type="button" class="btn small primary" data-sync="login">Se connecter avec Google</button>'
+      : `<b>${esc(user.displayName||user.email||'Connecté')}</b><div class="hint" style="margin:2px 0 8px">${esc(user.email||'')}</div><div class="hint" style="margin:0 0 8px">${state==='err'?'⚠ '+esc(msg):state==='sync'?'Recopie en cours…':'✔ À jour'+(inflight?'':'')}</div><div class="fx-acts"><button type="button" class="btn small" data-sync="resync">↻ Forcer la synchro</button><button type="button" class="btn small danger" data-sync="logout">Se déconnecter</button></div><p class="hint" style="margin:8px 0 0">Les photos des annonces restent sur l'appareil où tu les as scannées pour l'instant.</p>`;
+  }
+  function flushSoon(){ clearTimeout(timer); timer=setTimeout(flush,350); }
+  function enqueue(n,id,d,del){ if(!user||applying||!COLS.includes(n)) return; q.set(n+'/'+id,{n,id,d,del}); set('sync'); flushSoon(); }
+  async function flush(){
+    if(!user||!q.size) { if(user&&!q.size&&state==='sync') set('ok'); return; }
+    const items=[...q.values()].slice(0,300); items.forEach(x=>{ if(q.get(x.n+'/'+x.id)===x) q.delete(x.n+'/'+x.id); });
+    try{
+      const b=M.fs.writeBatch(fdb);
+      items.forEach(x=>{ const r=docRef(x.n,x.id);
+        if(x.del) b.delete(r); else { const j=JSON.stringify(x.d); if(j.length>900000){ console.warn('document trop gros, non synchronisé',x.n,x.id); return; } b.set(r,{j,u:x.d._u||Date.now()}); } });
+      inflight++; await b.commit(); inflight--;
+      if(q.size) flush(); else set('ok');
+    }catch(e){ inflight=Math.max(0,inflight-1); items.forEach(x=>{ if(!q.has(x.n+'/'+x.id)) q.set(x.n+'/'+x.id,x); }); set('err',e&&e.code==='permission-denied'?'Règles Firestore non publiées (étape 3).':String(e&&e.message||e)); }
+  }
+  function onSnap(n,snap){
+    applying=true;
+    try{
+      snap.docChanges().forEach(ch=>{
+        const id=ch.doc.id, loc=LocalDB.get(n,id);
+        if(ch.type==='removed'){ if(loc!==undefined) LocalDB.applyRemote(n,id,null,true); return; }
+        const d=ch.doc.data(); if(!d||typeof d.j!=='string') return;
+        if(loc===undefined || (d.u||0)>(loc._u||0)){ try{ const v=JSON.parse(d.j); v._u=d.u||0; LocalDB.applyRemote(n,id,v,false); }catch(_){} }
+      });
+    } finally { applying=false; }
+    if(!firstDone[n]){   // premier passage : ce qui n'existe que sur cet appareil (ou qui est plus récent) part vers le cloud
+      firstDone[n]=true; const inCloud=new Map(); snap.docs.forEach(d=>inCloud.set(d.id,(d.data()||{}).u||0)); const all=LocalDB.all(n);
+      Object.keys(all).forEach(id=>{ const d=all[id]; if(!d||typeof d!=='object') return; if(!inCloud.has(id)||(d._u||0)>inCloud.get(id)){ if(!d._u){ d._u=Date.now(); } q.set(n+'/'+id,{n,id,d,del:false}); } });
+      if(q.size){ set('sync'); flushSoon(); }
+    }
+    if(Object.keys(firstDone).length===COLS.length && !q.size && state!=='err') set('ok');
+  }
+  function start(){
+    stop(); firstDone={}; set('sync');
+    COLS.forEach(n=>{ unsubs.push(M.fs.onSnapshot(colRef(n),snap=>onSnap(n,snap),e=>set('err',e&&e.code==='permission-denied'?'Règles Firestore non publiées (étape 3).':String(e&&e.message||e)))); });
+  }
+  function stop(){ unsubs.forEach(f=>{ try{ f(); }catch(_){} }); unsubs=[]; }
+  async function login(){
+    try{ await M.au.signInWithPopup(auth,new M.au.GoogleAuthProvider()); }
+    catch(e){ if(e&&/popup-blocked|operation-not-supported/.test(e.code||'')){ try{ await M.au.signInWithRedirect(auth,new M.au.GoogleAuthProvider()); return; }catch(_){} } if(!e||e.code!=='auth/popup-closed-by-user') toast('Connexion impossible : '+String(e&&e.message||e)); }
+  }
+  async function init(){
+    if(!cfg()){ set('off'); return; }
+    try{
+      const [a,au,fs]=await Promise.all([import(SDK+'firebase-app.js'),import(SDK+'firebase-auth.js'),import(SDK+'firebase-firestore.js')]);
+      M={app:a,au,fs}; const app=a.initializeApp(cfg()); auth=au.getAuth(app); fdb=fs.getFirestore(app);
+      LocalDB.onChange((n,id,d,del)=>{ if(n==='*'){ if(!user) return; COLS.forEach(c=>{ const all=LocalDB.all(c); Object.keys(all).forEach(i=>enqueue(c,i,all[i],false)); }); return; } enqueue(n,id,d,del); });
+      try{ au.getRedirectResult(auth).catch(()=>{}); }catch(_){}
+      au.onAuthStateChanged(auth,u=>{ user=u||null; if(user) start(); else { stop(); q.clear(); set('out'); } render(); });
+    }catch(e){ set('err','Chargement de Firebase impossible : '+String(e&&e.message||e)); }
+  }
+  document.addEventListener('click',e=>{
+    const sb=e.target.closest('#syncBtn'); const pop=document.getElementById('syncPop');
+    if(sb&&pop){ pop.hidden=!pop.hidden; if(!pop.hidden) renderPop(); return; }
+    const a=e.target.closest('[data-sync]'); if(a){ const k=a.dataset.sync; if(k==='login') login(); else if(k==='logout'){ M.au.signOut(auth); if(pop) pop.hidden=true; } else if(k==='resync'){ start(); } return; }
+    if(pop&&!pop.hidden&&!e.target.closest('#syncPop')) pop.hidden=true;
+  });
+  return { init, render, state:()=>state, user:()=>user };
+})();
 async function init(){
   renderAll(); setTab('scan'); renderSettings();
   loadCatalog().then(ok=>{ if(ok) renderAll(); });
-  S.mcp = true; S.db = LocalDB; await seedIfEmpty(); setTimeout(autoImportFromUrl, 700); setTimeout(()=>scheduleSync(0), 2500);
+  S.mcp = true; S.db = LocalDB; setTimeout(()=>CloudSync.init(),900); await seedIfEmpty(); setTimeout(autoImportFromUrl, 700); setTimeout(()=>scheduleSync(0), 2500);
   $('footStatus').textContent = 'Prix Cardmarket via TCGdex · base enregistrée dans ce navigateur · version 27 oct. (import CSV)';
   let first = true;
   S.db.collection('settings').doc('config').onSnapshot(s=>{ if(s.exists){ S.settings = Object.assign({},DEFAULTS,s.data()); } renderAll(); }, ()=>{});
