@@ -1,12 +1,21 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.12.0 | 2026-11-09 08:26 UTC">
+<meta name="pikascan-build" content="1.14.0 | 2026-11-09 12:00 UTC">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3Cpath d='M3 32a29 29 0 0 1 58 0z' fill='%23e3350d'/%3E%3Crect x='3' y='29' width='58' height='6' fill='%231a1d24'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff' stroke='%231a1d24' stroke-width='4'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* polices hébergées avec le site (aucune dépendance à Google Fonts, fonctionne hors ligne) */
+@font-face{ font-family:"Lilita One"; src:url(fonts/lilita-one-latin-400-normal.woff2) format("woff2"); font-weight:100 900; font-style:normal; font-display:swap; }
+@font-face{ font-family:"Nunito"; src:url(fonts/nunito-latin-400-normal.woff2) format("woff2"); font-weight:400; font-display:swap; }
+@font-face{ font-family:"Nunito"; src:url(fonts/nunito-latin-500-normal.woff2) format("woff2"); font-weight:500; font-display:swap; }
+@font-face{ font-family:"Nunito"; src:url(fonts/nunito-latin-600-normal.woff2) format("woff2"); font-weight:600; font-display:swap; }
+@font-face{ font-family:"Nunito"; src:url(fonts/nunito-latin-700-normal.woff2) format("woff2"); font-weight:700; font-display:swap; }
+@font-face{ font-family:"Nunito"; src:url(fonts/nunito-latin-800-normal.woff2) format("woff2"); font-weight:800 900; font-display:swap; }
+@font-face{ font-family:"IBM Plex Mono"; src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format("woff2"); font-weight:400; font-display:swap; }
+@font-face{ font-family:"IBM Plex Mono"; src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2"); font-weight:500; font-display:swap; }
+@font-face{ font-family:"IBM Plex Mono"; src:url(fonts/ibm-plex-mono-latin-600-normal.woff2) format("woff2"); font-weight:600 700; font-display:swap; }
+</style>
 <style>
   :root{
     color-scheme: light;
@@ -82,7 +91,7 @@
   body{
     background: var(--paper);
     color: var(--ink);
-    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-family: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
@@ -98,7 +107,7 @@
   .mast-title{ display:flex; align-items:center; gap:12px; }
   .bolt{ font-size:28px; line-height:1; }
   h1{
-    font-family:"Baloo 2", sans-serif; font-weight:800; letter-spacing:-0.01em;
+    font-family:"Lilita One", sans-serif; font-weight:800; letter-spacing:-0.01em;
     font-size: clamp(28px,4vw,38px); margin:0; text-wrap: balance;
   }
   .mast-sub{ color:var(--ink-secondary); font-size:14.5px; margin-top:4px; }
@@ -117,12 +126,12 @@
   }
   .tile .label{ font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin-bottom:8px; }
   .tile .value{ font-size:24px; font-weight:600; font-family:"IBM Plex Mono",monospace; font-variant-numeric: tabular-nums; }
-  .tile .value.small{ font-size:16px; font-family:"IBM Plex Sans",sans-serif; font-weight:600; }
+  .tile .value.small{ font-size:16px; font-family:"Nunito",sans-serif; font-weight:600; }
   .tile .foot{ font-size:12.5px; color:var(--muted); margin-top:6px; }
 
   /* ---------- section headers ---------- */
   .section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin: 36px 0 14px; flex-wrap:wrap; }
-  .section-head h2{ font-family:"Baloo 2",sans-serif; font-size:18px; font-weight:700; margin:0; }
+  .section-head h2{ font-family:"Lilita One",sans-serif; font-size:18px; font-weight:700; margin:0; }
   .section-head .sub{ font-size:12.5px; color:var(--muted); }
 
   /* ---------- layout w/ sidebar ---------- */
@@ -132,7 +141,7 @@
     border-radius:14px; padding:16px; box-shadow:var(--shadow);
     max-height: calc(100vh - 40px); overflow-y:auto;
   }
-  .sidebar h2{ font-family:"Baloo 2",sans-serif; font-size:15px; margin:0 0 10px; }
+  .sidebar h2{ font-family:"Lilita One",sans-serif; font-size:15px; margin:0 0 10px; }
   .sidebar-search{
     width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--border);
     background:var(--paper); color:var(--ink); font:inherit; font-size:13px; margin-bottom:10px;
@@ -210,11 +219,11 @@
   }
   .dossier .body{ padding:18px 20px 18px 18px; min-width:0; }
   .dossier .title-row{ display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:flex-start; }
-  .dossier h3{ font-family:"Baloo 2",sans-serif; font-size:19px; margin:0 0 3px; font-weight:700; }
+  .dossier h3{ font-family:"Lilita One",sans-serif; font-size:19px; margin:0 0 3px; font-weight:700; }
   .dossier .en-name{ font-size:12.5px; color:var(--muted); font-style:italic; margin-bottom:8px; }
   .chips{ display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 12px; }
   .chip{ font-size:11.5px; padding:4px 9px; border-radius:6px; background:var(--chip-bg); color:var(--ink-secondary); font-family:"IBM Plex Mono",monospace; }
-  .chip.rarity{ color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); font-family:"IBM Plex Sans",sans-serif; font-weight:600;}
+  .chip.rarity{ color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); font-family:"Nunito",sans-serif; font-weight:600;}
 
   .attacks{ font-size:13px; color:var(--ink-secondary); margin: 4px 0 14px; }
   .attacks .atk{ display:inline-flex; gap:6px; margin-right:14px; }
@@ -256,7 +265,7 @@
     background:var(--card); border:1px solid var(--border); border-radius:14px; padding:18px 20px;
     box-shadow:var(--shadow); font-size:13.5px; color:var(--ink-secondary);
   }
-  .provenance h2{ font-family:"Baloo 2",sans-serif; font-size:16px; margin:0 0 10px; color:var(--ink); }
+  .provenance h2{ font-family:"Lilita One",sans-serif; font-size:16px; margin:0 0 10px; color:var(--ink); }
   .provenance ul{ margin:8px 0 0; padding-left:20px; }
   .provenance li{ margin-bottom:6px; }
   .provenance code{ font-family:"IBM Plex Mono",monospace; background:var(--chip-bg); padding:1px 5px; border-radius:4px; font-size:12px; }
@@ -326,7 +335,7 @@
 .verdict{ border-radius:14px; padding:16px 18px; margin-top:14px; border:1px solid var(--border); }
 .verdict.good{ background:var(--good-bg); border-color:var(--good); } .verdict.ok,.verdict.low{ background:var(--warn-bg); border-color:var(--warn); } .verdict.bad{ background:var(--bad-bg); border-color:var(--bad); }
 .verdict .vhead{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
-.verdict .vlabel{ font-family:"Baloo 2",sans-serif; font-size:24px; font-weight:800; }
+.verdict .vlabel{ font-family:"Lilita One",sans-serif; font-size:24px; font-weight:800; }
 .verdict.good .vlabel{ color:var(--good); } .verdict.ok .vlabel,.verdict.low .vlabel{ color:var(--warn); } .verdict.bad .vlabel{ color:var(--bad); }
 .verdict .vmargin{ font-size:15px; font-weight:600; }
 .ladder{ position:relative; height:14px; border-radius:7px; margin:26px 0 30px; display:flex; overflow:visible; }
@@ -375,7 +384,7 @@
 .seg-btns{ flex-wrap:wrap; align-items:center; }
 @media (max-width:720px){ .var-row .bname{ width:100px; font-size:12.5px; } .var-val{ width:78px; font-size:12.5px; } }
 /* ---- éditions : logos, symboles ---- */
-.ed-title{ font-family:"Baloo 2",sans-serif; font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-secondary); margin:6px 0 8px; }
+.ed-title{ font-family:"Lilita One",sans-serif; font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink-secondary); margin:6px 0 8px; }
 .ed-tiles{ display:grid; grid-template-columns:repeat(auto-fill,minmax(112px,1fr)); gap:8px; }
 .edition-btn.ed-tile{ flex-direction:column; align-items:center; justify-content:flex-start; gap:6px; padding:10px 8px 8px; min-height:84px; text-align:center; border:1px solid var(--hairline); border-radius:12px; background:var(--card, var(--surface, #fff)); position:relative; width:100%; }
 .edition-btn.ed-tile .edlogo{ max-width:100%; width:auto; height:38px; object-fit:contain; }
@@ -394,7 +403,7 @@
 .rs.edrow{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; }
 /* ---- liens annonces ---- */
 .mlinks{ margin-top:14px; padding:12px 14px; border:1px dashed var(--hairline); border-radius:12px; }
-.mlinks .ml-title{ font-family:"Baloo 2",sans-serif; font-size:14px; font-weight:700; margin-bottom:8px; }
+.mlinks .ml-title{ font-family:"Lilita One",sans-serif; font-size:14px; font-weight:700; margin-bottom:8px; }
 .mlinks .btn.vint{ border-color:#09B1BA; color:#07757b; }
 .mlinks .btn.vint.good{ background:#09B1BA; color:#fff; }
 .mlinks .btn.lbc{ border-color:#ff6e14; color:#b34a00; }
@@ -413,7 +422,7 @@
 .mygroup{ margin-bottom:12px; }
 .mg-head, .serie-head .sbox{ }
 .mg-head{ display:flex; align-items:center; gap:8px; margin:0 0 6px; padding:4px 0 6px; border-bottom:2px solid var(--accent); }
-.mg-head .sname, .serie-head .sname{ font-family:"Baloo 2",sans-serif; font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-secondary); }
+.mg-head .sname, .serie-head .sname{ font-family:"Lilita One",sans-serif; font-size:12px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-secondary); }
 .sbox{ display:inline-flex; align-items:center; justify-content:center; width:78px; height:26px; flex:0 0 78px; background:rgba(255,255,255,.93); border-radius:7px; padding:2px 5px; box-sizing:border-box; }
 .sbox:empty{ display:none; }
 .sbox .selogo{ max-width:100%; max-height:100%; height:auto; width:auto; }
@@ -423,7 +432,7 @@
 .edition-btn.ed-tile .count{ top:4px; right:6px; background:var(--accent); color:var(--accent-ink); border-radius:999px; padding:0 6px; font-size:10.5px; }
 .edition-btn.ed-tile[aria-pressed="true"]{ outline:2px solid var(--accent); }
 .alleds{ margin-top:12px; border:1px solid var(--hairline); border-radius:12px; overflow:hidden; }
-.alleds-btn{ display:flex; width:100%; align-items:center; justify-content:space-between; padding:11px 12px; background:var(--chip-bg); border:0; cursor:pointer; font:600 13px "IBM Plex Sans",sans-serif; color:var(--ink); }
+.alleds-btn{ display:flex; width:100%; align-items:center; justify-content:space-between; padding:11px 12px; background:var(--chip-bg); border:0; cursor:pointer; font:600 13px "Nunito",sans-serif; color:var(--ink); }
 .chev{ transition:transform .15s; opacity:.7; }
 .alleds.open > .alleds-btn .chev, .serie.open > .serie-head .chev{ transform:rotate(180deg); }
 .eds-scroll{ max-height:min(56vh,460px); overflow:auto; padding:6px; }
@@ -449,7 +458,7 @@
 .ml-cap{ display:flex; align-items:center; gap:8px; margin:10px 0 2px; font-size:13px; cursor:pointer; }
 .layout{ grid-template-columns: 300px 1fr; }
 @media (max-width:900px){ .layout{ grid-template-columns:1fr; } }
-.bbox{ position:relative; display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; flex:0 0 28px; border-radius:7px; background:var(--c,#888); color:#fff; font:800 15px "Baloo 2",sans-serif; overflow:hidden; }
+.bbox{ position:relative; display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; flex:0 0 28px; border-radius:7px; background:var(--c,#888); color:#fff; font:800 15px "Lilita One",sans-serif; overflow:hidden; }
 .bbox img.brand{ position:absolute; inset:0; width:100%; height:100%; padding:2px; box-sizing:border-box; background:#fff; border-radius:7px; opacity:0; }
 .bbox img.brand.ok{ opacity:1; }
 
@@ -461,7 +470,7 @@
 .edition-btn.logo-btn .count{ position:absolute; top:-6px; right:-4px; background:var(--accent); color:var(--accent-ink); border-radius:999px; padding:1px 7px; font-size:10.5px; font-weight:700; box-shadow:0 0 0 2px var(--surface, #fff); }
 .edition-btn.logo-btn[aria-pressed="true"] .count{ background:#fff; color:var(--accent); }
 .subeds{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; padding:6px 4px 4px 10px; }
-.edtxt{ font:600 11px "IBM Plex Sans",sans-serif; color:#333; text-align:center; line-height:1.1; }
+.edtxt{ font:600 11px "Nunito",sans-serif; color:#333; text-align:center; line-height:1.1; }
 .edbox img.edimg{ max-width:100%; max-height:100%; object-fit:contain; }
 /* ---- patch 5 : import + pagination ---- */
 .more-wrap{ display:flex; justify-content:center; padding:18px 0 6px; }
@@ -478,7 +487,7 @@
 #impScript{ width:100%; box-sizing:border-box; font:12px/1.4 "IBM Plex Mono",monospace; background:var(--chip-bg); color:var(--ink); border:1px solid var(--hairline); border-radius:10px; padding:10px; resize:vertical; margin:6px 0 10px; }
 
 .edbox{ position:relative; }
-.subtag{ position:absolute; left:4px; bottom:2px; font:700 9.5px "IBM Plex Sans",sans-serif; text-transform:uppercase; letter-spacing:.04em; background:var(--ink,#1a1d24); color:#fff; border-radius:5px; padding:1px 5px; }
+.subtag{ position:absolute; left:4px; bottom:2px; font:700 9.5px "Nunito",sans-serif; text-transform:uppercase; letter-spacing:.04em; background:var(--ink,#1a1d24); color:#fff; border-radius:5px; padding:1px 5px; }
 
 /* pastille d'édition sur les fiches : logo sur fond clair, lisible en thème sombre */
 .chip.edchip{ gap:8px; }
@@ -501,7 +510,7 @@
 .ebstat{ display:inline-flex; flex-direction:column; align-items:flex-start; gap:1px; margin-top:8px; padding:6px 10px; border:1px solid var(--hairline); border-radius:10px; background:var(--chip-bg); color:var(--ink); cursor:pointer; text-align:left; }
 .ebstat .eb-l{ font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--ink-secondary); }
 .ebstat .eb-v{ font:700 16px "IBM Plex Mono",monospace; }
-.ebstat.none .eb-v{ font:500 12.5px "IBM Plex Sans",sans-serif; color:var(--muted); }
+.ebstat.none .eb-v{ font:500 12.5px "Nunito",sans-serif; color:var(--muted); }
 .ebstat .eb-s{ font-size:11px; color:var(--ink-secondary); }
 .eb-form{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
 .eb-form input{ padding:7px 9px; border:1px solid var(--hairline); border-radius:8px; background:var(--chip-bg); color:var(--ink); font:500 14px "IBM Plex Mono",monospace; }
@@ -550,9 +559,9 @@
 .ph-skel{ animation:phpulse 1.2s ease-in-out infinite; }
 @keyframes phpulse{ 50%{ opacity:.45; } }
 .ph-info{ min-width:0; display:flex; flex-direction:column; gap:5px; }
-.ph-name{ font:700 15px "Baloo 2",sans-serif; line-height:1.2; }
+.ph-name{ font:700 15px "Lilita One",sans-serif; line-height:1.2; }
 .ph-meta{ display:flex; flex-wrap:wrap; gap:5px; align-items:center; font-size:13px; }
-.ph-sel{ max-width:100%; padding:5px 7px; border:1px solid var(--hairline); border-radius:8px; background:var(--chip-bg); color:var(--ink); font:500 12.5px "IBM Plex Sans",sans-serif; }
+.ph-sel{ max-width:100%; padding:5px 7px; border:1px solid var(--hairline); border-radius:8px; background:var(--chip-bg); color:var(--ink); font:500 12.5px "Nunito",sans-serif; }
 .ph-qty{ display:flex; flex-direction:column; align-items:center; gap:4px; }
 .chip.ph-sure{ background:rgba(12,163,12,.14); color:var(--good); }
 .chip.ph-prob{ background:rgba(184,134,11,.16); color:var(--warn); }
@@ -562,7 +571,7 @@
 .ph-tr.up{ color:var(--good); } .ph-tr.dn{ color:var(--accent); }
 .ph-bar{ position:sticky; bottom:0; z-index:5; display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-top:16px; padding:12px 14px; background:var(--card); border:1px solid var(--accent); border-radius:14px; box-shadow:var(--shadow); }
 .ph-bar-c{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-.ph-bar select{ padding:8px; border:1px solid var(--hairline); border-radius:8px; background:var(--chip-bg); color:var(--ink); font:500 13.5px "IBM Plex Sans",sans-serif; }
+.ph-bar select{ padding:8px; border:1px solid var(--hairline); border-radius:8px; background:var(--chip-bg); color:var(--ink); font:500 13.5px "Nunito",sans-serif; }
 .ph-txt{ margin-top:14px; font-size:13px; }
 .ph-pre{ white-space:pre-wrap; max-height:220px; overflow:auto; font:12px/1.4 "IBM Plex Mono",monospace; background:var(--chip-bg); padding:8px; border-radius:8px; margin:0; }
 .ph-done{ margin-bottom:10px; display:flex; gap:12px; align-items:center; }
@@ -755,9 +764,121 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
 
 .ver[data-state="ok"]{ border-color:rgba(42,157,58,.7); color:#2a9d3a; } .ver[data-state="err"]{ border-color:rgba(229,83,61,.7); color:#e5533d; } .ver[data-state="sync"]{ border-color:rgba(76,141,255,.7); color:#4c8dff; } .ver[data-state="out"]{ border-color:rgba(245,175,2,.8); color:#f5af02; }
 .sync-pop{ position:absolute; z-index:50; margin-top:6px; width:min(320px,86vw); padding:12px 14px; border:1px solid var(--border); border-radius:12px; background:var(--card); box-shadow:0 10px 30px rgba(0,0,0,.4); font-size:13px; } .sync-pop p{ margin:6px 0 10px; }
+
+/* bannière */
+.hero{ margin:0 0 14px; border-radius:16px; overflow:hidden; border:1px solid var(--hairline); box-shadow:0 8px 28px rgba(0,0,0,.35); background:#1a0707; }
+.hero img{ display:block; width:100%; height:auto; }
+header.mast .pokeball{ display:none; } header.mast h1{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+header.mast{ padding-bottom:14px; margin-bottom:18px; }
+
+/* titres en Lilita One */
+h1,h2,h3,.fl-top>b,.fx-md-h>b,.fx-rv-h>b,.fx-info>b,.mlinks .ml-title,.tab{ font-family:"Lilita One",system-ui,sans-serif; font-weight:400; letter-spacing:.015em; }
+h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
+
+/* onglets : icônes colorées, survol et état actif mis en valeur */
+.tabs{ gap:8px; border-bottom:1px solid var(--hairline); padding-bottom:12px; margin-bottom:22px; }
+.tab{ --tc:76,141,255; position:relative; padding:7px 14px 7px 7px; border:1px solid transparent; border-radius:14px; margin-bottom:0; color:var(--ink-secondary); transition:transform .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .2s ease, color .15s ease; }
+.tab[data-tab="scan"]{ --tc:76,141,255; } .tab[data-tab="photo"]{ --tc:165,107,255; } .tab[data-tab="flux"]{ --tc:255,122,69; } .tab[data-tab="base"]{ --tc:42,190,90; } .tab[data-tab="alerts"]{ --tc:242,183,5; } .tab[data-tab="settings"]{ --tc:9,177,186; }
+.tab .ti{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:10px; background:rgba(var(--tc),.16); color:rgb(var(--tc)); transition:transform .2s ease, background-color .15s ease, color .15s ease; }
+.tab:hover{ color:var(--ink); transform:translateY(-2px); background:rgba(var(--tc),.1); border-color:rgba(var(--tc),.45); box-shadow:0 8px 20px rgba(var(--tc),.22); }
+.tab:hover .ti{ transform:scale(1.12) rotate(-6deg); background:rgba(var(--tc),.3); }
+.tab:active{ transform:translateY(0); box-shadow:none; }
+.tab[aria-selected="true"]{ color:var(--ink); border-color:rgba(var(--tc),.75); background:linear-gradient(135deg,rgba(var(--tc),.3),rgba(var(--tc),.08)); box-shadow:0 6px 18px rgba(var(--tc),.28), inset 0 -3px 0 rgb(var(--tc)); }
+.tab[aria-selected="true"] .ti{ background:rgb(var(--tc)); color:#101418; }
+.tab[aria-selected="true"]:hover{ transform:translateY(-1px); }
+.tab:focus-visible{ outline:2px solid rgb(var(--tc)); outline-offset:2px; }
+@media (prefers-reduced-motion:reduce){ .tab,.tab .ti{ transition:none; } .tab:hover,.tab:hover .ti{ transform:none; } }
+
+/* présentation */
+.mast-sub{ font-size:15px; }
+.mast-meta{ gap:8px; align-items:stretch; }
+.mc{ display:flex; flex-direction:column; justify-content:center; gap:1px; padding:7px 13px; border-radius:12px; border:1px solid var(--hairline); background:var(--card); border-top:3px solid var(--c,var(--accent2)); min-width:92px; }
+.mc-n{ font-size:15px; font-weight:800; color:var(--ink); line-height:1.2; }
+.mc-l{ font-size:11.5px; color:var(--muted); letter-spacing:.02em; }
+.mc-base{ --c:rgb(42,190,90); } .mc-last{ --c:rgb(76,141,255); } .mc-al{ --c:rgb(242,183,5); } .mc-src{ --c:rgb(165,107,255); }
+.mc-al.on{ --c:var(--accent); } .mc-al.on .mc-n{ color:var(--accent); }
+.mc-src .mc-n{ font-family:"Lilita One",system-ui,sans-serif; font-weight:400; letter-spacing:.015em; font-size:16px; }
+
+.pres{ position:relative; margin:0 0 20px; border:1px solid var(--hairline); border-radius:18px; overflow:hidden;
+  background: radial-gradient(900px 260px at 100% 0%, rgba(255,203,5,.10), transparent 60%), radial-gradient(700px 260px at 0% 0%, rgba(227,53,13,.10), transparent 60%), var(--card); box-shadow:var(--shadow); }
+.pres-top{ display:flex; flex-wrap:wrap; gap:14px 24px; align-items:center; justify-content:space-between; padding:20px 22px 6px; }
+.pres.min .pres-top{ padding-bottom:18px; }
+.pres.min .pres-p{ display:none; }
+.pres-hd{ flex:1 1 420px; min-width:0; }
+.pres-h{ margin:0; font-size:clamp(23px,3.4vw,32px); line-height:1.15; font-weight:400; text-wrap:balance; }
+.pres-h em{ font-style:normal; color:var(--accent2); }
+.pres-p{ margin:8px 0 0; color:var(--ink-secondary); font-size:14.5px; line-height:1.5; max-width:62ch; }
+.pres-act{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.pres-tg{ display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:10px; border:1px solid var(--hairline); background:transparent; color:var(--ink-secondary); font:inherit; font-size:13px; font-weight:600; cursor:pointer; transition:background-color .15s, color .15s, border-color .15s; }
+.pres-tg:hover{ background:var(--chip-bg); color:var(--ink); border-color:var(--muted); }
+.pres-tg i{ font-style:normal; transition:transform .2s; display:inline-block; }
+.pres.min .pres-tg i{ transform:rotate(-90deg); }
+.pres-body{ padding:6px 22px 20px; }
+.pres-body[hidden]{ display:none; }
+.pres-s{ margin:18px 0 10px; font-size:13px !important; letter-spacing:.14em !important; text-transform:uppercase; color:var(--muted); display:flex; align-items:center; gap:10px; }
+.pres-s::after{ content:""; flex:1; height:1px; background:var(--hairline); }
+
+.pres-flow{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; counter-reset:none; }
+.pst{ --tc:76,141,255; position:relative; display:flex; flex-direction:column; gap:6px; padding:30px 14px 14px; border-radius:14px; border:1px solid rgba(var(--tc),.30); background:linear-gradient(180deg,rgba(var(--tc),.14),rgba(var(--tc),.04)); }
+.pst[data-k="scan"]{ --tc:76,141,255; } .pst[data-k="photo"]{ --tc:165,107,255; } .pst[data-k="flux"]{ --tc:255,122,69; } .pst[data-k="base"]{ --tc:42,190,90; } .pst[data-k="alerts"]{ --tc:242,183,5; }
+.pst-n{ position:absolute; top:-10px; left:12px; width:30px; height:30px; border-radius:50%; display:grid; place-items:center; background:rgb(var(--tc)); color:#14171c; font-family:"Lilita One",system-ui,sans-serif; font-size:16px; box-shadow:0 0 0 4px var(--card); }
+.pst-n b{ font-weight:400; }
+.pst-i{ position:absolute; top:10px; right:12px; color:rgb(var(--tc)); display:grid; }
+.pst-t{ font-family:"Lilita One",system-ui,sans-serif; font-weight:400; font-size:17px; letter-spacing:.015em; color:var(--ink); }
+.pst-d{ font-size:13px; line-height:1.45; color:var(--ink-secondary); }
+.pst:not(:last-child)::after{ content:"›"; position:absolute; right:-11px; top:50%; transform:translateY(-50%); width:18px; text-align:center; font-size:22px; line-height:1; color:var(--muted); z-index:2; }
+
+.pres-feats{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+@media (max-width:860px){ .pres-feats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:560px){ .pres-feats{ grid-template-columns:1fr; } }
+.pf{ --tc:76,141,255; position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; padding:16px 16px 14px; border-radius:14px; border:1px solid var(--hairline); border-top:3px solid rgb(var(--tc)); background:var(--card); color:var(--ink); font:inherit; cursor:pointer; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease, background-color .16s ease; }
+.pf[data-k="scan"]{ --tc:76,141,255; } .pf[data-k="photo"]{ --tc:165,107,255; } .pf[data-k="flux"]{ --tc:255,122,69; } .pf[data-k="base"]{ --tc:42,190,90; } .pf[data-k="alerts"]{ --tc:242,183,5; } .pf[data-k="settings"]{ --tc:9,177,186; }
+.pf:hover,.pf:focus-visible{ transform:translateY(-3px); border-color:rgba(var(--tc),.65); border-top-color:rgb(var(--tc)); background:linear-gradient(180deg,rgba(var(--tc),.12),var(--card) 70%); box-shadow:0 10px 26px -12px rgba(var(--tc),.55); }
+.pf:active{ transform:translateY(-1px); }
+.pf-i{ display:grid; place-items:center; width:40px; height:40px; border-radius:12px; color:rgb(var(--tc)); background:rgba(var(--tc),.16); border:1px solid rgba(var(--tc),.35); transition:transform .18s ease; }
+.pf:hover .pf-i{ transform:scale(1.08) rotate(-4deg); }
+.pf-t{ font-family:"Lilita One",system-ui,sans-serif; font-weight:400; font-size:17px; letter-spacing:.015em; margin-top:2px; }
+.pf-d{ font-size:13px; line-height:1.45; color:var(--ink-secondary); flex:1; }
+.pf-go{ margin-top:4px; font-size:13px; font-weight:700; color:rgb(var(--tc)); display:inline-flex; gap:6px; align-items:center; }
+.pf-go i{ font-style:normal; transition:transform .16s; } .pf:hover .pf-go i{ transform:translateX(4px); }
+:root:not([data-theme="dark"]) .pf[data-k="alerts"] .pf-go, :root:not([data-theme="dark"]) .pf[data-k="alerts"] .pf-i{ color:#9a7400; }
+
+.pres-src{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+.psrc{ display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px; background:var(--chip-bg); border:1px solid var(--hairline); font-size:12.5px; color:var(--ink-secondary); }
+.psrc b{ color:var(--ink); font-weight:700; }
+.psrc i{ width:8px; height:8px; border-radius:50%; background:var(--accent2); box-shadow:0 0 0 3px rgba(255,203,5,.2); }
+.psrc:nth-child(2) i{ background:rgb(76,141,255); box-shadow:0 0 0 3px rgba(76,141,255,.2); } .psrc:nth-child(3) i{ background:rgb(42,190,90); box-shadow:0 0 0 3px rgba(42,190,90,.2); } .psrc:nth-child(4) i{ background:rgb(255,122,69); box-shadow:0 0 0 3px rgba(255,122,69,.2); }
+
+.pres-dots{ display:none; justify-content:center; gap:7px; margin-top:8px; }
+.pres-dots button{ width:8px; height:8px; padding:0; border:none; border-radius:99px; background:var(--hairline); cursor:pointer; transition:width .2s, background-color .2s; }
+.pres-dots button[aria-current="true"]{ width:22px; background:var(--accent2); }
+.mast-sub{ display:flex; flex-direction:column; gap:3px; margin-top:6px; }
+.tg{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; font-family:"Lilita One",system-ui,sans-serif; font-size:clamp(20px,3vw,26px); letter-spacing:.02em; line-height:1.1; }
+.tg b{ font-weight:400; } .tg i{ font-style:normal; font-size:.55em; color:var(--muted); }
+.tg .t1{ color:rgb(165,107,255); } .tg .t2{ color:rgb(76,141,255); } .tg .t3{ color:var(--accent2); }
+.tg2{ font-size:14px; color:var(--ink-secondary); } .tg2 b{ color:var(--ink); font-weight:700; }
+@media (max-width:980px){
+  .pres-flow{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:0; margin:0; padding:16px 0 6px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+  .pres-flow::-webkit-scrollbar,.pres-feats::-webkit-scrollbar{ display:none; }
+  .pst{ flex:0 0 100%; box-sizing:border-box; scroll-snap-align:start; scroll-snap-stop:always; }
+  .pst:not(:last-child)::after{ display:none; }
+  .pres-dots[data-for="flow"]{ display:flex; }
+}
+@media (max-width:720px){
+  .pres-top{ padding:16px 16px 4px; } .pres-body{ padding:4px 16px 16px; } .pres-act .btn{ flex:1 1 auto; }
+  .pres-feats{ display:flex; overflow-x:auto; scroll-snap-type:x mandatory; gap:0; margin:0; padding:6px 0; scrollbar-width:none; }
+  .pf{ flex:0 0 100%; box-sizing:border-box; scroll-snap-align:start; scroll-snap-stop:always; }
+  .pres-dots[data-for="feats"]{ display:flex; }
+  .pres-src{ flex-wrap:nowrap; overflow-x:auto; margin:14px -16px 0; padding:2px 16px 4px; scrollbar-width:none; } .psrc{ flex:0 0 auto; white-space:nowrap; }
+  .mast-meta{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; width:100%; }
+  .mc{ min-width:0; padding:6px 8px; } .mc-n{ font-size:13.5px; } .mc-l{ font-size:10.5px; line-height:1.2; } .mc-src .mc-n{ font-size:13px; }
+}
+@media (prefers-reduced-motion:reduce){ .pf,.pf-i,.pf-go i,.pres-tg i{ transition:none; } .pf:hover,.pf:focus-visible{ transform:none; } .pf:hover .pf-i{ transform:none; } }
+@media (max-width:600px){ .tab{ padding:6px 10px 6px 6px; font-size:14px; } .tab .ti{ width:28px; height:28px; } }
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
+  <div class="hero"><img src="banner.jpg" width="1600" height="533" alt="PikaScan : scan, inventaire, prix, marché" fetchpriority="high"></div>
   <header class="mast">
     <div class="mast-title">
       <svg class="pokeball" viewBox="0 0 72 72" aria-hidden="true">
@@ -772,29 +893,48 @@ a.btn[href*="ebay"]{ --tbg:rgba(245,175,2,.2); --tbd:rgba(245,175,2,.85); }
       </svg>
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
-        <div class="mast-sub">Scanne tes lots · estime leur valeur · suis le marché Cardmarket</div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.12.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><div class="sync-pop" id="syncPop" hidden></div>
+        <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.14.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
   </header>
 
   <div class="tabs" role="tablist" aria-label="Sections">
-    <button class="tab" role="tab" id="tab-scan" data-tab="scan" aria-selected="true">🔎 Repérer une carte</button>
-    <button class="tab" role="tab" id="tab-photo" data-tab="photo" aria-selected="false">📷 Scanner photo</button>
-    <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false">📡 Annonces <span class="badge" id="badgeFlux" data-n="0"></span></button>
-    <button class="tab" role="tab" id="tab-base" data-tab="base" aria-selected="false">📚 Ma base <span class="badge" id="badgeCards" data-n="0"></span></button>
-    <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false">🔔 Alertes <span class="badge" id="badgeAlerts" data-n="0"></span></button>
-    <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false">⚙️ Réglages</button>
+    <button class="tab" role="tab" id="tab-scan" data-tab="scan" aria-selected="true"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></span><span class="tl">Repérer une carte</span></button>
+    <button class="tab" role="tab" id="tab-photo" data-tab="photo" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span class="tl">Scanner photo</span></button>
+    <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.8"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><span class="tl">Annonces</span> <span class="badge" id="badgeFlux" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-base" data-tab="base" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/></svg></span><span class="tl">Ma base</span> <span class="badge" id="badgeCards" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></span><span class="tl">Alertes</span> <span class="badge" id="badgeAlerts" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tl">Réglages</span></button>
   </div>
 
-  <section class="intro" id="intro" aria-label="Présentation">
-    <div class="intro-txt"><b>Achète malin, revends au bon prix.</b> Scanne un lot : valeur Cardmarket de chaque carte et prix d'achat max.</div>
-    <div class="intro-act">
-      <button class="btn primary" type="button" data-intro="photo">📷 Scanner un lot</button>
-      <button class="btn" type="button" data-intro="scan">🔎 Chercher</button>
+  <section class="pres" id="intro" aria-label="Présentation de PikaScan">
+    <div class="pres-top">
+      <div class="pres-hd">
+        <h2 class="pres-h">Achète malin, <em>revends</em> au bon prix.</h2>
+        <p class="pres-p">PikaScan lit tes lots de cartes Pokémon, les chiffre avec les prix Cardmarket et les ventes réelles eBay, et te dit combien payer au maximum.</p>
+      </div>
+      <div class="pres-act">
+        <button class="btn primary" type="button" data-intro="photo">📷 Scanner un lot</button>
+        <button class="btn" type="button" data-intro="scan">🔎 Chercher une carte</button>
+        <button class="pres-tg" type="button" id="presTg" aria-expanded="true" aria-controls="presBody"><span class="pres-tg-l">Réduire</span><i aria-hidden="true">▾</i></button>
+      </div>
     </div>
-    <button class="intro-x" type="button" id="introX" aria-label="Masquer la présentation" title="Masquer">✕</button>
+    <div class="pres-body" id="presBody">
+      <h3 class="pres-s">Comment ça marche</h3>
+      <ol class="pres-flow"><li class="pst" data-k="flux"><span class="pst-n"><b>1</b></span><span class="pst-i"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.8"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><b class="pst-t">Trouve</b><span class="pst-d">Vinted, Leboncoin, vide-greniers : repère un lot ou une carte à l'unité.</span></li><li class="pst" data-k="photo"><span class="pst-n"><b>2</b></span><span class="pst-i"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><b class="pst-t">Capture</b><span class="pst-d">1 clic avec l'extension Chrome sur une annonce, ou tes propres photos du lot.</span></li><li class="pst" data-k="scan"><span class="pst-n"><b>3</b></span><span class="pst-i"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></span><b class="pst-t">Lecture</b><span class="pst-d">Détection des cartes, reconnaissance visuelle sur ~17 000 cartes, cadres ajustables à la main ou en auto.</span></li><li class="pst" data-k="base"><span class="pst-n"><b>4</b></span><span class="pst-i"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/></svg></span><b class="pst-t">Valeur</b><span class="pst-d">Prix Cardmarket (actuel, 7 j, 30 j) comparé aux ventes réelles eBay.fr.</span></li><li class="pst" data-k="alerts"><span class="pst-n"><b>5</b></span><span class="pst-i"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></span><b class="pst-t">Verdict</b><span class="pst-d">Bon plan ou non, marge, prix d'achat max, puis suivi et alertes de variation.</span></li></ol>
+      <div class="pres-dots" data-for="flow" aria-hidden="true"></div>
+      <h3 class="pres-s">Ce que tu peux faire</h3>
+      <div class="pres-feats" id="presFeats"><button type="button" class="pf" data-k="scan" data-intro="scan"><span class="pf-i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></span><b class="pf-t">Repérer une carte</b><span class="pf-d">Cherche par nom (FR/EN) : fiche, prix Cardmarket actuel / 7 j / 30 j, graphique et comparatif eBay.</span><span class="pf-go">Chercher <i aria-hidden="true">→</i></span></button><button type="button" class="pf" data-k="photo" data-intro="photo"><span class="pf-i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><b class="pf-t">Scanner photo</b><span class="pf-d">Photographie un lot : chaque carte est détectée, reconnue et chiffrée, avec le prix d'achat max.</span><span class="pf-go">Scanner un lot <i aria-hidden="true">→</i></span></button><button type="button" class="pf" data-k="flux" data-intro="flux"><span class="pf-i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1.8"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><b class="pf-t">Annonces</b><span class="pf-d">Suis tes annonces : photos, texte, verdict « bon plan », cadres déplaçables et redimensionnables.</span><span class="pf-go">Voir les annonces <i aria-hidden="true">→</i></span></button><button type="button" class="pf" data-k="base" data-intro="base"><span class="pf-i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/></svg></span><b class="pf-t">Ma base</b><span class="pf-d">Toutes tes cartes et achats, plus-value latente, historique des relevés par édition.</span><span class="pf-go">Ouvrir ma base <i aria-hidden="true">→</i></span></button><button type="button" class="pf" data-k="alerts" data-intro="alerts"><span class="pf-i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></span><b class="pf-t">Alertes</b><span class="pf-d">Hausses et baisses Cardmarket au-delà de tes seuils, avec relevé automatique des prix.</span><span class="pf-go">Voir les alertes <i aria-hidden="true">→</i></span></button><button type="button" class="pf" data-k="settings" data-intro="settings"><span class="pf-i"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><b class="pf-t">Réglages & synchro</b><span class="pf-d">Frais, décote, marge cible. Connexion Google : données et photos synchronisées partout.</span><span class="pf-go">Régler <i aria-hidden="true">→</i></span></button></div>
+      <div class="pres-dots" data-for="feats" aria-hidden="true"></div>
+      <div class="pres-src" aria-label="Sources et technologies">
+        <span class="psrc"><i aria-hidden="true"></i>Prix <b>Cardmarket</b> via TCGdex</span>
+        <span class="psrc"><i aria-hidden="true"></i>Ventes réelles <b>eBay.fr</b> (extension)</span>
+        <span class="psrc"><i aria-hidden="true"></i>Reconnaissance <b>dans ton navigateur</b></span>
+        <span class="psrc"><i aria-hidden="true"></i>Synchro <b>Firebase</b> multi-appareils</span>
+      </div>
+    </div>
   </section>
 
   <!-- ===== Repérer ===== -->
@@ -1355,9 +1495,11 @@ function renderTiles(){
 
 function renderMeta(){
   const cs=cardsArr(); const last = cs.map(c=>c.lastChecked).filter(Boolean).sort().pop();
-  $('mastMeta').innerHTML = `<span class="meta-chip">Base <b>${cs.length} carte${cs.length>1?'s':''}</b></span>
-    <span class="meta-chip">Dernier relevé <b>${last?esc(dtFmt(last)):'—'}</b></span>
-    <span class="meta-chip">Source <b>Cardmarket · TCGdex</b></span>`;
+  const un0 = Object.values(S.alerts).filter(a=>!a.seen).length;
+  $('mastMeta').innerHTML = `<span class="mc mc-base"><span class="mc-n num">${cs.length}</span><span class="mc-l">carte${cs.length>1?'s':''} en base</span></span>
+    <span class="mc mc-last"><span class="mc-n num">${last?esc(dtFmt(last)):'—'}</span><span class="mc-l">dernier relevé</span></span>
+    <span class="mc mc-al${un0?' on':''}"><span class="mc-n num">${un0}</span><span class="mc-l">alerte${un0>1?'s':''} à lire</span></span>
+    <span class="mc mc-src"><span class="mc-n">Cardmarket</span><span class="mc-l">source · TCGdex</span></span>`;
   $('badgeCards').textContent = cs.length||''; $('badgeCards').dataset.n = cs.length;
   const un = Object.values(S.alerts).filter(a=>!a.seen).length;
   $('badgeAlerts').textContent = un||''; $('badgeAlerts').dataset.n = un;
@@ -1891,10 +2033,28 @@ function setTab(t){
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 (function(){
   const box=document.getElementById('intro'); if(!box) return;
-  let off=false; try{ off = localStorage.getItem('ps_intro_off')==='1'; }catch(e){}
-  if(off) box.hidden=true;
-  document.getElementById('introX').addEventListener('click',()=>{ box.hidden=true; try{ localStorage.setItem('ps_intro_off','1'); }catch(e){} });
+  const tg=document.getElementById('presTg'), body=document.getElementById('presBody');
+  function set(min,save){
+    box.classList.toggle('min',min); body.hidden=min;
+    tg.setAttribute('aria-expanded',String(!min)); tg.querySelector('.pres-tg-l').textContent = min?'Afficher le guide':'Réduire';
+    if(save){ try{ localStorage.setItem('ps_pres_min', min?'1':'0'); }catch(e){} }
+  }
+  let min=false; try{ const v=localStorage.getItem('ps_pres_min'); min = v==='1' || (v===null && localStorage.getItem('ps_intro_off')==='1'); }catch(e){}
+  set(min,false);
+  tg.addEventListener('click',()=>set(!box.classList.contains('min'),true));
   box.querySelectorAll('[data-intro]').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.intro)));
+  function dots(scroller,wrap){
+    if(!scroller||!wrap) return; const kids=[...scroller.children];
+    wrap.innerHTML=kids.map((_,i)=>`<button type="button" tabindex="-1" data-i="${i}"></button>`).join('');
+    const upd=()=>{ const sr=scroller.getBoundingClientRect(), mid=sr.left+sr.width/2; let best=0,bd=1e9;
+      kids.forEach((k,i)=>{ const kr=k.getBoundingClientRect(), d=Math.abs(kr.left+kr.width/2-mid); if(d<bd){bd=d;best=i;} });
+      wrap.querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-current',String(i===best))); };
+    scroller.addEventListener('scroll',()=>requestAnimationFrame(upd),{passive:true});
+    wrap.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; const k=kids[+b.dataset.i]; const sr=scroller.getBoundingClientRect(), kr=k.getBoundingClientRect(); scroller.scrollTo({left:scroller.scrollLeft+kr.left-sr.left,behavior:'smooth'}); });
+    upd();
+  }
+  dots(box.querySelector('.pres-flow'),box.querySelector('.pres-dots[data-for="flow"]'));
+  dots(document.getElementById('presFeats'),box.querySelector('.pres-dots[data-for="feats"]'));
 })();
 $('searchForm').addEventListener('submit',e=>{ e.preventDefault(); doSearch($('searchInput').value); });
 $('editionSearch').addEventListener('input',renderSidebar);
