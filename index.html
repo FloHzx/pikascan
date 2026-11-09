@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.15.1 | 2026-11-09 15:05 UTC">
+<meta name="pikascan-build" content="1.15.2 | 2026-11-09 16:00 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -913,7 +913,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.15.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.15.2</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -3536,7 +3536,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.4.0';
+const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.4.1';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
@@ -3895,7 +3895,7 @@ function cmStore(id,r){
 function cmFresh(x){ const e=cmGet(x); return !!(e&&Date.now()-e.t<FX_CM_TTL); }
 /* prix de référence français / Near Mint, utilisé pour le verdict quand il est connu et pas trop vieux */
 function cmRef(x){ const e=cmGet(x); return (e&&e.n>0&&e.avg>0&&Date.now()-e.t<FX_CM_MAXAGE)?e.avg:null; }
-let cmPause=0, cmBusy=null, cmAutoTried={};
+let cmPause=0, cmBusy=null, cmAutoTried={}, cmErrs={};
 function cmAutoOn(){ try{ return localStorage.getItem('pikascan_autocm')!=='0'; }catch(_){ return true; } }
 function cmExtOk(){ const v=document.documentElement.dataset.pikascanExt; if(!v) return false;
   const a=String(v).split('.').map(Number); return (a[0]||0)>1 || ((a[0]||0)===1 && (a[1]||0)>=4); }
@@ -3909,8 +3909,8 @@ function cmFetch(x,force){
     const done=r=>{ window.removeEventListener('message',on); clearTimeout(tm); res(r); };
     const on=e=>{
       const d=e.data; if(e.origin!==location.origin||!d||d.type!=='pikascan-cm-res'||d.id!==rid) return;
-      if(d.error) return done({err:d.error});
-      if(d.blocked){ cmPause=Date.now()+10*60000; return done({err:'blocked'}); }
+      if(d.error) return done({err:d.error,status:d.status,head:d.head,finalUrl:d.finalUrl});
+      if(d.blocked){ cmPause=Date.now()+10*60000; return done({err:'blocked',finalUrl:d.finalUrl,head:d.head}); }
       if(d.needLogin) return done({err:'login'});
       cmStore(id,d); done(cmRead()[id]||{err:'cache'});
     };
@@ -3924,7 +3924,7 @@ function cmErr(r){
   : r.err==='noid' ? "Cette carte n'a pas de fiche Cardmarket connue."
   : r.err==='blocked' ? "Cardmarket demande une vérification anti-robot : ouvre cardmarket.com dans un onglet, passe la vérification, puis réessaie dans quelques minutes."
   : r.err==='login' ? "Cardmarket demande une connexion : connecte-toi sur cardmarket.com dans le navigateur, puis réessaie."
-  : 'Prix Cardmarket FR : '+esc(String(r.err||'échec'));
+  : 'Prix Cardmarket FR : '+esc(String(r.err||'échec'))+(r.status?' (HTTP '+esc(String(r.status))+')':'');
 }
 function cmAge(e){ const m=Math.round((Date.now()-e.t)/60000);
   return m<2?'à l\'instant':m<90?'il y a '+m+' min':m<2160?'il y a '+Math.round(m/60)+' h':'il y a '+Math.round(m/1440)+' j'; }
@@ -3935,6 +3935,10 @@ function cmBoxHTML(x, ref, tag){
   const head='<span class="cm-h">🇫🇷 Cardmarket · français · Near Mint ou mieux</span>';
   if(busy) return `<div class="fx-cm">${head}<div><span class="spinner" aria-hidden="true"></span> Lecture des offres françaises…</div></div>`;
   if(!e && ok && !cmBusy) setTimeout(()=>cmAuto({cm:'idProduct='+id}, tag),0);
+  const le=cmErrs[id];
+  if(!e && le) return `<div class="fx-cm">${head}<div class="fx-warn" style="margin:4px 0 6px">⚠ ${cmErr(le)}</div>
+    <details class="eb-det"><summary>Diagnostic (à m'envoyer)</summary><textarea readonly rows="4" style="width:100%;font-size:11px">erreur: ${esc(String(le.err))}\nstatut: ${esc(String(le.status||''))}\nadresse: ${esc(String(le.finalUrl||''))}\nextrait: ${esc(String(le.head||''))}</textarea></details>
+    <button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" data-cmforce="1">↻ Réessayer</button></div>`;
   if(!e) return `<div class="fx-cm">${head}<div class="hint" style="margin:4px 0 6px">Le prix tendance ci-dessus mélange toutes les langues et tous les états.</div>
     <button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" ${ok?'':'disabled'} title="${ok?'Lit les offres françaises en Near Mint sur Cardmarket (via l\'extension)':'Nécessite l\'extension PikaScan v1.4.0'}">🇫🇷 Lire les offres françaises</button>
     ${ok?'':'<div class="hint" style="margin:6px 0 0">Nécessite l\'extension PikaScan v1.4.0.</div>'}</div>`;
@@ -3959,7 +3963,7 @@ async function cmRun(id, force, tag){
   cmBusy=id; cmRepaint(tag);
   const r=await cmFetch({cm:'idProduct='+id}, !!force);
   cmBusy=null;
-  if(r && r.err) toast(cmErr(r));
+  if(r && r.err){ cmErrs[id]=r; toast(cmErr(r)); } else delete cmErrs[id];
   cmRepaint(tag);
 }
 function cmRepaint(tag){

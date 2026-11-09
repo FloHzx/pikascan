@@ -117,10 +117,15 @@ chrome.runtime.onMessage.addListener((m, sender, send) => {
       const gap = 1500 - (Date.now() - cmLast); if (gap > 0) await wait(gap);     // une page à la fois, espacée
       cmLast = Date.now();
       const url = 'https://www.cardmarket.com/fr/Pokemon/Products?idProduct=' + id + '&language=2&minCondition=2';
-      const r = await fetch(url, { credentials: 'include', headers: { 'Accept-Language': 'fr-FR,fr;q=0.9' } });
-      if (!r.ok) { send({ error: 'Cardmarket a répondu ' + r.status, status: r.status }); return; }
-      const res = cmParse(await r.text(), { idProduct: id, k });
-      res.url = url; res.finalUrl = r.url || url; res.idProduct = id; send(res);
+      const hdr = { credentials: 'include', headers: { 'Accept-Language': 'fr-FR,fr;q=0.9' } };
+      const hasF = u => /[?&]language=2(?:&|$)/.test(u || '') && /[?&]minCondition=2(?:&|$)/.test(u || '');
+      let r = await fetch(url, hdr);
+      // la redirection vers l'adresse « avec nom » peut perdre les filtres : on les remet pour ne lire QUE français + NM+
+      if (r.ok && r.url && !hasF(r.url)) { const x = new URL(r.url); x.searchParams.set('language', '2'); x.searchParams.set('minCondition', '2'); r = await fetch(x.toString(), hdr); }
+      const html = await r.text();
+      if (!r.ok) { send({ error: 'Cardmarket a répondu ' + r.status, status: r.status, finalUrl: r.url || url, htmlLen: html.length, head: html.slice(0, 300).replace(/\s+/g, ' ') }); return; }
+      const res = cmParse(html, { idProduct: id, k });
+      res.url = url; res.finalUrl = r.url || url; res.idProduct = id; res.status = r.status; res.filtered = hasF(r.url || url); send(res);
     } catch (e) { send({ error: String(e && e.message || e) }); }
   });
   return true;
