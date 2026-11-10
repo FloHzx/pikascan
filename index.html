@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.16.3 | 2026-11-10 13:40 UTC">
+<meta name="pikascan-build" content="1.18.0 | 2026-11-10 17:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -908,6 +908,76 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
 }
 @media (prefers-reduced-motion:reduce){ .pf,.pf-i,.pf-go i,.pres-tg i{ transition:none; } .pf:hover,.pf:focus-visible{ transform:none; } .pf:hover .pf-i{ transform:none; } }
 @media (max-width:600px){ .tab{ padding:6px 10px 6px 6px; font-size:14px; } .tab .ti{ width:28px; height:28px; } }
+/* ===== Achats & ventes ===== */
+.tab[data-tab="trade"]{ --tc:58,127,224; }
+:root{ --tr-buy:#e0742a; --tr-sell:#3a7fe0; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --tr-buy:#d06a22; --tr-sell:#4a88e6; } }
+:root[data-theme="dark"]{ --tr-buy:#d06a22; --tr-sell:#4a88e6; }
+#panel-trade .tile .foot b.up, #panel-trade .up{ color:var(--good,#2a9d3a); } #panel-trade .down{ color:var(--bad,#e5533d); }
+.tr-chart{ padding:14px 16px; margin:0 0 14px; }
+.tr-ch-h{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 6px; font-size:14px; }
+.tr-leg{ display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-secondary); }
+.sw{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-left:8px; } .sw.b{ background:var(--tr-buy); } .sw.s{ background:var(--tr-sell); }
+.tr-tip .sw{ margin:0 4px 0 0; }
+.tr-ch{ position:relative; } .tr-ch svg{ width:100%; height:auto; max-height:240px; display:block; overflow:visible; }
+.tr-gl{ stroke:var(--hairline); stroke-width:1; } .tr-ax{ fill:var(--muted); font-size:11px; font-family:inherit; }
+.tr-bb{ fill:var(--tr-buy); } .tr-bs{ fill:var(--tr-sell); }
+.tr-hit{ fill:transparent; cursor:default; } .tr-hit.on{ fill:var(--chip-bg); }
+.tr-tip{ position:absolute; z-index:3; pointer-events:none; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:10px; padding:8px 10px; font-size:12.5px; display:flex; flex-direction:column; gap:3px; min-width:170px; }
+.tr-tip span{ display:flex; align-items:center; gap:4px; } .tr-tip span b{ margin-left:auto; padding-left:10px; }
+.tr-tab{ margin-top:6px; font-size:12.5px; } .tr-tab summary{ cursor:pointer; color:var(--muted); } .tr-tab table{ border-collapse:collapse; margin-top:6px; width:100%; max-width:520px; } .tr-tab td,.tr-tab th{ padding:4px 8px; border-bottom:1px solid var(--hairline); text-align:left; } .tr-tab td.num{ text-align:right; font-variant-numeric:tabular-nums; }
+.tr-flags{ display:flex; flex-wrap:wrap; gap:6px; margin:0 0 12px; }
+.tr-flag{ font:inherit; font-size:12.5px; padding:6px 10px; border-radius:999px; border:1px solid rgba(242,183,5,.6); background:rgba(242,183,5,.12); color:var(--ink); cursor:pointer; }
+.tr-flag.on{ background:rgba(242,183,5,.35); } .tr-flag.clr{ border-color:var(--border); background:var(--chip-bg); }
+#trChips,#fluxChips{ flex-wrap:wrap; }
+.tr-q{ font:inherit; font-size:13px; padding:7px 10px; border-radius:9px; border:1px solid var(--border); background:var(--paper); color:var(--ink); min-width:200px; flex:1; max-width:320px; }
+.tr-it,.tr-buy{ display:grid; grid-template-columns:76px minmax(0,1fr); gap:14px; background:var(--card); border:1px solid var(--border); border-left:4px solid var(--trc,var(--border)); border-radius:14px; padding:12px 14px; margin:0 0 10px; box-shadow:var(--shadow); }
+.tr-it.flash{ outline:2px solid var(--accent); }
+.tr-it.st-stock{ --trc:rgba(150,150,160,.7); } .tr-it.st-listed{ --trc:rgba(58,127,224,.9); } .tr-it.st-grading{ --trc:rgba(165,107,255,.9); } .tr-it.st-sold{ --trc:rgba(42,157,58,.9); } .tr-it.st-kept{ --trc:rgba(242,183,5,.9); } .tr-buy{ --trc:var(--tr-buy); }
+.tr-buy.open{ outline:2px solid var(--tr-buy); }
+.tr-img img,.tr-img .fl-noimg{ width:76px; border-radius:6px; display:block; } .tr-img .fl-noimg{ height:104px; display:flex; align-items:center; justify-content:center; background:var(--chip-bg); font-size:22px; }
+.tr-top{ display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; } .tr-top>b{ font-family:"Lilita One",system-ui,sans-serif; font-weight:400; font-size:17px; }
+.tr-st{ margin-left:auto; font-size:12px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--chip-bg); white-space:nowrap; }
+.tr-st.st-listed{ background:rgba(58,127,224,.18); } .tr-st.st-grading{ background:rgba(165,107,255,.2); } .tr-st.st-sold{ background:rgba(42,157,58,.2); } .tr-st.st-kept{ background:rgba(242,183,5,.2); }
+.tr-grade{ font-size:12px; font-weight:800; padding:2px 7px; border-radius:6px; background:#c62828; color:#fff; letter-spacing:.02em; }
+.tr-meta{ font-size:12.5px; color:var(--ink-secondary); margin:3px 0 6px; } .tr-lk{ font:inherit; border:0; background:none; color:var(--accent); cursor:pointer; padding:0; text-decoration:underline; }
+.tr-nums{ margin:4px 0 6px; } .tr-note{ font-size:12.5px; color:var(--ink-secondary); margin:0 0 6px; }
+.fb-ico{ padding:6px 9px !important; } .fb-trl{ border-color:rgba(58,127,224,.8)!important; background:rgba(58,127,224,.16)!important; } .fb-trg{ border-color:rgba(165,107,255,.7)!important; background:rgba(165,107,255,.16)!important; } .fb-trs{ border-color:rgba(42,157,58,.75)!important; background:rgba(42,157,58,.18)!important; }
+.fb-buy{ border-color:rgba(224,116,42,.85)!important; background:rgba(224,116,42,.18)!important; } .fb-buy.on{ background:rgba(224,116,42,.36)!important; }
+.fl-bought{ font-size:12.5px; margin:6px 0 2px; padding:6px 10px; border-radius:9px; background:rgba(224,116,42,.12); border:1px solid rgba(224,116,42,.45); }
+.fl-bought button{ font:inherit; border:0; background:none; color:var(--accent); cursor:pointer; text-decoration:underline; padding:0; }
+.tr-hist{ font-size:12.5px; margin-top:6px; } .tr-hist summary{ cursor:pointer; color:var(--muted); } .tr-hist ol{ margin:6px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:2px; }
+.tr-prog{ position:relative; height:20px; border-radius:999px; background:var(--chip-bg); overflow:hidden; margin:4px 0 8px; } .tr-prog i{ position:absolute; inset:0 auto 0 0; background:rgba(42,157,58,.35); } .tr-prog span{ position:relative; font-size:11.5px; font-weight:700; line-height:20px; padding:0 10px; }
+.tr-thumbs{ display:flex; flex-wrap:wrap; gap:5px; margin:0 0 8px; } .tr-th{ position:relative; width:40px; height:56px; padding:0; border-radius:4px; border:2px solid var(--trc,var(--border)); background:var(--chip-bg); cursor:pointer; overflow:hidden; font-size:9px; color:var(--ink); }
+.tr-th img{ width:100%; height:100%; object-fit:cover; display:block; } .tr-th i{ position:absolute; right:1px; bottom:1px; font-style:normal; font-size:10px; font-weight:800; background:rgba(0,0,0,.7); color:#fff; border-radius:3px; padding:0 3px; }
+.tr-th.st-stock{ --trc:rgba(150,150,160,.7); } .tr-th.st-listed{ --trc:rgba(58,127,224,.9); } .tr-th.st-grading{ --trc:rgba(165,107,255,.9); } .tr-th.st-sold{ --trc:rgba(42,157,58,.9); opacity:.55; } .tr-th.st-kept{ --trc:rgba(242,183,5,.9); }
+/* fenêtre */
+.tr-md{ position:fixed; inset:0; z-index:60; background:rgba(0,0,0,.55); display:flex; align-items:flex-start; justify-content:center; padding:4vh 12px; overflow:auto; }
+.tr-md-box{ width:min(720px,100%); background:var(--card); color:var(--ink); border:1px solid var(--border); border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.4); display:flex; flex-direction:column; max-height:92vh; }
+.tr-md-h{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 16px; border-bottom:1px solid var(--hairline); } .tr-md-h b{ font-family:"Lilita One",system-ui,sans-serif; font-weight:400; font-size:18px; }
+.tr-md-b{ padding:14px 16px; overflow:auto; display:flex; flex-direction:column; gap:10px; }
+.tr-md-f{ display:flex; justify-content:flex-end; align-items:center; gap:8px; padding:12px 16px; border-top:1px solid var(--hairline); flex-wrap:wrap; } .tr-md-f .hint{ margin-right:auto!important; color:var(--bad,#e5533d); }
+.tr-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; }
+.tr-fld{ display:flex; flex-direction:column; gap:4px; font-size:12.5px; font-weight:600; color:var(--ink-secondary); }
+.tr-fld input,.tr-fld select,.tr-fld textarea,.tr-add input{ font:inherit; font-size:14px; font-weight:400; padding:8px 10px; border-radius:9px; border:1px solid var(--border); background:var(--paper); color:var(--ink); width:100%; box-sizing:border-box; }
+.tr-fld small{ font-weight:400; color:var(--muted); font-size:11.5px; }
+.tr-sum{ display:flex; gap:12px; align-items:center; } .tr-sum img,.tr-sum .fl-noimg{ width:54px; border-radius:5px; } .tr-sum div{ display:flex; flex-direction:column; } .tr-sum small{ color:var(--muted); font-size:12px; }
+.tr-sec{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-top:4px; }
+.tr-lines{ display:flex; flex-direction:column; gap:6px; }
+.tr-ln{ display:grid; grid-template-columns:auto 34px minmax(0,1fr) auto auto 70px auto; gap:8px; align-items:center; padding:6px 8px; border:1px solid var(--hairline); border-radius:10px; }
+.tr-ln.off{ opacity:.45; } .tr-ln-i img{ width:34px; border-radius:3px; display:block; } .tr-ln-i{ text-align:center; color:var(--muted); }
+.tr-ln-n{ display:flex; flex-direction:column; min-width:0; } .tr-ln-n b{ font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .tr-ln-n small{ color:var(--muted); font-size:11.5px; }
+.tr-ln-q input{ width:52px; font:inherit; padding:5px 6px; border-radius:7px; border:1px solid var(--border); background:var(--paper); color:var(--ink); } .tr-ln select{ font:inherit; padding:5px; border-radius:7px; border:1px solid var(--border); background:var(--paper); color:var(--ink); }
+.tr-ln-c{ text-align:right; font-weight:700; }
+.tr-tot{ font-size:13px; text-align:right; margin-top:4px; } .tr-tot .up{ color:var(--good,#2a9d3a); } .tr-tot .down{ color:var(--bad,#e5533d); }
+.tr-add{ display:flex; gap:6px; flex-wrap:wrap; } .tr-add input{ flex:1; min-width:180px; }
+.tr-res{ display:flex; flex-wrap:wrap; gap:6px; } .tr-chk{ font-size:13px; display:flex; gap:8px; align-items:center; }
+.tr-prev{ font-size:13px; } .tr-prev .up{ color:var(--good,#2a9d3a); } .tr-prev .down{ color:var(--bad,#e5533d); }
+@media (max-width:560px){
+  .tr-it,.tr-buy{ grid-template-columns:54px minmax(0,1fr); gap:10px; padding:10px; } .tr-img img,.tr-img .fl-noimg{ width:54px; } .tr-img .fl-noimg{ height:74px; }
+  .tr-st{ margin-left:0; } .tr-q{ max-width:none; }
+  .tr-ln{ grid-template-columns:auto 30px minmax(0,1fr) auto; } .tr-ln select,.tr-ln-c{ grid-column:3; justify-self:start; } .tr-ln>button{ grid-column:4; grid-row:1; }
+}
 </style></head><body>
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -927,7 +997,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.16.3</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.18.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -937,6 +1007,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
     <button class="tab" role="tab" id="tab-scan" data-tab="scan" aria-selected="true"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></span><span class="tl">Repérer une carte</span></button>
     <button class="tab" role="tab" id="tab-photo" data-tab="photo" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span class="tl">Scanner photo</span></button>
     <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.8"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><span class="tl">Annonces</span> <span class="badge" id="badgeFlux" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-trade" data-tab="trade" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/><path d="M10 13l1.5 1.5L14.5 11"/></svg></span><span class="tl">Achats/Ventes</span> <span class="badge" id="badgeTrade" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-base" data-tab="base" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/></svg></span><span class="tl">Ma base</span> <span class="badge" id="badgeCards" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></span><span class="tl">Alertes</span> <span class="badge" id="badgeAlerts" data-n="0"></span></button>
     <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tl">Réglages</span></button>
@@ -1045,6 +1116,20 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
     <div class="hint">Frais d'achat = port + protection acheteur Vinted (à ajuster selon l'annonce). Alimentation automatique : si un fichier <code>data/annonces.json</code> existe dans le dépôt, son contenu est ajouté ici à l'ouverture.</div>
   </section>
 
+
+  <!-- ===== Achats & ventes ===== -->
+  <section class="panel" id="panel-trade" role="tabpanel" aria-labelledby="tab-trade" hidden>
+    <div class="section-head" style="margin-top:0">
+      <div><h2>Achats &amp; ventes</h2><div class="sub" id="trSub"></div></div>
+      <div class="inline-edit"><button class="btn primary" id="trNew" type="button">➕ Nouvel achat</button><button class="btn small" id="trRefresh" type="button" title="Relit la valeur Cardmarket des cartes non vendues">↻ Actualiser les valeurs</button><button class="btn small" id="trCsv" type="button" title="Tableur de tous les achats et ventes (comptabilité)">⬇️ Export CSV</button><span class="hint" id="trStatus" aria-live="polite" style="margin:0"></span></div>
+    </div>
+    <section class="tiles" aria-label="Résumé des achats et ventes" id="trTiles"></section>
+    <div class="card-box tr-chart" id="trChart" hidden></div>
+    <div class="tr-flags" id="trFlags"></div>
+    <div class="fl-bar"><div class="sort-controls" id="trChips" role="group" aria-label="Filtrer"></div><input type="search" id="trQ" class="tr-q" placeholder="Rechercher une carte, un achat…" aria-label="Rechercher"></div>
+    <div id="trList"></div>
+    <div class="hint">Prix de revient = part du prix d'achat (port et frais compris), répartie entre les cartes au prorata de leur valeur Cardmarket, plus les frais de gradation. Bénéfice = prix de vente − frais de la plateforme − port à ta charge − prix de revient.</div>
+  </section>
 
   <!-- ===== Ma base ===== -->
   <section class="panel" id="panel-base" role="tabpanel" aria-labelledby="tab-base" hidden>
@@ -2068,6 +2153,7 @@ function setTab(t){
   document.querySelectorAll('.panel').forEach(p=>{ p.hidden = p.id!=='panel-'+t; });
   if(t==='base') renderAll();
   if(t==='flux') fluxOpen();
+  if(t==='trade') renderTrade();
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
 (function(){
@@ -3163,7 +3249,121 @@ function phSegIslands(im, opt){
   out.islands=true; out.cardW=mw/w; out.cardH=mh/h; out.cards=covered; return out;
 }
 
+/* ===== pré-traitement d'une carte repérée : redressement (perspective), agrandissement bicubique, contraste et netteté ===== */
+function phRectify(im, q, opt){
+  opt=opt||{}; const M=opt.margin==null?0.05:opt.margin, TW=opt.w||420, TH=Math.round(TW/CARD_AR), sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height;
+  let src=im.__px; if(!src){ const c=document.createElement('canvas'); c.width=sw; c.height=sh; const x=c.getContext('2d',{willReadFrequently:true}); x.drawImage(im,0,0); src=im.__px={d:x.getImageData(0,0,sw,sh).data}; }
+  const S=src.d, W=Math.round(TW*(1+2*M)), H=Math.round(TH*(1+2*M)), N=W*H, R=new Float32Array(N), G=new Float32Array(N), B=new Float32Array(N), qq=q.map(p=>p.slice());
+  const cr=t=>{ const a=Math.abs(t); return a<1?1.5*a*a*a-2.5*a*a+1:a<2?-0.5*a*a*a+2.5*a*a-4*a+2:0; };   /* Catmull-Rom */
+  const px=(x,y,ch)=>S[((Math.min(sh-1,Math.max(0,y)))*sw+Math.min(sw-1,Math.max(0,x)))*4+ch];
+  for(let y=0;y<H;y++){ const v=(y+0.5)/H*(1+2*M)-M;
+    for(let x=0;x<W;x++){ const u=(x+0.5)/W*(1+2*M)-M, p=phQuadPt(qq,u,v), fx=p[0]*sw-0.5, fy=p[1]*sh-0.5, x0=Math.floor(fx), y0=Math.floor(fy), dx=fx-x0, dy=fy-y0;
+      const wx=[cr(1+dx),cr(dx),cr(1-dx),cr(2-dx)], wy=[cr(1+dy),cr(dy),cr(1-dy),cr(2-dy)]; let r=0,g=0,b=0;
+      for(let j=0;j<4;j++){ const yy=y0-1+j; for(let i=0;i<4;i++){ const ww=wx[i]*wy[j], xx=x0-1+i; r+=ww*px(xx,yy,0); g+=ww*px(xx,yy,1); b+=ww*px(xx,yy,2); } }
+      const o=y*W+x; R[o]=r; G[o]=g; B[o]=b; } }
+  /* contraste : étirement de la luminance entre les percentiles 1 % et 99 % (mêmes gains sur R, V, B : pas de dérive de couleur) */
+  const hist=new Uint32Array(256); for(let i=0;i<N;i++){ const l=Math.max(0,Math.min(255,Math.round(R[i]*.299+G[i]*.587+B[i]*.114))); hist[l]++; }
+  let lo=0,hi=255,acc=0; for(let i=0;i<256;i++){ acc+=hist[i]; if(acc>=N*0.01){ lo=i; break; } } acc=0; for(let i=255;i>=0;i--){ acc+=hist[i]; if(acc>=N*0.01){ hi=i; break; } }
+  const k=hi-lo>40?Math.min(1.6,235/(hi-lo)):1, off=hi-lo>40?(lo*k-10):0;
+  /* netteté : masque flou (flou gaussien séparable, rayon adapté à l'agrandissement) */
+  const up=TW/Math.max(8,Math.hypot((q[1][0]-q[0][0])*sw,(q[1][1]-q[0][1])*sh)), sig=Math.max(0.8,0.6*up), rad=Math.ceil(sig*2.5), ker=[]; let ks=0; for(let i=-rad;i<=rad;i++){ const e=Math.exp(-i*i/(2*sig*sig)); ker.push(e); ks+=e; } ker.forEach((e,i)=>ker[i]=e/ks);
+  const blur=A=>{ const T=new Float32Array(N), O=new Float32Array(N); for(let y=0;y<H;y++) for(let x=0;x<W;x++){ let s=0; for(let i=-rad;i<=rad;i++) s+=ker[i+rad]*A[y*W+Math.min(W-1,Math.max(0,x+i))]; T[y*W+x]=s; } for(let y=0;y<H;y++) for(let x=0;x<W;x++){ let s=0; for(let i=-rad;i<=rad;i++) s+=ker[i+rad]*T[Math.min(H-1,Math.max(0,y+i))*W+x]; O[y*W+x]=s; } return O; };
+  const amt=opt.sharp==null?0.8:opt.sharp, cv=document.createElement('canvas'); cv.width=W; cv.height=H; const cx=cv.getContext('2d'), id=cx.createImageData(W,H), D=id.data;
+  [R,G,B].forEach((A,ch)=>{ const Bl=amt>0?blur(A):A; for(let i=0;i<N;i++){ const s=A[i]+amt*(A[i]-Bl[i]); D[i*4+ch]=Math.max(0,Math.min(255,s*k-off)); } });
+  for(let i=0;i<N;i++) D[i*4+3]=255; cx.putImageData(id,0,0);
+  const m=M/(1+2*M); cv.quad=[[m,m],[1-m,m],[1-m,1-m],[m,1-m]]; return cv;
+}
 function phSegment(im){ try{ const r=phSegIslands(im); if(r && r.length) return r; }catch(e){ console.warn('îlots',e); } return phSegmentBlobs(im); }
+/* ===== repérage carte par carte : 4 bords droits aux proportions d'une carte (63×88), taille dominante, complétion par la grille, ajustement de chaque bord ===== */
+function phDetectCards(im, opt){
+  opt=opt||{}; const AR=CARD_AR, S=opt.S||480;
+  const sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height, k=S/Math.max(sw,sh), w=Math.round(sw*k), h=Math.round(sh*k);
+  const cv=document.createElement('canvas'); cv.width=w; cv.height=h; const cx=cv.getContext('2d',{willReadFrequently:true}); cx.imageSmoothingQuality='high'; cx.drawImage(im,0,0,w,h); const d=cx.getImageData(0,0,w,h).data;
+  let g=new Float32Array(w*h); for(let i=0;i<w*h;i++) g[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
+  { const o=new Float32Array(w*h); for(let y=0;y<h;y++) for(let x=0;x<w;x++){ let s=0,n=0; for(let dy=-1;dy<=1;dy++){ const yy=y+dy; if(yy<0||yy>=h) continue; for(let dx=-1;dx<=1;dx++){ const xx=x+dx; if(xx<0||xx>=w) continue; s+=g[yy*w+xx]; n++; } } o[y*w+x]=s/n; } g=o; }
+  const Gx=new Float32Array(w*h), Gy=new Float32Array(w*h); let gm=0;
+  for(let y=1;y<h-1;y++) for(let x=1;x<w-1;x++){ const i=y*w+x; Gx[i]=Math.abs(g[i+1]-g[i-1]); Gy[i]=Math.abs(g[i+w]-g[i-w]); gm+=Gx[i]+Gy[i]; }
+  gm/=2*w*h;
+  // cumuls : CX[x][y] = somme de Gx sur la colonne x jusqu'à y ; RY[y][x] = somme de Gy sur la ligne y jusqu'à x
+  const CX=new Float32Array(w*(h+1)), RY=new Float32Array(h*(w+1));
+  for(let x=0;x<w;x++){ let s=0; for(let y=0;y<h;y++){ s+=Gx[y*w+x]; CX[x*(h+1)+y+1]=s; } }
+  for(let y=0;y<h;y++){ let s=0; for(let x=0;x<w;x++){ s+=Gy[y*w+x]; RY[y*(w+1)+x+1]=s; } }
+  const vcol=(x,y0,y1)=>{ if(x<0||x>=w) return 0; return (CX[x*(h+1)+y1]-CX[x*(h+1)+y0])/(y1-y0); };
+  const hrow=(y,x0,x1)=>{ if(y<0||y>=h) return 0; return (RY[y*(w+1)+x1]-RY[y*(w+1)+x0])/(x1-x0); };
+  const vside=(x,y0,y1,dd)=>{ const m=Math.max(vcol(x,y0,y1),vcol(x-1,y0,y1),vcol(x+1,y0,y1)); return m-0.5*(vcol(x-dd,y0,y1)+vcol(x+dd,y0,y1)); };
+  const hside=(y,x0,x1,dd)=>{ const m=Math.max(hrow(y,x0,x1),hrow(y-1,x0,x1),hrow(y+1,x0,x1)); return m-0.5*(hrow(y-dd,x0,x1)+hrow(y+dd,x0,x1)); };
+  const rectScore=(x0,y0,x1,y1,noGrp)=>{ const cw=x1-x0, ch=y1-y0, dd=Math.max(3,Math.round(0.05*cw)), iy0=y0+Math.round(ch*0.08), iy1=y1-Math.round(ch*0.08), ix0=x0+Math.round(cw*0.08), ix1=x1-Math.round(cw*0.08);
+    const a=vside(x0,iy0,iy1,dd), b=vside(x1,iy0,iy1,dd), c=hside(y0,ix0,ix1,dd), e=hside(y1,ix0,ix1,dd);
+    const mn=Math.min(a,b,c,e); if(mn<=0) return {s:0};
+    if(!noGrp){ let inner=0; for(const f of [1/3,1/2,2/3]) inner=Math.max(inner, vside(Math.round(x0+cw*f),iy0,iy1,dd));   /* un groupe de cartes a toujours une séparation verticale sur toute sa hauteur */
+      if(inner>0.55*mn) return {s:0, grp:1}; }
+    return { s:mn/gm }; };
+  const t0=performance.now();
+  const scan=(hmin,hmax,step,thr,per)=>{ const cand=[];
+  for(let ch=hmin; ch<=hmax; ch*=step){ const cw=Math.round(ch*AR), chr=Math.round(ch); if(cw>=w-2) break;
+    const loc=[];
+    for(let y0=1;y0+chr<h-1;y0++) for(let x0=1;x0+cw<w-1;x0++){ const r=rectScore(x0,y0,x0+cw,y0+chr); if(r.s>thr) loc.push([r.s,x0,y0]); }
+    loc.sort((a,b)=>b[0]-a[0]); loc.slice(0,per).forEach(([s,x0,y0])=>cand.push({s,x0,y0,x1:x0+cw,y1:y0+chr})); }
+  cand.sort((a,b)=>b.s-a.s); return cand; };
+  const iou=(a,b)=>{ const ix=Math.max(0,Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0)), iy=Math.max(0,Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0)), i=ix*iy; return i/((a.x1-a.x0)*(a.y1-a.y0)+(b.x1-b.x0)*(b.y1-b.y0)-i); };
+  const nms=(cand,max)=>{ const keep=[]; for(const c of cand){ if(keep.length>=max) break; if(keep.some(k=>iou(k,c)>0.2 || (Math.max(0,Math.min(k.x1,c.x1)-Math.max(k.x0,c.x0))*Math.max(0,Math.min(k.y1,c.y1)-Math.max(k.y0,c.y0)))>0.4*Math.min((c.x1-c.x0)*(c.y1-c.y0),(k.x1-k.x0)*(k.y1-k.y0)))) continue; keep.push(c); } return keep; };
+  const k1=nms(scan(Math.max(24,0.09*h),0.98*h,1.05,0.8,300),12);
+  // taille dominante : médiane pondérée des meilleures boîtes
+  const top=k1.filter(c=>c.s>=0.6*k1[0].s).slice(0,6); const hs=top.map(c=>c.y1-c.y0).sort((a,b)=>a-b); const Hd=hs.length?hs[hs.length>>1]:0;
+  const k2=Hd?nms(scan(Hd*0.88,Hd*1.12,1.025,0.45,600),40):[];
+  const keep=k2.filter(c=>c.s>=Math.max(0.6,0.3*k2[0].s));
+
+  /* ---- complétion par la grille (rangées / colonnes de cartes alignées) ---- */
+  let boxes=keep.map(c=>({...c, src:'edge'}));
+  if(boxes.length>=3){
+    const Wd=Hd*AR, cxo=b=>(b.x0+b.x1)/2, cyo=b=>(b.y0+b.y1)/2;
+    const clus=(vals,tol)=>{ const s=[...vals].sort((a,b)=>a-b), g=[]; s.forEach(v=>{ const l=g[g.length-1]; if(l && v-l[l.length-1]<tol) l.push(v); else g.push([v]); }); return g.map(a=>a.reduce((x,y)=>x+y,0)/a.length); };
+    const rowsY=clus(boxes.map(cyo),Hd*0.45), colsX=clus(boxes.map(cxo),Wd*0.45);
+    const near=(arr,v,tol)=>arr.some(a=>Math.abs(a-v)<tol);
+    // espacements réguliers : on garde rangées/colonnes, et on comble les trous internes
+    const fill=(arr,step)=>{ const out=[arr[0]]; for(let i=1;i<arr.length;i++){ const gap=arr[i]-arr[i-1], n=Math.round(gap/step); for(let k=1;k<n;k++) out.push(arr[i-1]+gap*k/n); out.push(arr[i]); } return out; };
+    let R=rowsY.length>=2?fill(rowsY,Hd*1.04):rowsY, C=colsX.length>=2?fill(colsX,Wd*1.04):colsX;
+    const stepOf=(a,d)=>a.length>=2?(a[a.length-1]-a[0])/(a.length-1):d, sy=stepOf(R,Hd*1.04), sx=stepOf(C,Wd*1.04);
+    const ext=new Set();
+    // un cran de plus de chaque côté si la case tient dans la photo (le score de bords décidera)
+    if(R[0]-sy-Hd/2>-0.03*h){ R=[R[0]-sy,...R]; ext.add('r0'); } if(R[R.length-1]+sy+Hd/2<1.03*h){ R=[...R,R[R.length-1]+sy]; ext.add('r1'); }
+    if(C[0]-sx-Wd/2>-0.03*w){ C=[C[0]-sx,...C]; ext.add('c0'); } if(C[C.length-1]+sx+Wd/2<1.03*w){ C=[...C,C[C.length-1]+sx]; ext.add('c1'); }
+    const isExt=(y,x)=>(ext.has('r0')&&y===R[0])||(ext.has('r1')&&y===R[R.length-1])||(ext.has('c0')&&x===C[0])||(ext.has('c1')&&x===C[C.length-1]);
+    if(R.length*C.length<=36 && boxes.length>=0.4*R.length*C.length){
+      for(const y of R) for(const x of C){
+        if(boxes.some(b=>Math.abs(cyo(b)-y)<Hd*0.4 && Math.abs(cxo(b)-x)<Wd*0.4)) continue;
+        const x0=Math.round(x-Wd/2), y0=Math.round(y-Hd/2), x1=Math.round(x0+Wd), y1=Math.round(y0+Hd);
+        if(x0<-0.04*w||y0<-0.04*h||x1>1.04*w||y1>1.04*h) continue;
+        // petite recherche locale autour de la case prévue
+        let best=null; for(let dy=-6;dy<=6;dy+=2) for(let dx=-6;dx<=6;dx+=2){ const a=x0+dx,b=y0+dy; if(a<1||b<1||a+(x1-x0)>=w-1||b+(y1-y0)>=h-1) continue; const r=rectScore(a,b,a+(x1-x0),b+(y1-y0),true); if(!best||r.s>best.s) best={s:r.s,x0:a,y0:b,x1:a+(x1-x0),y1:b+(y1-y0)}; }
+        if(best && best.s>(isExt(y,x)?0.45:0.15)) boxes.push({...best, src:isExt(y,x)?'ext':'grid'});
+      }
+      // on écarte les boîtes hors grille (faux positifs : boîtes, objets)
+      boxes=boxes.filter(b=>near(R,cyo(b),Hd*0.45)&&near(C,cxo(b),Wd*0.45));
+    }
+  }
+  /* ---- ajustement côté par côté (perspective) ---- */
+  const bil=(G,x,y)=>{ x=Math.min(w-1.001,Math.max(0,x)); y=Math.min(h-1.001,Math.max(0,y)); const xi=x|0, yi=y|0, fx=x-xi, fy=y-yi, a=yi*w+xi; return (G[a]*(1-fx)+G[a+1]*fx)*(1-fy)+(G[a+w]*(1-fx)+G[a+w+1]*fx)*fy; };
+  const lineS=(G,vert,p,t,lo,hi,dd)=>{ let s=0,o=0; const N=32, mid=(lo+hi)/2; for(let k=0;k<N;k++){ const q=lo+(hi-lo)*(k+0.5)/N, off=p+t*(q-mid); if(vert){ s+=Math.max(bil(G,off,q),bil(G,off-1,q),bil(G,off+1,q)); o+=bil(G,off-dd,q)+bil(G,off+dd,q); } else { s+=Math.max(bil(G,q,off),bil(G,q,off-1),bil(G,q,off+1)); o+=bil(G,q,off-dd)+bil(G,q,off+dd); } } return (s-0.5*o)/N; };
+  const refineBox=b=>{ const cw=b.x1-b.x0, ch=b.y1-b.y0, dd=Math.max(3,Math.round(0.05*cw)), R=Math.max(2,Math.round(0.05*cw));
+    const side=(vert,p0,lo,hi)=>{ let best={s:-1e9,p:p0,t:0}; for(let dp=-R;dp<=R;dp++) for(let t=-0.08;t<=0.0801;t+=0.02){ const s=lineS(vert?Gx:Gy,vert,p0+dp,t,lo,hi,dd)-0.02*gm*Math.abs(dp); if(s>best.s) best={s,p:p0+dp,t}; } return best; };
+    const L=side(true,b.x0,b.y0+0.1*ch,b.y1-0.1*ch), Rr=side(true,b.x1,b.y0+0.1*ch,b.y1-0.1*ch), T=side(false,b.y0,b.x0+0.1*cw,b.x1-0.1*cw), B=side(false,b.y1,b.x0+0.1*cw,b.x1-0.1*cw);
+    const ym=(b.y0+b.y1)/2, xm=(b.x0+b.x1)/2;
+    // droites : x = p + t*(y-ym) (verticales) ; y = p + t*(x-xm) (horizontales)
+    const X=(V,H)=>{ // intersection
+      let y=H.p, x=V.p; for(let i=0;i<5;i++){ x=V.p+V.t*(y-ym); y=H.p+H.t*(x-xm); } return [x/w,y/h]; };
+    return { q:[X(L,T),X(Rr,T),X(Rr,B),X(L,B)], es:Math.min(L.s,Rr.s,T.s,B.s)/gm };
+  };
+  boxes=boxes.map(b=>({...b, ...refineBox(b)}));
+  const tc=performance.now()-t0;
+  if(!boxes.length) return null;
+  const qy=b=>(b.q[0][1]+b.q[1][1]+b.q[2][1]+b.q[3][1])/4, qx=b=>(b.q[0][0]+b.q[1][0]+b.q[2][0]+b.q[3][0])/4, hN=Hd/h;
+  boxes.sort((a,b)=>Math.round((qy(a)-qy(b))/(hN*0.5)) || qx(a)-qx(b));
+  const cl=(vals,tol)=>{ const s2=[...vals].sort((a,b)=>a-b); let n=0, last=-9; s2.forEach(v=>{ if(v-last>=tol) n++; last=v; }); return n; };
+  const cards=boxes.map(b=>({ q:b.q.map(p=>[Math.round(Math.min(1,Math.max(0,p[0]))*1000)/1000, Math.round(Math.min(1,Math.max(0,p[1]))*1000)/1000]), s:+b.s.toFixed(2), src:b.src }));
+  const xs=cards.flatMap(c=>c.q.map(p=>p[0])), ys=cards.flatMap(c=>c.q.map(p=>p[1])), X0=Math.min(...xs), X1=Math.max(...xs), Y0=Math.min(...ys), Y1=Math.max(...ys);
+  return { cards, rows:Math.max(1,cl(boxes.map(qy),hN*0.5)), cols:Math.max(1,cl(boxes.map(qx),hN*AR*h/w*0.5)), quad:[[X0,Y0],[X1,Y0],[X1,Y1],[X0,Y1]], ms:Math.round(tc) };
+}
 
 /* ===== détection de la grille par les séparations entre cartes (rangées / colonnes), avec perspective ===== */
 const PH_TILTS = Array.from({length:19},(_,i)=>-0.18+i*0.02);
@@ -3270,27 +3470,32 @@ async function phRunVis(only){
       const tag = PH.files.length>1 ? `Image ${i+1}/${PH.files.length} · ` : '';
       try{
         const im=await phEnsureImg(f); if(!f.grid) await phPrepare(f);
-        const g=f.grid, total=g.rows*g.cols; let n=0;
-        const W=phWork(im, g.quad, g.cols); f.W=W;
-        for(let r=0;r<g.rows;r++) for(let c=0;c<g.cols;c++){
+        const g=f.grid, total=g.cards?g.cards.length:g.rows*g.cols; let n=0;
+        const W=g.cards?phWork(im, g.cards[0], 1):phWork(im, g.quad, g.cols); f.W=W;
+        /* g.cards : une liste de cadres (une carte chacun) ; sinon une grille lignes × colonnes */
+        const cellList = g.cards ? g.cards.map((_,k)=>[k,0]) : Array.from({length:total},(_,k)=>[Math.floor(k/g.cols),k%g.cols]);
+        for(const [r,c] of cellList){
           n++; phSet(`${tag}Carte ${n}/${total}…`, (n-1)/total); await phYield();
-          const st=phCellState(g.quad, g.rows, g.cols, r, c, W);
-          const a=await phAnalyseState(idx, vidx, W, st, true);
-          const flat = a.list.length ? phDescQ(W, UNIT, a.rc, false).sd < 22 : true;
+          /* carte repérée seule : on la redresse, l'agrandit et la rend plus nette avant de la comparer (pré-traitement automatique) */
+          let Wc=W, imc=im;
+          if(g.cards){ try{ imc=phRectify(im, g.cards[r]); Wc=phWork(imc, imc.quad, 1); }catch(e){ console.warn('prétraitement',e); imc=im; Wc=W; } }
+          const st=g.cards?(imc!==im?phCellState(imc.quad,1,1,0,0,Wc):phCellState(g.cards[r],1,1,0,0,W)):phCellState(g.quad, g.rows, g.cols, r, c, W);
+          const a=await phAnalyseState(idx, vidx, Wc, st, true);
+          const flat = a.list.length ? phDescQ(Wc, UNIT, a.rc, false).sd < 22 : true;
           let conf = (!a.list.length || flat) ? 'lost' : phConfOf(a.s1, a.margin), viaText=false;
           if(conf!=='sure' && !flat && $('phTxtAssist') && $('phTxtAssist').checked){
             try{
               phSet(`${tag}Carte ${n}/${total} · lecture du nom…`, (n-1)/total);
-              const rs=await phRescueText(idx, vidx, W, im, a, m=>phSet(m), st);
+              const rs=await phRescueText(idx, vidx, Wc, imc, a, m=>phSet(m), st);
               if(rs && rs.length && rs[0].s>=0.58 && rs[0].s>=a.s1-0.04){
                 const seen=new Set(rs.map(o=>o.e.id)), rest=a.list.filter(o=>!seen.has(o.e.id));
-                a.list=rs.concat(rest); a.s1=rs[0].s; a.margin=rs.length>1?rs[0].s-rs[1].s:0.12; a.st=rs[0].st; a.crop=phCropURL(W, UNIT, phRectOf(W, rs[0].st)); viaText=true;
+                a.list=rs.concat(rest); a.s1=rs[0].s; a.margin=rs.length>1?rs[0].s-rs[1].s:0.12; a.st=rs[0].st; a.crop=phCropURL(Wc, UNIT, phRectOf(Wc, rs[0].st)); viaText=true;
                 conf = rs[0].s>=0.72 ? 'sure' : 'probable';
               }
             }catch(e){ console.warn('rescue',e); }
           }
           const sims={}; a.list.forEach(o=>sims[o.e.id]=o.s);
-          PH.items.push({ kind:'vis', img:i, cell:[r,c], ncell:total, crop:a.crop, cands:a.list.map(o=>o.e), sims, st:a.st, st0:st, conf, flat, viaText, dbg:a.list.map(o=>[o.e.id,+o.g.toFixed(2),o.f==null?null:+o.f.toFixed(2)]), s1:a.s1, margin:a.margin, x:c, y:r, sel:0, checked: conf==='sure'||conf==='probable', qty:1 });
+          PH.items.push({ kind:'vis', img:i, cell:[r,c], ncell:total, crop:a.crop, cands:a.list.map(o=>o.e), sims, st:a.st, st0:st, conf, flat, viaText, dbg:a.list.map(o=>[o.e.id,+o.g.toFixed(2),o.f==null?null:+o.f.toFixed(2)]), s1:a.s1, margin:a.margin, x:c, y:r, sel:0, checked: conf==='sure'||conf==='probable', qty:1, ...(imc!==im?{W:Wc, im2:imc}:{}) });
           f.found = PH.items.filter(it=>it.img===i && it.conf!=='lost').length; f.lost = PH.items.filter(it=>it.img===i && it.conf==='lost').length;
           renderPhoto(true);
         }
@@ -3323,7 +3528,7 @@ async function phRescueText(idx, vidx, W, im, a, msg, st0){
 }
 /* recherche manuelle par nom : on classe les impressions de ce nom selon leur ressemblance avec la case de la photo */
 async function phNameSearch(k, text){
-  const it=PH.items[k], f=it&&PH.files[it.img]; if(!it||!f||!f.W||!it.st) return;
+  const it=PH.items[k], f=it&&PH.files[it.img], IW=it&&(it.W||(f&&f.W)); if(!it||!f||!IW||!it.st) return;
   const q=normName(text||''); if(q.length<3){ toast('Tape au moins 3 lettres du nom.'); return; }
   if(PH.busy) return; PH.busy=true; renderPhoto(true);
   try{
@@ -3331,12 +3536,12 @@ async function phNameSearch(k, text){
     idx.byName.forEach((arr,key)=>{ if(key.includes(q)) arr.forEach(e=>{ if(e.img) ents.set(e.id,e); }); });
     if(!ents.size){ toast('Aucune carte à ce nom.'); return; }
     phSet(`Comparaison avec ${Math.min(90,ents.size)} impression(s)…`);
-    const rs=await phAnalyseNames(vidx, f.W, [it.st0, it.st], [...ents.values()].sort((x,y)=>phRank(x.sid)-phRank(y.sid)));
+    const rs=await phAnalyseNames(vidx, IW, [it.st0, it.st], [...ents.values()].sort((x,y)=>phRank(x.sid)-phRank(y.sid)));
     if(!rs.length){ toast('Comparaison impossible (images indisponibles).'); return; }
     const seen=new Set(rs.map(o=>o.e.id)), rest=it.cands.filter(c=>!seen.has(c.id)), sims=Object.assign({}, it.sims);
     rs.forEach(o=>sims[o.e.id]=o.s);
     it.cands=rs.map(o=>o.e).concat(rest); it.sims=sims; it.sel=0; it.picked=true; it.manual=true; it.checked=true; it.det=null; it.viaText=false;
-    it.conf = rs[0].s>=0.66 ? 'probable' : 'choose'; it.st=rs[0].st; it.crop=phCropURL(f.W, UNIT, phRectOf(f.W, rs[0].st));
+    it.conf = rs[0].s>=0.66 ? 'probable' : 'choose'; it.st=rs[0].st; it.crop=phCropURL(IW, UNIT, phRectOf(IW, rs[0].st));
   }catch(e){ console.warn(e); toast('Recherche impossible.'); }
   finally{ phSet(''); PH.busy=false; renderPhoto(true); phLoadDetail(it); }
 }
@@ -3423,7 +3628,7 @@ async function phZoom(k){
   const it=PH.items[k]; if(!it||!it.cands.length) return;
   PHZ.k=k; PHZ.j=it.conf==='lost'&&!it.picked ? 0 : it.sel; PHZ.zoom=false; PHZ.photo='';
   const f=PH.files[it.img];
-  if(it.kind==='vis' && f && it.st){ try{ const im=await phEnsureImg(f); PHZ.photo=phCropHi(im, phRectOf({sw:im.naturalWidth,sh:im.naturalHeight}, it.st), 760); }catch(e){} }
+  if(it.kind==='vis' && f && it.st){ try{ const im=it.im2||await phEnsureImg(f); PHZ.photo=phCropHi(im, phRectOf({sw:im.naturalWidth||im.width,sh:im.naturalHeight||im.height}, it.st), 760); }catch(e){} }
   if(!PHZ.photo && it.crop) PHZ.photo=it.crop;
   phZoomClose(); PHZ.k=k;
   const m=document.createElement('div'); m.id='phZm'; m.className='ph-zm'; document.body.appendChild(m);
@@ -3483,7 +3688,7 @@ function phFitCard(im, quad){
   const cl=v=>Math.round(Math.min(1,Math.max(0,v))*1000)/1000;
   return { quad:P.map(p=>[cl(p[0]/W),cl(p[1]/H)]), move:move/Math.max(cardH,cardW), gain:tot0>0?tot1/tot0:1 };
 }
-window.__ocr = { renderPhoto, phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phCellARq, phSegment, phFitCard, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
+window.__ocr = { renderPhoto, phDetectCards, phRectify, phQuadPt, phWork1, phTextureBox, phZoom, phNameSearch, phCropURL, phLoadIndex, phMatchAll, phWork, phCellState, phDescQ, phRectOf, phAlign, UNIT, phRunVis, phPrepare, phCellARq, phSegment, phFitCard, phFinish, phFiche, phVisual, phCardBox, PH, phDetect, phNumbers, phNames, phIndex, phRun, phAddFiles, phAdd, phTotals };
 phInit();
 /*OCRSCAN-END*/
 window.__imp = { csvToRows, resolveRow, impPreview, impRun, IMP };
@@ -3669,7 +3874,7 @@ function fxStructure(raw){
   const bads=new Set(); for(const m of text.matchAll(BAD)){ const pre=text.slice(Math.max(0,m.index-16),m.index).toLowerCase(); if(/(aucun[e]?s?|sans|pas de|pas d'|ni|0)\s*$/.test(pre)) continue; bads.add(m[0].toLowerCase().trim()); } [...bads].slice(0,8).forEach(x=>tags.push({t:x,bad:true,ic:'⚠'}));
   const q=/(\d{1,4})\s*cartes?\b/i.exec(text), refs=[...new Set((text.match(/\b\d{1,3}\s?\/\s?\d{1,3}\b/g)||[]).map(x=>x.replace(/\s/g,'')))].slice(0,8);
   return { sections, tags, qty:q?+q[1]:null, refs, raw:text.slice(0,4000) };
-}
+}
 function fxAddFiles(list){
   const fs=[...list].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name||''));
   if(!fs.length) return false;
@@ -3685,7 +3890,7 @@ const FXI={ _db:null,
   async get(id){ const d=await this.open(); return new Promise((res,rej)=>{ const r=d.transaction('imgs').objectStore('imgs').get(id); r.onsuccess=()=>res(r.result||null); r.onerror=()=>rej(r.error); }); },
   async del(id,noSync){ try{ const d=await this.open(); d.transaction('imgs','readwrite').objectStore('imgs').delete(id); }catch(_){} if(!noSync){ try{ CloudSync.mediaDel(id); }catch(_){} } } };
 function fxPhotoData(file, edge){ return new Promise(res=>{ const u=URL.createObjectURL(file), im=new Image(); im.onload=()=>{ const k=Math.min(1,(edge||1000)/Math.max(im.naturalWidth,im.naturalHeight,1)), cv=document.createElement('canvas'); cv.width=Math.max(1,Math.round(im.naturalWidth*k)); cv.height=Math.max(1,Math.round(im.naturalHeight*k)); cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height); URL.revokeObjectURL(u); res(cv.toDataURL('image/jpeg',0.8)); }; im.onerror=()=>{ URL.revokeObjectURL(u); res(''); }; im.src=u; }); }
-function fxPoly(g,r,c){ const [TL,TR,BR,BL]=g.quad, P=(u,v)=>[0,1].map(a=>Math.round((TL[a]*(1-u)*(1-v)+TR[a]*u*(1-v)+BR[a]*u*v+BL[a]*(1-u)*v)*1000)/1000);
+function fxPoly(g,r,c){ if(g.cards) return g.cards[r].map(p=>p.map(v=>Math.round(v*1000)/1000)); const [TL,TR,BR,BL]=g.quad, P=(u,v)=>[0,1].map(a=>Math.round((TL[a]*(1-u)*(1-v)+TR[a]*u*(1-v)+BR[a]*u*v+BL[a]*(1-u)*v)*1000)/1000);
   const u0=c/g.cols,u1=(c+1)/g.cols,v0=r/g.rows,v1=(r+1)/g.rows; return [P(u0,v0),P(u1,v0),P(u1,v1),P(u0,v1)]; }
 /* --- photo sans grille (cartes posées sur une table…) : on isole les groupes de cartes, puis chaque groupe est lu avec sa propre grille --- */
 async function fxSegCore(url, ph, onMsg){
@@ -3725,19 +3930,27 @@ async function fxScanPhotos(files, onMsg){
     for(let n=0;n<files.length;n++){
       const file=files[n], url=URL.createObjectURL(file), tag=files.length>1?`Photo ${n+1}/${files.length} · `:'';
       photos.push(await fxPhotoData(file,1400)); grids.push(null);
-      const run=async mode=>{
+      const run=async (mode,dc)=>{
         const f={file, url, thumb:'', edit:false}; PH.files=[f]; PH.items=[];
-        if(mode==='auto'){ await O.phPrepare(f); const g0=f.grid; if(g0.rows*g0.cols>1){ const car=O.phCellARq(f.im,g0.quad,g0.rows,g0.cols); if(car<0.58||car>1.05) return { grid:g0.rows+'x'+g0.cols, g:null, cs:[], lc:[], invalid:true }; } }
+        if(mode==='cards'){ f.im=dc.im; f.grid={cards:dc.cards.map(c=>c.q), quad:dc.quad, rows:dc.rows, cols:dc.cols}; }
+        else if(mode==='auto'){ await O.phPrepare(f); const g0=f.grid; if(g0.rows*g0.cols>1){ const car=O.phCellARq(f.im,g0.quad,g0.rows,g0.cols); if(car<0.58||car>1.05) return { grid:g0.rows+'x'+g0.cols, g:null, cs:[], lc:[], invalid:true }; } }
         else { const im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Photo illisible.')); i.src=url; }); f.im=im; const tb=mode==='full'?{x0:.03,y0:.03,x1:.97,y1:.97}:O.phTextureBox(im); f.grid={quad:[[tb.x0,tb.y0],[tb.x1,tb.y0],[tb.x1,tb.y1],[tb.x0,tb.y1]],rows:1,cols:1}; }
         const g=f.grid, grid=g.rows+'x'+g.cols; if(onMsg) onMsg(tag+'lecture des cartes…');
         await O.phRunVis();
         const pl=i=>{ try{ return i.cell?fxPoly(g,i.cell[0],i.cell[1]):null; }catch(_){ return null; } };
         return { grid, g:{quad:g.quad.map(p=>p.map(v=>Math.round(v*1000)/1000)),rows:g.rows,cols:g.cols}, cs:PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length).map(i=>({id:i.cands[0].id, conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,5).map(c=>c.id), crop:i.crop||'', poly:pl(i), ph:n})),
-          lc:PH.items.filter(i=>i.kind==='lost'||i.conf==='lost'||!i.cands.length).map(i=>({ph:n, poly:pl(i), crop:i.crop||''})) };
+          lc:PH.items.filter(i=>(i.kind==='lost'||i.conf==='lost'||!i.cands.length) && !(dc && i.cell && dc.cards[i.cell[0]] && dc.cards[i.cell[0]].src!=='edge')).map(i=>({ph:n, poly:pl(i), crop:i.crop||''})) };
       };
+      const gcount=x=>x?x.cs.filter(c=>c.conf==='sure'||c.conf==='probable').length:-1;
       const good=r=>r.cs.some(c=>c.conf==='sure'||c.conf==='probable');
       try{
-        let r=null;
+        let r=null, rCards=null;
+        try{   /* 1) repérage carte par carte (bords de chaque carte) : marche quels que soient le cadrage, le zoom et le nombre de cartes */
+          const imC=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url; }), dc=O.phDetectCards(imC);
+          if(dc && dc.cards.length>=2){ dc.im=imC; if(onMsg) onMsg(tag+dc.cards.length+' cartes repérées · lecture…'); rCards=await run('cards',dc);
+            const sure=dc.cards.filter(c=>c.src==='edge').length; if(gcount(rCards)>=Math.max(2,Math.ceil(0.5*sure))) r=rCards; }
+        }catch(e){ console.warn('cartes',e); }
+        if(!r){
         try{   /* plusieurs groupes de cartes posés sur un fond (table…) : lecture par zones plutôt qu'une grille unique */
           const im0=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url; }), sg=O.phSegment(im0);
           if(sg.length>=2){ const ux0=Math.min(...sg.map(b=>b.x0)), ux1=Math.max(...sg.map(b=>b.x1)), uy0=Math.min(...sg.map(b=>b.y0)), uy1=Math.max(...sg.map(b=>b.y1));
@@ -3748,6 +3961,8 @@ async function fxScanPhotos(files, onMsg){
         if(!r) r=await run('auto');
         if(r.invalid){ try{ if(onMsg) onMsg(tag+'cartes non alignées : lecture par zones…'); const rz=await fxSegCore(url,n,m=>onMsg&&onMsg(tag+m)); if(rz&&rz.cs.length) r=rz; }catch(e){ console.warn('zones',e); } if(r.invalid) r=await run('single'); }
         for(const m of ['single','full']){ if(good(r)) break; if(m==='single' && r.grid==='1x1') continue; const r2=await run(m); if(r2.cs.length && (!r.cs.length || good(r2))) r=r2; }
+        if(rCards && gcount(rCards)>=gcount(r)) r=rCards;
+        }
         read++; grids[n]=r.g; lost+=r.lc.length; r.lc.forEach(l=>lostCells.push(l));
         /* plusieurs exemplaires d'une même carte sur UNE photo = plusieurs cartes ; la même carte revue sur une AUTRE photo = la même carte (on garde la photo qui en montre le plus) */
         const mine=new Map(); for(const c of r.cs){ if(c.conf!=='sure'&&c.conf!=='probable') continue; if(!mine.has(c.id)) mine.set(c.id,[]); mine.get(c.id).push(Object.assign({},c)); }
@@ -4392,7 +4607,7 @@ function fxItemHTML(it){
       <div class="fl-top">${head}<span class="fl-badge ${ev.level}">${ev.level==='good'?'🔥 ':ev.level==='bad'?'⛔ ':''}${esc(ev.label)}</span></div>
       ${it.title?`<div class="fl-title">« ${esc(it.title)} »</div>`:''}
       ${fxMetaHTML(it)}
-      ${nums}${cmSummary(it,v)}${fxEbSummary(it,v)}${flags.length?`<div>${flags.join('')}</div>`:''}${lotBox}${pick}${fxDescHTML(it)}
+      ${it.bought?`<div class="fl-bought">🛒 Acheté le ${esc(trD(it.bought.date))} pour <b>${esc(eur(it.bought.total))}</b> · ${esc(it.bought.n)} carte${it.bought.n>1?'s':''} · <button type="button" data-fx="bought" data-id="${esc(it.id)}">suivre la revente →</button></div>`:''}${nums}${cmSummary(it,v)}${fxEbSummary(it,v)}${flags.length?`<div>${flags.join('')}</div>`:''}${lotBox}${pick}${fxDescHTML(it)}
       <div class="fl-edit">
         <label>Prix <input type="number" step="0.1" min="0" inputmode="decimal" value="${it.ask==null?'':esc(it.ask)}" data-fx-f="ask" data-id="${esc(it.id)}"> €</label>
         <label>Frais <input type="number" step="0.1" min="0" inputmode="decimal" value="${esc(it.shipIn||0)}" data-fx-f="shipIn" data-id="${esc(it.id)}"> €</label>
@@ -4407,6 +4622,7 @@ function fxItemHTML(it){
         ${(it.lot||it.cardId)?`<button class="fb fb-cm2" type="button" data-fx="cmall" data-id="${esc(it.id)}" ${FLUX.cmBusy===it.id?'disabled':''} title="Lit les offres Cardmarket en français, état Near Mint ou mieux, pour chaque carte">${FLUX.cmBusy===it.id?'⏳ Cardmarket…':'🇫🇷 Offres françaises NM+'}</button>`:''}
         ${(it.lot||it.cardId)?`<button class="fb fb-ebay2" type="button" data-fx="ebayall" data-id="${esc(it.id)}" ${FLUX.ebBusy===it.id?'disabled':''} title="Lit les prix des ventes eBay terminées et les compare à Cardmarket">${FLUX.ebBusy===it.id?'⏳ eBay…':'🏷️ Comparer avec eBay'}</button>`:''}
         ${it.cardId&&!it.lot?`<button class="fb fb-analyse" type="button" data-fx="analyse" data-id="${esc(it.id)}">🔎 Analyser</button>`:''}
+        <button class="fb fb-buy${it.bought?' on':''}" type="button" data-fx="bought" data-id="${esc(it.id)}" title="Enregistre l'achat : les cartes passent dans l'onglet Achats/Ventes avec leur prix de revient">${it.bought?'🛒 Acheté · voir':'🛒 J\'ai acheté'}</button>
         <button class="fb fb-watch${watch?' on':''}" type="button" data-fx="watch" data-id="${esc(it.id)}">${watch?'⭐ Suivie':'☆ Suivre'}</button>
         <button class="fb fb-ign" type="button" data-fx="${it.status==='ignored'?'unignore':'ignore'}" data-id="${esc(it.id)}">${it.status==='ignored'?'↩ Rétablir':'🚫 Ignorer'}</button>
         <button class="fb fb-del" type="button" data-fx="del" data-id="${esc(it.id)}">🗑 Retirer</button>
@@ -4418,15 +4634,15 @@ function renderFlux(){
   const list=$('fluxList'); if(!list) return;
   const all=Object.values(FLUX.items).sort((a,b)=>String(b.t).localeCompare(String(a.t)));
   const lv=it=>fxEval(it).level;
-  const F={ todo:it=>it.status!=='ignored' && !(it.src==='auto' && !it.cardId), good:it=>it.status!=='ignored' && lv(it)==='good', watch:it=>it.status==='watch', confirm:it=>!it.cardId && it.status!=='ignored', ignored:it=>it.status==='ignored' };
+  const F={ todo:it=>it.status!=='ignored' && !(it.src==='auto' && !it.cardId), good:it=>it.status!=='ignored' && !it.bought && lv(it)==='good', bought:it=>!!it.bought, watch:it=>it.status==='watch', confirm:it=>!it.cardId && it.status!=='ignored', ignored:it=>it.status==='ignored' };
   const cnt=k=>all.filter(F[k]).length;
-  const chips=[['todo','Toutes'],['good','🔥 Bons plans'],['watch','⭐ Suivies'],['confirm','À confirmer'],['ignored','Ignorées']];
+  const chips=[['todo','Toutes'],['good','🔥 Bons plans'],['watch','⭐ Suivies'],['bought','🛒 Achetées'],['confirm','À confirmer'],['ignored','Ignorées']];
   $('fluxChips').innerHTML=chips.map(([k,l])=>`<button type="button" class="sort-btn" data-fx-filter="${k}" aria-pressed="${FLUX.filter===k}">${l} <span class="num">${cnt(k)}</span></button>`).join('');
   const show=all.filter(F[FLUX.filter]||F.todo);
   list.innerHTML = show.length ? show.map(fxItemHTML).join('') : `<div class="empty-state"><div class="big">📡</div>${all.length?'Rien dans cette vue.':'Aucune annonce pour l\'instant. Colle un lien ou le texte d\'une annonce Vinted, ajoute ses photos, et PikaScan lit les cartes.'}</div>`;
-  const n=all.filter(it=>it.status==='new' && ['good','ok'].includes(lv(it))).length, b=$('badgeFlux'); if(b){ b.textContent=n||''; b.dataset.n=String(n); }
+  const n=all.filter(it=>it.status==='new' && !it.bought && ['good','ok'].includes(lv(it))).length, b=$('badgeFlux'); if(b){ b.textContent=n||''; b.dataset.n=String(n); }
 }
-function fluxOpen(){ renderFlux(); fluxRefresh(false); }
+function fluxOpen(){ renderFlux(); fluxRefresh(false); }
 /* --- favori « Envoyer à PikaScan » : s'exécute sur la page Vinted que TU consultes (ton navigateur, ta session) --- */
 function fxBookmarklet(APP){
   var d=document, q=function(x){ return d.querySelector(x); }, title='', price='', imgs=[];
@@ -4485,7 +4701,7 @@ window.addEventListener('hashchange',()=>{ if(location.hash==='#annonce') setTab
 document.addEventListener('click',e=>{ if(e.target.closest('#fxExtZip')){ e.preventDefault(); fxExtDownload(); return; } if(e.target.closest('#fxExtDl')){ if(FX_EXT_STORE && !document.documentElement.dataset.pikascanExt) window.open(FX_EXT_STORE,'_blank','noopener'); else fxExtDownload(); } });
 fxExtState(); setTimeout(fxExtState,800); setTimeout(fxExtState,2500); document.addEventListener('visibilitychange',fxExtState);
 (function(){ const cb=$('fxAutoEb'); if(cb){ cb.checked=fxEbAutoOn(); cb.addEventListener('change',()=>{ try{ localStorage.setItem('pikascan_autoeb',cb.checked?'1':'0'); }catch(_){} toast(cb.checked?'Prix eBay automatiques activés.':'Prix eBay automatiques désactivés.'); }); } })();
-fxBmInit(); if(location.hash==='#annonce') setTimeout(()=>setTab('flux'),0);
+fxBmInit(); if(location.hash==='#annonce') setTimeout(()=>setTab('flux'),0);
 document.addEventListener('click', e=>{
   if(e.target.closest('#fxPhBtn')){ $('fxPhIn').click(); return; }
   const r=e.target.closest('[data-fx-rmph]'); if(r){ const f=FLUX.files.splice(+r.dataset.fxRmph,1)[0]; if(f&&f._u) URL.revokeObjectURL(f._u); fxThumbsRender(); }
@@ -4498,6 +4714,7 @@ document.addEventListener('click', async e=>{
   if(e.target.closest('#fxAdd')){ fxAddText(); return; }
   if(e.target.closest('#fxRefresh')){ fluxRefresh(true); fluxPull(); return; }
   const b=e.target.closest('[data-fx]'); if(!b) return; const it=FLUX.items[b.dataset.id]; if(!it) return; const a=b.dataset.fx;
+  if(a==='bought'){ if(it.bought && TR.buys[it.bought.id]){ TR.view='buys'; TR.flag=''; TR.open=it.bought.id; setTab('trade'); setTimeout(()=>{ const e=document.querySelector(`.tr-buy[data-id="${CSS.escape(it.bought.id)}"]`); if(e) e.scrollIntoView({behavior:'smooth',block:'center'}); },80); } else trBuyOpen({listing:it}); return; }
   if(a==='photos'||a==='rev'){ fxOpenViewer(it.id,a,+b.dataset.i||0); return; }
   if(a==='cmall'){ if(!FLUX.cmBusy) await cmAll(it); return; }
   if(a==='ebayall'){ if(!FLUX.ebBusy) await fxEbAll(it); return; }
@@ -4529,7 +4746,7 @@ document.addEventListener('keydown', e=>{ if(e.key==='Enter' && e.target.matches
 try{ MOB_Q.addEventListener('change', ()=>{ try{ renderAll(); }catch(e){} }); }catch(e){}
 /* ===== synchronisation entre appareils (Firebase) : la base locale reste la référence rapide, le cloud la recopie ===== */
 const CloudSync=(function(){
-  const COLS=['cards','alerts','listings','settings'], SDK='https://www.gstatic.com/firebasejs/10.14.1/';
+  const COLS=['cards','alerts','listings','settings','buys','stock'], SDK='https://www.gstatic.com/firebasejs/10.14.1/';
   let M=null, auth=null, fdb=null, user=null, unsubs=[], applying=false, state='off', msg='', q=new Map(), timer=null, inflight=0, firstDone={};
   const cfg=()=>{ const c=window.PIKA_FIREBASE; return c&&c.apiKey&&c.projectId?c:null; };
   const colRef=n=>M.fs.collection(fdb,'users',user.uid,n), docRef=(n,id)=>M.fs.doc(fdb,'users',user.uid,n,id);
@@ -4673,6 +4890,375 @@ function pwaLaunchParams(){
     toast("Annonce reçue : ajoute des photos si besoin, puis appuie sur Ajouter.");
   } else if(tab && document.getElementById('panel-'+tab)) setTab(tab);
 }
+/* ===================== Achats & ventes : suivi d'achat-revente (achats, stock, mise en vente, gradation, ventes, marges) ===================== */
+const TR={ buys:{}, stock:{}, view:'stock', flag:'', q:'', open:null, refreshing:false, msg:'' };
+const TR_PLAT=[['vinted','Vinted'],['leboncoin','Leboncoin'],['cardmarket','Cardmarket'],['ebay','eBay'],['brocante','Brocante / salon'],['main','Main propre'],['autre','Autre']];
+const TR_GRADERS=['PCA','PSA','CGC','Collect Aura','Beckett (BGS)','Autre'];
+const TR_ST={ stock:['En stock','📦'], listed:['En vente','🏷️'], grading:['En gradation','🎖️'], sold:['Vendue','💶'], kept:['Gardée','⭐'] };
+const TR_EV={ buy:'Achat', list:'Mise en vente', relist:'Annonce modifiée', unlist:'Retirée de la vente', grade:'Envoyée en gradation', gradeback:'Retour de gradation', sold:'Vendue', unsold:'Vente annulée', keep:'Gardée pour la collection', unkeep:'Remise en stock', split:'Séparée d\'un lot', edit:'Modifiée' };
+const trPlat=k=>(TR_PLAT.find(p=>p[0]===k)||[k,k||'—'])[1];
+const trToday=()=>{ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const trD=d=>{ if(!d) return '—'; const x=new Date(String(d).length===10?d+'T12:00:00':d); return isNaN(x)?'—':x.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}); };
+const trDays=(a,b)=>{ if(!a) return 0; const A=new Date(String(a).length===10?a+'T12:00:00':a), B=b?new Date(String(b).length===10?b+'T12:00:00':b):new Date(); return Math.max(0,Math.round((B-A)/864e5)); };
+const trId=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const tr2=n=>Math.round((+n||0)*100)/100;
+const trSg=n=>(n>=0?'+':'−')+eur(Math.abs(n));
+function trPlatOfUrl(u){ u=String(u||''); return /vinted\./.test(u)?'vinted':/leboncoin\./.test(u)?'leboncoin':/cardmarket\./.test(u)?'cardmarket':/ebay\./.test(u)?'ebay':''; }
+function trEv(x,type,data){ (x.ev=x.ev||[]).push(Object.assign({t:new Date().toISOString(), type},data||{})); }
+async function trPut(x){ TR.stock[x.id]=x; if(S.db) await S.db.collection('stock').doc(x.id).set(x); }
+async function trPutBuy(b){ TR.buys[b.id]=b; if(S.db) await S.db.collection('buys').doc(b.id).set(b); }
+async function trDel(x){ delete TR.stock[x.id]; if(S.db) await S.db.collection('stock').doc(x.id).delete(); }
+/* sépare n exemplaires d'une ligne (ex. 3 cartes identiques, on en vend 1) : le coût suit au prorata */
+function trSplit(x,n){ const q=x.qty||1; if(!n||n>=q) return null; const unit=(x.cost||0)/q, y=JSON.parse(JSON.stringify(x)); y.id=trId('s'); y.qty=n; y.cost=tr2(unit*n); x.qty=q-n; x.cost=tr2(unit*x.qty); y.ev=(y.ev||[]).slice(); trEv(y,'split',{n}); return y; }
+function trCalc(x){
+  const q=x.qty||1, cost=x.cost||0, gc=(x.grade&&x.grade.cost)||0, mkt=x.mkt!=null?tr2(x.mkt*q):null;
+  if(x.status==='sold' && x.sale){ const net=(x.sale.price||0)-(x.sale.fees||0)-(x.sale.ship||0); return { q, cost, gc, mkt, net:tr2(net), profit:tr2(net-cost-gc) }; }
+  return { q, cost, gc, mkt, latent: mkt!=null?tr2(mkt-cost-gc):null };
+}
+function trStats(){
+  const items=Object.values(TR.stock), buys=Object.values(TR.buys), m0=trToday().slice(0,7);
+  const inv=items.filter(x=>x.status!=='sold' && x.status!=='kept'), sold=items.filter(x=>x.status==='sold');
+  const o={ invested:tr2(buys.reduce((a,b)=>a+(b.total||0),0)), month:tr2(buys.filter(b=>String(b.date).slice(0,7)===m0).reduce((a,b)=>a+(b.total||0),0)), nBuys:buys.length,
+    nStock:inv.reduce((a,x)=>a+(x.qty||1),0), stockCost:0, stockMkt:0, mktN:0, nSold:sold.reduce((a,x)=>a+(x.qty||1),0), revenue:0, fees:0, profit:0, costSold:0, days:[], nListed:0, listedAsk:0, nGrading:0 };
+  inv.forEach(x=>{ const c=trCalc(x); o.stockCost+=c.cost+c.gc; if(c.mkt!=null){ o.stockMkt+=c.mkt; o.mktN++; } if(x.status==='listed'){ o.nListed+=c.q; o.listedAsk+=(x.list&&x.list.price)||0; } if(x.status==='grading') o.nGrading+=c.q; });
+  sold.forEach(x=>{ const c=trCalc(x); o.revenue+=x.sale.price||0; o.fees+=(x.sale.fees||0)+(x.sale.ship||0); o.profit+=c.profit; o.costSold+=c.cost+c.gc; if(x.buyDate&&x.sale.date) o.days.push(trDays(x.buyDate,x.sale.date)); });
+  ['stockCost','stockMkt','revenue','fees','profit','costSold','listedAsk'].forEach(k=>o[k]=tr2(o[k]));
+  o.roi=o.costSold>0?o.profit/o.costSold*100:null; o.avgDays=o.days.length?Math.round(o.days.reduce((a,b)=>a+b,0)/o.days.length):null;
+  return o;
+}
+/* points d'attention : stock qui dort, annonces qui ne partent pas, gradations longues, marché en baisse, prix sous le prix de revient */
+const TR_FLAGS={
+  dormant:{ t:'📦', l:n=>`${n} carte${n>1?'s':''} en stock depuis plus de 60 jours : à mettre en vente ?`, f:x=>x.status==='stock' && trDays(x.buyDate)>60 },
+  stale:{ t:'🏷️', l:n=>`${n} annonce${n>1?'s':''} en ligne depuis plus de 30 jours : baisser le prix ?`, f:x=>x.status==='listed' && x.list && trDays(x.list.date)>30 },
+  gradelong:{ t:'🎖️', l:n=>`${n} carte${n>1?'s':''} en gradation depuis plus de 60 jours : relancer la société ?`, f:x=>x.status==='grading' && x.grade && trDays(x.grade.sent)>60 },
+  drop:{ t:'📉', l:n=>`${n} carte${n>1?'s':''} en stock perd${n>1?'ent':''} plus de 10 % sur 30 jours (Cardmarket)`, f:x=>['stock','listed'].includes(x.status) && x.mom30!=null && x.mom30<=-10 },
+  under:{ t:'⚠️', l:n=>`${n} annonce${n>1?'s':''} sous le prix de revient`, f:x=>x.status==='listed' && x.list && x.list.price!=null && x.list.price<(x.cost||0)+((x.grade&&x.grade.cost)||0) }
+};
+function trFlagCounts(){ const items=Object.values(TR.stock), o={}; Object.keys(TR_FLAGS).forEach(k=>{ o[k]=items.filter(TR_FLAGS[k].f).length; }); return o; }
+
+/* ---------- rendu ---------- */
+function renderTrade(){
+  const fc=trFlagCounts(), nb=(fc.dormant||0)+(fc.stale||0)+(fc.gradelong||0)+(fc.under||0), bd=$('badgeTrade'); if(bd){ bd.textContent=nb||''; bd.dataset.n=String(nb); }
+  const panel=$('panel-trade'); if(!panel || panel.hidden) return;
+  const st=trStats(), items=Object.values(TR.stock), buys=Object.values(TR.buys);
+  $('trTiles').innerHTML = `
+    <div class="tile"><div class="label">Investi</div><div class="value">${eur(st.invested)}</div><div class="foot">${st.nBuys} achat${st.nBuys>1?'s':''} · ${eur(st.month)} ce mois-ci</div></div>
+    <div class="tile"><div class="label">Stock · valeur marché</div><div class="value">${st.mktN?eur(st.stockMkt):'—'}</div><div class="foot">${st.nStock} carte${st.nStock>1?'s':''} · prix de revient ${eur(st.stockCost)}${st.mktN?` · <b class="${st.stockMkt-st.stockCost>=0?'up':'down'}">${trSg(st.stockMkt-st.stockCost)}</b> latent`:''}</div></div>
+    <div class="tile"><div class="label">Ventes</div><div class="value">${eur(st.revenue)}</div><div class="foot">${st.nSold} carte${st.nSold>1?'s':''} vendue${st.nSold>1?'s':''} · ${eur(st.fees)} de frais et port</div></div>
+    <div class="tile"><div class="label">Bénéfice net réalisé</div><div class="value ${st.nSold?(st.profit>=0?'up':'down'):''}">${st.nSold?trSg(st.profit):'—'}</div><div class="foot">${st.roi!=null?'ROI '+esc(pctS(st.roi)):'Aucune vente'}${st.avgDays!=null?` · revendue en ${st.avgDays} j en moyenne`:''}</div></div>`;
+  $('trSub').textContent = items.length ? `${st.nListed} en vente (${eur(st.listedAsk)} demandés) · ${st.nGrading} en gradation` : '';
+  $('trChart').innerHTML = (buys.length||items.some(x=>x.sale)) ? trChartHTML() : '';
+  $('trChart').hidden = !(buys.length||items.some(x=>x.sale));
+  $('trFlags').innerHTML = Object.keys(TR_FLAGS).filter(k=>fc[k]).map(k=>`<button type="button" class="tr-flag${TR.flag===k?' on':''}" data-trf="${k}">${TR_FLAGS[k].t} ${esc(TR_FLAGS[k].l(fc[k]))}</button>`).join('') + (TR.flag?'<button type="button" class="tr-flag clr" data-trf="">✕ Tout afficher</button>':'');
+  const cnt=k=>k==='buys'?buys.length:k==='all'?items.length:items.filter(x=>x.status===k).length;
+  const views=[['stock','📦 En stock'],['listed','🏷️ En vente'],['grading','🎖️ Gradation'],['sold','💶 Vendues'],['kept','⭐ Gardées'],['buys','🛒 Achats'],['all','Tout']];
+  $('trChips').innerHTML = views.filter(([k])=>k!=='kept'||cnt('kept')).map(([k,l])=>`<button type="button" class="sort-btn" data-trv="${k}" aria-pressed="${TR.view===k&&!TR.flag}">${l} <span class="num">${cnt(k)}</span></button>`).join('');
+  const q=TR.q.trim().toLowerCase(), hit=s=>!q||String(s||'').toLowerCase().includes(q);
+  let html='';
+  if(TR.view==='buys' && !TR.flag){
+    const list=buys.filter(b=>hit(b.title)||hit(trPlat(b.plat))||items.some(x=>x.buyId===b.id&&hit(x.name))).sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.t||0)-(a.t||0));
+    html=list.map(trBuyHTML).join('');
+  } else {
+    const f=TR.flag?TR_FLAGS[TR.flag].f:(TR.view==='all'?()=>true:x=>x.status===TR.view);
+    const list=items.filter(f).filter(x=>hit(x.name)||hit(x.ed)||hit(x.number)||hit(x.note)).sort((a,b)=>{ const k=x=>x.status==='sold'?(x.sale&&x.sale.date)||'':x.status==='listed'?(x.list&&x.list.date)||'':x.buyDate||''; return String(k(b)).localeCompare(String(k(a))); });
+    html=list.map(trItemHTML).join('');
+  }
+  $('trList').innerHTML = html || `<div class="empty-state"><div class="big">🛒</div>${items.length||buys.length?'Rien dans cette vue.':'Aucun achat enregistré. Depuis l\'onglet <b>Annonces</b>, clique <b>🛒 J\'ai acheté</b> sur une annonce : les cartes reconnues arrivent ici avec leur prix de revient. Ou utilise <b>➕ Nouvel achat</b> (Cardmarket, brocante…).'}</div>`;
+  $('trStatus').textContent = TR.msg||'';
+}
+function trImg(x){ return x.img?`<img src="${esc(x.img)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.visibility='hidden'">`:'<div class="fl-noimg">?</div>'; }
+function trItemHTML(x){
+  const c=trCalc(x), b=TR.buys[x.buyId], s=TR_ST[x.status]||[x.status,''], cond=(COND.find(k=>k.k===x.cond)||{}).l||'';
+  const gr=x.grade&&x.grade.note?`<span class="tr-grade">${esc(x.grade.co||'')} ${esc(x.grade.note)}</span>`:'';
+  const since = x.status==='stock'?`en stock depuis ${trDays(x.buyDate)} j`: x.status==='listed'&&x.list?`en ligne depuis ${trDays(x.list.date)} j sur ${esc(trPlat(x.list.plat))}`: x.status==='grading'&&x.grade?`chez ${esc(x.grade.co)} depuis ${trDays(x.grade.sent)} j`: x.status==='sold'&&x.sale?`vendue le ${esc(trD(x.sale.date))} sur ${esc(trPlat(x.sale.plat))} · ${trDays(x.buyDate,x.sale.date)} j après l'achat`:'';
+  const buyL = `Achetée le ${esc(trD(x.buyDate))} · ${esc(trPlat(x.plat||(b&&b.plat)))}${b?` · <button type="button" class="tr-lk" data-tr="gobuy" data-id="${esc(x.id)}">${esc((b.title||'achat').slice(0,48))}</button>`:''}`;
+  const nums=[`<span><i>Prix de revient</i><b class="num">${eur(c.cost+c.gc)}</b><small>${c.q>1?esc(eur((c.cost+c.gc)/c.q))+' / carte':''}${c.gc?(c.q>1?' · ':'')+'dont gradation '+esc(eur(c.gc)):''}</small></span>`,
+    `<span><i>Valeur marché</i><b class="num">${c.mkt!=null?eur(c.mkt):'—'}</b><small>${x.mom30!=null?esc(pctS(x.mom30))+' / 30 j':x.cardId?'Cardmarket':'carte non identifiée'}</small></span>`];
+  if(x.list && x.status==='listed') nums.push(`<span><i>Prix demandé</i><b class="num">${eur(x.list.price)}</b><small>${x.list.url?`<a href="${esc(x.list.url)}" target="_blank" rel="noopener noreferrer">voir l'annonce ↗</a>`:esc(trPlat(x.list.plat))}</small></span>`);
+  if(x.status==='sold') nums.push(`<span><i>Vendue</i><b class="num">${eur(x.sale.price)}</b><small>net ${esc(eur(c.net))}</small></span>`,`<span><i>Bénéfice</i><b class="num ${c.profit>=0?'up':'down'}">${trSg(c.profit)}</b><small>${c.cost+c.gc>0?esc(pctS(c.profit/(c.cost+c.gc)*100)):''}</small></span>`);
+  else if(c.latent!=null) nums.push(`<span><i>Plus-value latente</i><b class="num ${c.latent>=0?'up':'down'}">${trSg(c.latent)}</b><small>si vendue au prix du marché</small></span>`);
+  const A=(k,l,cls)=>`<button type="button" class="fb ${cls||''}" data-tr="${k}" data-id="${esc(x.id)}">${l}</button>`;
+  const acts = x.status==='stock' ? A('list','🏷️ Mettre en vente','fb-trl')+A('grade','🎖️ Envoyer en gradation','fb-trg')+A('sell','💶 Vendue','fb-trs')+A('keep','⭐ Garder')
+    : x.status==='listed' ? A('list','✏️ Modifier l\'annonce','fb-trl')+A('sell','💶 Vendue','fb-trs')+A('unlist','↩ Retirer de la vente')
+    : x.status==='grading' ? A('gradeback','📬 Retour de gradation','fb-trg')
+    : x.status==='kept' ? A('unkeep','↩ Remettre en stock')
+    : A('unsell','↩ Annuler la vente');
+  const ev=(x.ev||[]).slice().reverse();
+  return `<article class="tr-it st-${esc(x.status)}" data-id="${esc(x.id)}">
+    <div class="tr-img">${trImg(x)}</div>
+    <div class="tr-b">
+      <div class="tr-top"><b>${esc(x.name||'Carte')}</b> <span class="fl-ed">${esc(x.ed||'')}${x.number?' · '+esc(x.number):''}</span>${c.q>1?` <span class="chip">× ${c.q}</span>`:''}${cond?` <span class="chip">${esc(cond)}</span>`:''}${gr}<span class="tr-st st-${esc(x.status)}">${s[1]} ${esc(s[0])}</span></div>
+      <div class="tr-meta">${buyL}${since?' · '+since:''}</div>
+      <div class="fl-nums tr-nums">${nums.join('')}</div>
+      ${x.note?`<div class="tr-note">📝 ${esc(x.note)}</div>`:''}
+      <div class="fl-acts">${acts}<span class="fb-sep" aria-hidden="true"></span>${x.cardId?`<a class="fl-cm inl" href="${esc(fxCmHref(x))}" target="_blank" rel="noopener noreferrer" title="Prix sur Cardmarket" aria-label="Cardmarket"><span class="bdg bdg-cm">CM</span></a><a class="fl-cm eb inl" href="${esc(fxEbayHref(x))}" target="_blank" rel="noopener noreferrer" title="Ventes eBay terminées" aria-label="eBay"><span class="bdg bdg-eb">eBay</span></a>`:''}${A('edit','✏️','fb-ico')}${A('del','🗑','fb-del fb-ico')}</div>
+      ${ev.length?`<details class="tr-hist"><summary>Historique (${ev.length})</summary><ol>${ev.map(e=>`<li><b>${esc(trD(e.t))}</b> · ${esc(TR_EV[e.type]||e.type)}${e.price!=null?' · '+esc(eur(e.price)):''}${e.plat?' · '+esc(trPlat(e.plat)):''}${e.co?' · '+esc(e.co):''}${e.note?' · note '+esc(e.note):''}${e.n?' · '+esc(e.n)+' ex.':''}</li>`).join('')}</ol></details>`:''}
+    </div></article>`;
+}
+function trBuyHTML(b){
+  const its=Object.values(TR.stock).filter(x=>x.buyId===b.id), n=its.reduce((a,x)=>a+(x.qty||1),0), sold=its.filter(x=>x.status==='sold');
+  const back=tr2(sold.reduce((a,x)=>a+trCalc(x).net,0)), mkt=tr2(its.filter(x=>x.status!=='sold').reduce((a,x)=>a+(trCalc(x).mkt||0),0)), pct=b.total>0?Math.min(100,back/b.total*100):0;
+  const prof=tr2(sold.reduce((a,x)=>a+trCalc(x).profit,0));
+  return `<article class="tr-buy${TR.open===b.id?' open':''}" data-id="${esc(b.id)}">
+    <div class="tr-img">${b.img?`<img src="${esc(b.img)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.visibility='hidden'">`:'<div class="fl-noimg">🛒</div>'}</div>
+    <div class="tr-b">
+      <div class="tr-top"><b>${esc(b.title||'Achat')}</b><span class="tr-st">${esc(trD(b.date))} · ${esc(trPlat(b.plat))}</span></div>
+      <div class="fl-nums tr-nums">
+        <span><i>Payé</i><b class="num">${eur(b.total)}</b><small>${esc(eur(b.price))} + ${esc(eur((b.ship||0)+(b.fees||0)))} de frais</small></span>
+        <span><i>Cartes</i><b class="num">${n}</b><small>${sold.length?sold.reduce((a,x)=>a+(x.qty||1),0)+' vendue'+(sold.length>1?'s':''):'aucune vendue'}</small></span>
+        <span><i>Reste en stock</i><b class="num">${mkt?eur(mkt):'—'}</b><small>valeur marché</small></span>
+        <span><i>Déjà récupéré</i><b class="num">${eur(back)}</b><small>${sold.length?'bénéfice '+esc(trSg(prof)):''}</small></span>
+      </div>
+      <div class="tr-prog" title="Part du prix d'achat déjà récupérée par les ventes"><i style="width:${pct.toFixed(1)}%"></i><span>${pct>=100?'✔ Achat remboursé':pct.toFixed(0)+' % du prix d\'achat récupéré'}</span></div>
+      <div class="tr-thumbs">${its.slice(0,24).map(x=>`<button type="button" class="tr-th st-${esc(x.status)}" data-tr="goitem" data-id="${esc(x.id)}" title="${esc(x.name)} · ${esc((TR_ST[x.status]||[''])[0])}">${x.img?`<img src="${esc(x.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:`<span>${esc((x.name||'?').slice(0,10))}</span>`}${(x.qty||1)>1?`<i>×${x.qty}</i>`:''}</button>`).join('')}</div>
+      ${b.note?`<div class="tr-note">📝 ${esc(b.note)}</div>`:''}
+      <div class="fl-acts">${b.url?`<a class="fb" href="${esc(b.url)}" target="_blank" rel="noopener noreferrer">Ouvrir l'annonce d'achat ↗</a>`:''}<button type="button" class="fb" data-tr="addline" data-id="${esc(b.id)}">➕ Ajouter une carte</button><button type="button" class="fb fb-ico" data-tr="editbuy" data-id="${esc(b.id)}">✏️</button><button type="button" class="fb fb-del fb-ico" data-tr="delbuy" data-id="${esc(b.id)}">🗑</button></div>
+    </div></article>`;
+}
+/* graphique : achats et ventes par mois (12 derniers mois), un seul axe en euros, info-bulle au survol */
+function trChartHTML(){
+  const sm=window.innerWidth<640, NM=sm?6:12, now=new Date(), M=[]; for(let i=NM-1;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); M.push({k:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'), l:d.toLocaleDateString('fr-FR',{month:'short'}).replace('.',''), y:d.getFullYear(), buy:0, sell:0, prof:0, n:0}); }
+  const at=k=>M.find(m=>m.k===k);
+  Object.values(TR.buys).forEach(b=>{ const m=at(String(b.date).slice(0,7)); if(m) m.buy+=b.total||0; });
+  Object.values(TR.stock).forEach(x=>{ if(x.status==='sold'&&x.sale){ const m=at(String(x.sale.date).slice(0,7)); if(m){ m.sell+=x.sale.price||0; m.prof+=trCalc(x).profit; m.n+=x.qty||1; } } });
+  const mx=Math.max(1,...M.map(m=>Math.max(m.buy,m.sell))), step=[1,2,5,10,20,25,50,100,200,250,500,1000,2000,5000,10000].find(s=>mx/s<=4)||Math.ceil(mx/4), top=Math.ceil(mx/step)*step;
+  const W=sm?400:960, H=sm?220:190, pl=52, pr=6, pt=10, pb=24, gw=(W-pl-pr)/NM, bw=Math.min(16,gw*0.3), y=v=>pt+(H-pt-pb)*(1-v/top);
+  const bar=(x,v)=>{ if(v<=0) return ''; const y0=y(v), h=H-pb-y0, r=Math.min(4,h); return `M${x},${H-pb}V${y0+r}Q${x},${y0} ${x+r},${y0}H${x+bw-r}Q${x+bw},${y0} ${x+bw},${y0+r}V${H-pb}Z`; };
+  let g=''; for(let v=0; v<=top+1e-9; v+=step){ const yy=y(v).toFixed(1); g+=`<line x1="${pl}" x2="${W-pr}" y1="${yy}" y2="${yy}" class="tr-gl"/><text x="${pl-6}" y="${(+yy+4).toFixed(1)}" text-anchor="end" class="tr-ax">${esc(eur(v).replace(/,00\s?€/,' €'))}</text>`; }
+  let bars='', hits='', labs='';
+  M.forEach((m,i)=>{ const cx=pl+gw*i+gw/2, x1=cx-bw-1, x2=cx+1;
+    bars+=`<path d="${bar(x1,m.buy)}" class="tr-bb"/><path d="${bar(x2,m.sell)}" class="tr-bs"/>`;
+    labs+=`<text x="${cx.toFixed(1)}" y="${H-7}" text-anchor="middle" class="tr-ax">${esc(m.l)}</text>`;
+    hits+=`<rect x="${(pl+gw*i).toFixed(1)}" y="${pt}" width="${gw.toFixed(1)}" height="${H-pt-pb}" class="tr-hit" data-m="${i}"/>`; });
+  const rows=M.filter(m=>m.buy||m.sell);
+  return `<div class="tr-ch-h"><b>Achats et ventes par mois</b><span class="tr-leg"><i class="sw b"></i>Achats<i class="sw s"></i>Ventes</span></div>
+    <div class="tr-ch" data-months='${esc(JSON.stringify(M.map(m=>({l:m.l+' '+m.y,b:tr2(m.buy),s:tr2(m.sell),p:tr2(m.prof),n:m.n}))))}'>
+      <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Montants des achats et des ventes par mois sur ${NM} mois">${g}${bars}${labs}${hits}</svg><div class="tr-tip" hidden></div></div>
+    <details class="tr-tab"><summary>Voir en tableau</summary><table><thead><tr><th>Mois</th><th>Achats</th><th>Ventes</th><th>Bénéfice réalisé</th></tr></thead><tbody>${rows.map(m=>`<tr><td>${esc(m.l+' '+m.y)}</td><td class="num">${eur(m.buy)}</td><td class="num">${eur(m.sell)}</td><td class="num">${m.n?trSg(m.prof):'—'}</td></tr>`).join('')||'<tr><td colspan="4">—</td></tr>'}</tbody></table></details>`;
+}
+
+/* ---------- fenêtre (formulaire) ---------- */
+function trModal(title, body, onOk, okLabel){
+  trModalClose(); const m=document.createElement('div'); m.id='trMd'; m.className='tr-md'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true');
+  m.innerHTML=`<form class="tr-md-box" novalidate><div class="tr-md-h"><b>${esc(title)}</b><button type="button" class="btn small" data-trm="close" aria-label="Fermer">✕</button></div><div class="tr-md-b">${body}</div><div class="tr-md-f"><span class="hint" id="trMdMsg" style="margin:0" aria-live="polite"></span><button type="button" class="btn" data-trm="close">Annuler</button><button type="submit" class="btn primary">${esc(okLabel||'Enregistrer')}</button></div></form>`;
+  document.body.appendChild(m); document.body.style.overflow='hidden';
+  m.addEventListener('click',e=>{ if(e.target===m || e.target.closest('[data-trm="close"]')) trModalClose(); });
+  m.querySelector('form').addEventListener('submit',async e=>{ e.preventDefault(); const btn=m.querySelector('[type=submit]'); btn.disabled=true; try{ const r=await onOk(m); if(r!==false) trModalClose(); }catch(err){ const t=$('trMdMsg'); if(t) t.textContent='⚠ '+((err&&err.message)||err); console.error(err); } finally{ btn.disabled=false; } });
+  setTimeout(()=>{ const f=m.querySelector('input:not([type=hidden]),select'); if(f) f.focus(); },30);
+  return m;
+}
+function trModalClose(){ const m=$('trMd'); if(m){ m.remove(); document.body.style.overflow=''; } }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('trMd')) trModalClose(); });
+const trSel=(id,opts,v)=>`<select id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}" ${o[0]===v?'selected':''}>${esc(o[1])}</option>`:`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+const trF=(lab,inp,hint)=>`<label class="tr-fld"><span>${lab}</span>${inp}${hint?`<small>${hint}</small>`:''}</label>`;
+const trNum=(id,v,ph)=>`<input id="${id}" type="number" step="0.01" min="0" inputmode="decimal" value="${v==null||v===''?'':esc(v)}" placeholder="${esc(ph||'0')}">`;
+const trV=id=>{ const e=$(id); return e?e.value:''; };
+const trQtyF=x=>(x.qty||1)>1?trF('Quantité concernée',`<input id="trQty" type="number" min="1" max="${x.qty}" step="1" value="${x.qty}">`,`sur ${x.qty} exemplaires`):'';
+async function trTakeQty(x){ const n=Math.max(1,Math.min(x.qty||1,parseInt(trV('trQty'))||x.qty||1)); const y=trSplit(x,n); if(y){ await trPut(x); return y; } return x; }
+function trListText(x){ const cond=(COND.find(k=>k.k===x.cond)||{}).l||''; return `Carte Pokémon ${x.name||''}${x.number?' '+x.number:''}${x.ed?' — '+x.ed:''}\n${x.grade&&x.grade.note?`Gradée ${x.grade.co} ${x.grade.note}${x.grade.cert?' (certificat '+x.grade.cert+')':''}\n`:''}État : ${cond||'—'} · Langue : ${x.lang||'français'}\nEnvoi soigné : sleeve + toploader, enveloppe à bulles. Envoi rapide.`; }
+
+async function trAction(a, id){
+  const x=TR.stock[id];
+  if(a==='gobuy'){ if(x){ TR.view='buys'; TR.flag=''; TR.open=x.buyId; renderTrade(); setTimeout(()=>{ const e=document.querySelector(`.tr-buy[data-id="${CSS.escape(x.buyId)}"]`); if(e) e.scrollIntoView({behavior:'smooth',block:'center'}); },50); } return; }
+  if(a==='goitem'){ if(x){ TR.view=x.status; TR.flag=''; renderTrade(); setTimeout(()=>{ const e=document.querySelector(`.tr-it[data-id="${CSS.escape(id)}"]`); if(e){ e.scrollIntoView({behavior:'smooth',block:'center'}); e.classList.add('flash'); setTimeout(()=>e.classList.remove('flash'),1600); } },50); } return; }
+  if(a==='editbuy') return trBuyEdit(TR.buys[id]);
+  if(a==='delbuy') return trBuyDelete(TR.buys[id]);
+  if(a==='addline') return trAddLine(TR.buys[id]);
+  if(!x) return;
+  const c=trCalc(x), unitCost=(c.cost+c.gc)/c.q;
+  if(a==='list'){
+    const L=x.list||{};
+    trModal(x.status==='listed'?'Modifier l\'annonce':'Mettre en vente', `<div class="tr-sum">${trImg(x)}<div><b>${esc(x.name)}</b><small>${esc(x.ed||'')} ${esc(x.number||'')}</small><small>Prix de revient ${esc(eur(unitCost))} / carte${x.mkt!=null?` · marché ${esc(eur(x.mkt))}`:''}</small></div></div>
+      <div class="tr-grid">${trF('Plateforme',trSel('trP',TR_PLAT,L.plat||'vinted'))}${trF('Prix demandé (total)',trNum('trPr',L.price!=null?L.price:(x.mkt!=null?tr2(x.mkt*(x.qty||1)):''),''),x.mkt!=null?`marché ${esc(eur(x.mkt))} · revient ${esc(eur(unitCost))} / carte · marge 30 % ⇒ ${esc(eur(unitCost*1.3))}`:`revient ${esc(eur(unitCost))} / carte`)}
+      ${trF('Date de mise en ligne',`<input id="trDt" type="date" value="${esc(L.date||trToday())}">`)}${x.status==='listed'?'':trQtyF(x)}</div>
+      ${trF('Lien de ton annonce',`<input id="trU" type="url" placeholder="https://…" value="${esc(L.url||'')}">`)}
+      ${trF('Texte d\'annonce (à copier)',`<textarea id="trTx" rows="4">${esc(trListText(x))}</textarea>`,'<button type="button" class="btn small" id="trCopy">📋 Copier</button>')}`,
+      async()=>{ const pr=num(trV('trPr')); if(pr==null) throw new Error('Indique le prix demandé.'); const y=x.status==='listed'?x:await trTakeQty(x); const was=y.status==='listed'; y.list={plat:trV('trP'), price:tr2(pr), date:trV('trDt')||trToday(), url:trV('trU').trim()}; y.status='listed'; trEv(y,was?'relist':'list',{price:y.list.price, plat:y.list.plat}); await trPut(y); toast(was?'Annonce mise à jour.':'Carte mise en vente 🏷️'); }, x.status==='listed'?'Enregistrer':'Mettre en vente');
+    const cp=$('trCopy'); if(cp) cp.addEventListener('click',()=>{ const t=$('trTx'); t.select(); try{ navigator.clipboard.writeText(t.value); toast('Texte copié.'); }catch(_){ document.execCommand('copy'); } });
+    return;
+  }
+  if(a==='grade'){
+    trModal('Envoyer en gradation', `<div class="tr-sum">${trImg(x)}<div><b>${esc(x.name)}</b><small>${esc(x.ed||'')} ${esc(x.number||'')}</small></div></div>
+      <div class="tr-grid">${trF('Société',trSel('trCo',TR_GRADERS,(x.grade&&x.grade.co)||'PCA'))}${trF('Date d\'envoi',`<input id="trDt" type="date" value="${esc(trToday())}">`)}${trF('Coût total (gradation + envoi)',trNum('trCost','',''),'ajouté au prix de revient')}${trQtyF(x)}</div>
+      ${trF('Note',`<input id="trN" type="text" placeholder="Formule, n° de commande…">`)}`,
+      async()=>{ const y=await trTakeQty(x); y.grade={co:trV('trCo'), sent:trV('trDt')||trToday(), cost:tr2(num(trV('trCost'))||0), ref:trV('trN').trim()}; y.status='grading'; trEv(y,'grade',{co:y.grade.co, price:y.grade.cost}); await trPut(y); toast('Carte envoyée en gradation 🎖️'); }, 'Valider l\'envoi');
+    return;
+  }
+  if(a==='gradeback'){
+    const G=x.grade||{};
+    trModal('Retour de gradation', `<div class="tr-sum">${trImg(x)}<div><b>${esc(x.name)}</b><small>${esc(G.co||'')} · envoyée le ${esc(trD(G.sent))}</small></div></div>
+      <div class="tr-grid">${trF('Note obtenue',`<input id="trGn" type="text" placeholder="ex. 10, 9.5" value="${esc(G.note||'')}">`)}${trF('N° de certificat',`<input id="trGc" type="text" value="${esc(G.cert||'')}">`)}${trF('Date de retour',`<input id="trDt" type="date" value="${esc(trToday())}">`)}${trF('Frais supplémentaires',trNum('trCost','',''),'retour, assurance…')}</div>`,
+      async()=>{ G.note=trV('trGn').trim(); G.cert=trV('trGc').trim(); G.back=trV('trDt')||trToday(); G.cost=tr2((G.cost||0)+(num(trV('trCost'))||0)); x.grade=G; x.status='stock'; trEv(x,'gradeback',{co:G.co, note:G.note}); await trPut(x); toast('Retour de gradation enregistré.'); }, 'Enregistrer');
+    return;
+  }
+  if(a==='sell'){
+    const L=x.list||{};
+    trModal('Carte vendue', `<div class="tr-sum">${trImg(x)}<div><b>${esc(x.name)}</b><small>Prix de revient ${esc(eur(unitCost))} / carte</small></div></div>
+      <div class="tr-grid">${trF('Plateforme',trSel('trP',TR_PLAT,L.plat||'vinted'))}${trF('Date de vente',`<input id="trDt" type="date" value="${esc(trToday())}">`)}
+      ${trF('Prix de vente (total)',trNum('trPr',L.price!=null?L.price:'',''))}${trF('Frais de la plateforme',trNum('trFe','',''),'commission, paiement…')}
+      ${trF('Port à ta charge',trNum('trSh','',''),'si non payé par l\'acheteur')}${x.status==='listed'?trQtyF(x):trQtyF(x)}</div>
+      <div class="tr-prev" id="trPrev"></div>`,
+      async()=>{ const pr=num(trV('trPr')); if(pr==null) throw new Error('Indique le prix de vente.'); const y=await trTakeQty(x); y.sale={plat:trV('trP'), date:trV('trDt')||trToday(), price:tr2(pr), fees:tr2(num(trV('trFe'))||0), ship:tr2(num(trV('trSh'))||0)}; y.prev=y.status; y.status='sold'; trEv(y,'sold',{price:y.sale.price, plat:y.sale.plat}); await trPut(y); const p=trCalc(y).profit; toast(`Vente enregistrée : ${p>=0?'bénéfice':'perte'} ${trSg(p)}`); }, 'Enregistrer la vente');
+    const prev=()=>{ const q=Math.max(1,Math.min(x.qty||1,parseInt(trV('trQty'))||x.qty||1)), pr=num(trV('trPr'))||0, net=pr-(num(trV('trFe'))||0)-(num(trV('trSh'))||0), p=net-unitCost*q, e=$('trPrev'); if(e) e.innerHTML=pr?`Net encaissé <b>${esc(eur(net))}</b> · bénéfice <b class="${p>=0?'up':'down'}">${esc(trSg(p))}</b>${unitCost*q>0?' ('+esc(pctS(p/(unitCost*q)*100))+')':''}`:''; };
+    ['trPr','trFe','trSh','trQty'].forEach(k=>{ const e=$(k); if(e) e.addEventListener('input',prev); }); prev();
+    return;
+  }
+  if(a==='unsell'){ if(!confirm('Annuler cette vente ? La carte repasse en stock.')) return; x.status=x.prev&&x.prev!=='sold'?x.prev:'stock'; delete x.sale; trEv(x,'unsold'); await trPut(x); return; }
+  if(a==='unlist'){ x.status='stock'; trEv(x,'unlist'); await trPut(x); return; }
+  if(a==='keep'){ x.status='kept'; trEv(x,'keep'); await trPut(x); toast('Carte gardée pour la collection ⭐'); return; }
+  if(a==='unkeep'){ x.status='stock'; trEv(x,'unkeep'); await trPut(x); return; }
+  if(a==='del'){ if(!confirm(`Supprimer « ${x.name} » du suivi ? (l'achat reste enregistré)`)) return; await trDel(x); return; }
+  if(a==='edit'){
+    trModal('Modifier la carte', `<div class="tr-grid">${trF('Nom',`<input id="trNm" type="text" value="${esc(x.name||'')}">`)}${trF('Édition',`<input id="trEd" type="text" value="${esc(x.ed||'')}">`)}${trF('Numéro',`<input id="trNo" type="text" value="${esc(x.number||'')}">`)}
+      ${trF('État',trSel('trCd',COND.map(k=>[k.k,k.l]),x.cond||'NM'))}${trF('Langue',`<input id="trLg" type="text" value="${esc(x.lang||'français')}">`)}${trF('Quantité',`<input id="trQn" type="number" min="1" step="1" value="${esc(x.qty||1)}">`)}
+      ${trF('Prix de revient (total)',trNum('trCs',x.cost),'part du prix d\'achat')}${trF('Date d\'achat',`<input id="trDt" type="date" value="${esc(x.buyDate||'')}">`)}</div>${trF('Note',`<input id="trNt" type="text" value="${esc(x.note||'')}">`)}`,
+      async()=>{ Object.assign(x,{ name:trV('trNm').trim()||x.name, ed:trV('trEd').trim(), number:trV('trNo').trim(), cond:trV('trCd'), lang:trV('trLg').trim(), qty:Math.max(1,parseInt(trV('trQn'))||1), cost:tr2(num(trV('trCs'))||0), buyDate:trV('trDt')||x.buyDate, note:trV('trNt').trim() }); trEv(x,'edit'); await trPut(x); });
+    return;
+  }
+}
+
+/* ---------- achat : depuis une annonce repérée ou saisi à la main ---------- */
+let TRB=null;
+function trAlloc(){
+  const B=TRB, total=tr2((num(B.price)||0)+(num(B.ship)||0)+(num(B.fees)||0)), L=B.lines.filter(l=>l.on);
+  const known=L.filter(l=>l.mkt>0).map(l=>l.mkt), base=known.length?Math.min(...known):1;
+  const w=L.map(l=>B.alloc==='value'?(l.mkt>0?l.mkt:base)*(l.qty||1):(l.qty||1)), sw=w.reduce((a,b)=>a+b,0)||1;
+  let acc=0; L.forEach((l,i)=>{ l.cost = i===L.length-1 ? tr2(total-acc) : tr2(total*w[i]/sw); acc+=l.cost; });
+  B.lines.filter(l=>!l.on).forEach(l=>l.cost=0);
+  return total;
+}
+function trBuyLinesHTML(){
+  const B=TRB, total=trAlloc(), L=B.lines, mk=tr2(L.filter(l=>l.on).reduce((a,l)=>a+(l.mkt||0)*(l.qty||1),0));
+  return `<div class="tr-lines">${L.length?L.map((l,i)=>`<div class="tr-ln${l.on?'':' off'}">
+      <input type="checkbox" data-trl="on" data-i="${i}" ${l.on?'checked':''} aria-label="Inclure">
+      <span class="tr-ln-i">${l.img?`<img src="${esc(l.img)}" alt="" referrerpolicy="no-referrer">`:'?'}</span>
+      <span class="tr-ln-n"><b>${esc(l.name||'Carte')}</b><small>${esc(l.ed||'')}${l.number?' · '+esc(l.number):''}${l.mkt>0?' · marché '+esc(eur(l.mkt)):l.cardId?'':' · non identifiée'}</small></span>
+      <label class="tr-ln-q">× <input type="number" min="1" step="1" value="${esc(l.qty||1)}" data-trl="qty" data-i="${i}" aria-label="Quantité"></label>
+      <select data-trl="cond" data-i="${i}" aria-label="État">${COND.map(k=>`<option value="${k.k}" ${k.k===(l.cond||'NM')?'selected':''}>${k.k}</option>`).join('')}</select>
+      <span class="tr-ln-c num" title="Part du prix d'achat attribuée à cette ligne">${l.on?esc(eur(l.cost)):'—'}</span>
+      <button type="button" class="btn small" data-trl="rm" data-i="${i}" aria-label="Retirer">✕</button></div>`).join(''):'<div class="hint" style="margin:6px 0">Aucune carte : ajoute-les ci-dessous (ou une ligne « vrac » pour le reste du lot).</div>'}</div>
+    <div class="tr-tot">Total payé <b class="num">${esc(eur(total))}</b> · valeur marché des cartes <b class="num">${esc(eur(mk))}</b>${mk&&total?` · <b class="${mk-total>=0?'up':'down'}">${esc(trSg(mk-total))}</b> potentiel`:''}</div>`;
+}
+function trBuyOpen(o){
+  o=o||{}; const it=o.listing;
+  TRB={ id:trId('b'), plat:it?(trPlatOfUrl(it.url)||'vinted'):'vinted', date:trToday(), url:it?(it.url||''):'', title:it?(it.title||it.name||'').slice(0,140):'', price:it&&it.ask!=null?it.ask:'', ship:it?(it.shipIn||0):'', fees:'', note:'', alloc:'value', track:true, listingId:it?it.id:'', img:it?(it.photo||(it.photos&&it.photos[0])||it.img||''):'', lines:[], res:[] };
+  if(it && it.lot) TRB.lines=it.lot.cards.map(c=>({cardId:c.id, name:c.name, ed:c.ed, number:c.number, img:c.img, qty:c.q||1, mkt:c.p||null, cond:it.cond||'NM', on:true}));
+  else if(it && it.cardId) TRB.lines=[{cardId:it.cardId, name:it.name, ed:it.ed, number:it.number, img:it.img, qty:1, mkt:it.mkt||null, mom30:it.mom30, cond:it.cond||'NM', on:true}];
+  if(it && it.lot && it.lot.lost) TRB.lines.push({name:'Cartes non lues du lot', ed:'à identifier', qty:it.lot.lost, mkt:null, cond:it.cond||'NM', on:true});
+  const B=TRB;
+  trModal(it?'J\'ai acheté cette annonce':'Nouvel achat', `
+    <div class="tr-grid">${trF('Plateforme',trSel('trP',TR_PLAT,B.plat))}${trF('Date d\'achat',`<input id="trDt" type="date" value="${esc(B.date)}">`)}
+      ${trF('Prix payé (articles)',trNum('trPr',B.price,''))}${trF('Port',trNum('trSh',B.ship,''))}${trF('Frais (protection, service)',trNum('trFe',B.fees,''),'ex. protection acheteur Vinted')}
+      ${trF('Répartition du coût',trSel('trAl',[['value','Au prorata de la valeur marché'],['equal','À parts égales']],B.alloc),'pour calculer le prix de revient de chaque carte')}</div>
+    ${trF('Titre / vendeur',`<input id="trTi" type="text" value="${esc(B.title)}" placeholder="ex. Lot 20 cartes EV — vendeur Pierre">`)}
+    ${trF('Lien de l\'annonce',`<input id="trU" type="url" value="${esc(B.url)}" placeholder="https://…">`)}
+    <div class="tr-sec"><b>Cartes achetées</b><span class="hint" style="margin:0">${it?'pré-remplies avec les cartes reconnues : décoche celles que tu n\'as pas eues':''}</span></div>
+    <div id="trLines"></div>
+    <div class="tr-add"><input id="trS" type="search" placeholder="Ajouter une carte : nom (+ n°), ex. Dracaufeu ex 199"><button type="button" class="btn small" id="trSb">Chercher</button><button type="button" class="btn small" id="trFree">➕ Ligne libre / vrac</button></div>
+    <div class="tr-res" id="trRes"></div>
+    ${trF('Note',`<input id="trNt" type="text" placeholder="État réel, négociation…">`)}
+    <label class="tr-chk"><input type="checkbox" id="trTrk" checked> Suivre ces cartes dans <b>Ma base</b> (prix Cardmarket et alertes de fluctuation)</label>`,
+    trBuySave, 'Enregistrer l\'achat');
+  const draw=()=>{ $('trLines').innerHTML=trBuyLinesHTML(); };
+  const sync=()=>{ B.plat=trV('trP'); B.date=trV('trDt'); B.price=trV('trPr'); B.ship=trV('trSh'); B.fees=trV('trFe'); B.alloc=trV('trAl'); };
+  ['trPr','trSh','trFe','trAl'].forEach(k=>$(k).addEventListener('input',()=>{ sync(); draw(); }));
+  $('trAl').addEventListener('change',()=>{ sync(); draw(); });
+  $('trLines').addEventListener('input',e=>{ const t=e.target, i=+t.dataset.i, l=B.lines[i]; if(!l) return; if(t.dataset.trl==='qty'){ l.qty=Math.max(1,parseInt(t.value)||1); const c=$('trLines').querySelectorAll('.tr-ln-c'); trAlloc(); B.lines.forEach((ll,j)=>{ if(c[j]) c[j].textContent=ll.on?eur(ll.cost):'—'; }); const tt=$('trLines').querySelector('.tr-tot'); if(tt){ const tmp=document.createElement('div'); tmp.innerHTML=trBuyLinesHTML(); tt.replaceWith(tmp.querySelector('.tr-tot')); } } });
+  $('trLines').addEventListener('change',e=>{ const t=e.target, i=+t.dataset.i, l=B.lines[i]; if(!l) return; if(t.dataset.trl==='on'){ l.on=t.checked; draw(); } else if(t.dataset.trl==='cond') l.cond=t.value; else if(t.dataset.trl==='qty') draw(); });
+  $('trLines').addEventListener('click',e=>{ const b=e.target.closest('[data-trl="rm"]'); if(!b) return; B.lines.splice(+b.dataset.i,1); draw(); });
+  const search=async()=>{ const q=trV('trS').trim(); if(!q) return; const r=$('trRes'); r.innerHTML='<span class="hint" style="margin:0"><span class="spinner" aria-hidden="true"></span> Recherche…</span>';
+    try{ const res=(await tcSearch(q)).slice(0,10).map(fxSummary); B.res=res; r.innerHTML=res.length?res.map((c,i)=>`<button type="button" class="fl-cand" data-trr="${i}" title="${esc(c.name)}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<span>${esc(c.name)}<small>${esc(c.ed||'')} · ${esc(c.number||'')}</small></span></button>`).join(''):'<span class="hint" style="margin:0">Aucune carte trouvée.</span>'; }
+    catch(e){ r.innerHTML='<span class="hint" style="margin:0">Recherche impossible : '+esc((e&&e.message)||e)+'</span>'; } };
+  $('trSb').addEventListener('click',search); $('trS').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); search(); } });
+  $('trRes').addEventListener('click',async e=>{ const b=e.target.closest('[data-trr]'); if(!b) return; const c=B.res[+b.dataset.trr]; if(!c) return; const l={cardId:c.id, name:c.name, ed:c.ed, number:c.number, img:c.img, qty:1, mkt:c.mkt||null, mom30:c.mom30, cond:'NM', on:true}; B.lines.push(l); $('trRes').innerHTML=''; $('trS').value=''; draw();
+    if(!(l.mkt>0)){ try{ const s=await fxSum(c.id); l.mkt=s.mkt||null; l.mom30=s.mom30; l.img=l.img||s.img; draw(); }catch(_){ } } });
+  $('trFree').addEventListener('click',()=>{ const n=trV('trS').trim(); B.lines.push({name:n||'Vrac (cartes communes)', ed:'', qty:1, mkt:null, cond:'NM', on:true}); $('trS').value=''; draw(); });
+  draw();
+  /* valeurs marché manquantes (cartes du titre de l'annonce) */
+  B.lines.forEach(async l=>{ if(l.cardId && !(l.mkt>0)){ try{ const s=await fxSum(l.cardId); l.mkt=s.mkt||null; l.mom30=s.mom30; if($('trLines')) draw(); }catch(_){ } } });
+}
+async function trBuySave(){
+  const B=TRB; B.plat=trV('trP'); B.date=trV('trDt')||trToday(); B.price=trV('trPr'); B.ship=trV('trSh'); B.fees=trV('trFe'); B.alloc=trV('trAl');
+  if(num(B.price)==null) throw new Error('Indique le prix payé.');
+  const L=B.lines.filter(l=>l.on); if(!L.length) throw new Error('Ajoute au moins une carte (ou une ligne « vrac »).');
+  const total=trAlloc(), now=Date.now();
+  const buy={ id:B.id, date:B.date, plat:B.plat, url:trV('trU').trim(), title:trV('trTi').trim()||L.map(l=>l.name).slice(0,3).join(', '), price:tr2(num(B.price)), ship:tr2(num(B.ship)||0), fees:tr2(num(B.fees)||0), total, note:trV('trNt').trim(), listingId:B.listingId||'', img:B.img||L[0].img||'', n:L.reduce((a,l)=>a+(l.qty||1),0), t:now };
+  const docs={};
+  L.forEach(l=>{ const id=trId('s'); docs[id]={ id, buyId:buy.id, cardId:l.cardId||'', name:l.name, ed:l.ed||'', number:l.number||'', img:l.img||'', qty:l.qty||1, cond:l.cond||'NM', lang:'français', cost:l.cost, mkt:l.mkt>0?l.mkt:null, mom30:l.mom30!=null?l.mom30:null, mktT:l.mkt>0?now:null, status:'stock', buyDate:buy.date, plat:buy.plat, note:'', ev:[{t:new Date().toISOString(), type:'buy', price:l.cost, plat:buy.plat}] }; });
+  await trPutBuy(buy);
+  if(S.db && S.db.setMany) S.db.setMany('stock', docs); else for(const d of Object.values(docs)) await trPut(d);
+  Object.assign(TR.stock, docs);
+  if(B.listingId && FLUX.items[B.listingId]){ const it=FLUX.items[B.listingId]; it.bought={id:buy.id, date:buy.date, total, n:buy.n}; if(it.status==='new') it.status='seen'; await fxSave(it); renderFlux(); }
+  if($('trTrk') && $('trTrk').checked) trTrackInBase(L, buy);
+  toast(`Achat enregistré : ${buy.n} carte${buy.n>1?'s':''} · ${eur(total)} 🛒`);
+  TR.view='stock'; TR.flag=''; setTab('trade');
+}
+/* les cartes achetées rejoignent « Ma base » (statut Acheté, prix d'achat = prix de revient) : suivi des prix et alertes de marché */
+async function trTrackInBase(L, buy){
+  const ids=[...new Set(L.filter(l=>l.cardId).map(l=>l.cardId))]; if(!ids.length || !S.db) return;
+  const keep=Object.assign({},FORM); let n=0;
+  for(const id of ids){ try{
+    const l=L.find(x=>x.cardId===id), d=await tcCard(id,true), p=pickPrice(d,null); if(!p) continue; const ex=S.cards[d.id];
+    Object.assign(FORM,{ cond:l.cond||'NM', ask:'', buyPrice:String(tr2(l.cost/(l.qty||1))), status:'bought', source:trPlat(buy.plat), link:buy.url||'' });
+    const doc=buildCardDoc(d,p,parseMomentum(d),ex); await S.db.collection('cards').doc(slug(d.id)).set(doc); S.cards[d.id]=doc; n++;
+  }catch(e){ console.warn('suivi base',id,e); } }
+  Object.assign(FORM,keep); if(n){ renderAll(); toast(`${n} carte${n>1?'s':''} ajoutée${n>1?'s':''} à Ma base (suivi des prix).`); }
+}
+function trBuyEdit(b){ if(!b) return;
+  trModal('Modifier l\'achat', `<div class="tr-grid">${trF('Plateforme',trSel('trP',TR_PLAT,b.plat))}${trF('Date',`<input id="trDt" type="date" value="${esc(b.date||'')}">`)}${trF('Prix payé (articles)',trNum('trPr',b.price))}${trF('Port',trNum('trSh',b.ship))}${trF('Frais',trNum('trFe',b.fees))}</div>
+    ${trF('Titre / vendeur',`<input id="trTi" type="text" value="${esc(b.title||'')}">`)}${trF('Lien',`<input id="trU" type="url" value="${esc(b.url||'')}">`)}${trF('Note',`<input id="trNt" type="text" value="${esc(b.note||'')}">`)}
+    <div class="hint" style="margin:0">Si le total change, le prix de revient de chaque carte de cet achat est ajusté dans la même proportion.</div>`,
+    async()=>{ const old=b.total||0; Object.assign(b,{ plat:trV('trP'), date:trV('trDt')||b.date, price:tr2(num(trV('trPr'))||0), ship:tr2(num(trV('trSh'))||0), fees:tr2(num(trV('trFe'))||0), title:trV('trTi').trim(), url:trV('trU').trim(), note:trV('trNt').trim() }); b.total=tr2(b.price+b.ship+b.fees);
+      const its=Object.values(TR.stock).filter(x=>x.buyId===b.id); const k=old>0?b.total/old:null; const docs={};
+      its.forEach(x=>{ if(k!=null) x.cost=tr2((x.cost||0)*k); x.buyDate=b.date; x.plat=b.plat; docs[x.id]=x; });
+      await trPutBuy(b); if(its.length && S.db && S.db.setMany) S.db.setMany('stock',docs); });
+}
+async function trBuyDelete(b){ if(!b) return; const its=Object.values(TR.stock).filter(x=>x.buyId===b.id);
+  if(!confirm(`Supprimer cet achat${its.length?` et ses ${its.length} ligne${its.length>1?'s':''} de cartes (y compris l'historique de vente)`:''} ? C'est définitif.`)) return;
+  for(const x of its) await trDel(x); delete TR.buys[b.id]; if(S.db) await S.db.collection('buys').doc(b.id).delete();
+  if(b.listingId && FLUX.items[b.listingId]){ const it=FLUX.items[b.listingId]; delete it.bought; await fxSave(it); renderFlux(); }
+  renderTrade(); }
+function trAddLine(b){ if(!b) return;
+  trModal('Ajouter une carte à cet achat', `${trF('Nom de la carte',`<input id="trNm" type="text" placeholder="ex. Pikachu ex 247">`)}<div class="tr-grid">${trF('Quantité',`<input id="trQn" type="number" min="1" step="1" value="1">`)}${trF('Prix de revient (total)',trNum('trCs','',''),'part du prix d\'achat (le total de l\'achat ne change pas)')}${trF('État',trSel('trCd',COND.map(k=>[k.k,k.l]),'NM'))}</div><div class="hint" style="margin:0">La carte est recherchée sur Cardmarket par son nom pour récupérer l'image et la valeur.</div>`,
+    async()=>{ const nm=trV('trNm').trim(); if(!nm) throw new Error('Indique le nom.'); let s=null; try{ const r=await tcSearch(nm); if(r.length) s=await fxSum(r[0].id); }catch(_){ }
+      const id=trId('s'), x={ id, buyId:b.id, cardId:s?s.id:'', name:s?s.name:nm, ed:s?s.ed:'', number:s?s.number:'', img:s?s.img:'', qty:Math.max(1,parseInt(trV('trQn'))||1), cond:trV('trCd'), lang:'français', cost:tr2(num(trV('trCs'))||0), mkt:s&&s.mkt?s.mkt:null, mom30:s?s.mom30:null, mktT:Date.now(), status:'stock', buyDate:b.date, plat:b.plat, note:'', ev:[{t:new Date().toISOString(), type:'buy', price:tr2(num(trV('trCs'))||0), plat:b.plat}] };
+      await trPut(x); b.n=(b.n||0)+x.qty; await trPutBuy(b); toast(s?`Ajoutée : ${s.name} (${s.ed} ${s.number}) — vérifie que c'est la bonne.`:'Ajoutée (carte non identifiée).'); }, 'Ajouter');
+}
+/* actualisation des valeurs marché (Cardmarket via TCGdex) des cartes non vendues */
+async function trRefresh(){
+  if(TR.refreshing) return; const its=Object.values(TR.stock).filter(x=>x.cardId && x.status!=='sold'); const ids=[...new Set(its.map(x=>x.cardId))]; if(!ids.length){ toast('Aucune carte identifiée à actualiser.'); return; }
+  TR.refreshing=true; let n=0; const docs={};
+  try{ for(const id of ids){ n++; TR.msg=`Actualisation ${n}/${ids.length}…`; renderTrade(); try{ const s=await fxSum(id); its.filter(x=>x.cardId===id).forEach(x=>{ x.mkt=s.mkt||x.mkt||null; x.mom30=s.mom30!=null?s.mom30:x.mom30; x.mktT=Date.now(); if(!x.img&&s.img) x.img=s.img; docs[x.id]=x; }); }catch(_){ } }
+    if(Object.keys(docs).length && S.db && S.db.setMany) S.db.setMany('stock',docs); TR.msg=`Valeurs actualisées (${ids.length} carte${ids.length>1?'s':''}).`; }
+  finally{ TR.refreshing=false; renderTrade(); setTimeout(()=>{ TR.msg=''; renderTrade(); },6000); }
+}
+function trCsv(){
+  const items=Object.values(TR.stock); if(!items.length){ toast('Rien à exporter.'); return; }
+  const H=['Date achat','Plateforme achat','Achat','Carte','Édition','Numéro','Quantité','État','Statut','Prix de revient','Gradation','Note gradation','Coût gradation','Valeur marché','Mise en vente','Prix demandé','Date vente','Plateforme vente','Prix vente','Frais','Port','Bénéfice'];
+  const f=v=>{ const s=v==null?'':String(v); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }, n=v=>v==null||v===''?'':String(v).replace('.',',');
+  const rows=items.sort((a,b)=>String(a.buyDate).localeCompare(String(b.buyDate))).map(x=>{ const c=trCalc(x), b=TR.buys[x.buyId]||{}; return [x.buyDate, trPlat(x.plat||b.plat), b.title||'', x.name, x.ed, x.number, x.qty||1, x.cond, (TR_ST[x.status]||[x.status])[0], n(x.cost), x.grade?x.grade.co:'', x.grade?x.grade.note||'':'', n(x.grade?x.grade.cost:''), n(c.mkt), x.list?x.list.date:'', n(x.list?x.list.price:''), x.sale?x.sale.date:'', x.sale?trPlat(x.sale.plat):'', n(x.sale?x.sale.price:''), n(x.sale?x.sale.fees:''), n(x.sale?x.sale.ship:''), n(x.status==='sold'?c.profit:'')].map(f).join(';'); });
+  const blob=new Blob(['﻿'+H.join(';')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pikascan_achats_ventes_'+trToday()+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+(function trWire(){
+  const p=$('panel-trade'); if(!p) return;
+  $('trNew').addEventListener('click',()=>trBuyOpen());
+  $('trRefresh').addEventListener('click',trRefresh);
+  $('trCsv').addEventListener('click',trCsv);
+  $('trQ').addEventListener('input',e=>{ TR.q=e.target.value; renderTrade(); });
+  p.addEventListener('click',e=>{
+    const v=e.target.closest('[data-trv]'); if(v){ TR.view=v.dataset.trv; TR.flag=''; renderTrade(); return; }
+    const f=e.target.closest('[data-trf]'); if(f){ TR.flag=TR.flag===f.dataset.trf?'':f.dataset.trf; renderTrade(); return; }
+    const b=e.target.closest('[data-tr]'); if(b){ trAction(b.dataset.tr, b.dataset.id); }
+  });
+  /* info-bulle du graphique */
+  p.addEventListener('mousemove',e=>{ const r=e.target.closest('.tr-hit'), box=e.target.closest('.tr-ch'); const tip=box&&box.querySelector('.tr-tip'); if(!box||!tip) return; if(!r){ tip.hidden=true; return; }
+    let M; try{ M=JSON.parse(box.dataset.months); }catch(_){ return; } const m=M[+r.dataset.m]; if(!m) return;
+    tip.innerHTML=`<b>${esc(m.l)}</b><span><i class="sw b"></i>Achats <b class="num">${esc(eur(m.b))}</b></span><span><i class="sw s"></i>Ventes <b class="num">${esc(eur(m.s))}</b></span>${m.n?`<span>Bénéfice réalisé <b class="num">${esc(trSg(m.p))}</b> (${m.n} carte${m.n>1?'s':''})</span>`:''}`;
+    const bb=box.getBoundingClientRect(), rr=r.getBoundingClientRect(); tip.hidden=false; const x=rr.left-bb.left+rr.width/2; tip.style.left=Math.max(4,Math.min(bb.width-tip.offsetWidth-4,x-tip.offsetWidth/2))+'px'; tip.style.top='4px';
+    box.querySelectorAll('.tr-hit.on').forEach(z=>z.classList.remove('on')); r.classList.add('on'); });
+  p.addEventListener('mouseleave',()=>{ p.querySelectorAll('.tr-tip').forEach(t=>t.hidden=true); p.querySelectorAll('.tr-hit.on').forEach(z=>z.classList.remove('on')); });
+})();
+
 async function init(){
   renderAll(); setTab('scan'); renderSettings();
   loadCatalog().then(ok=>{ if(ok) renderAll(); });
@@ -4683,6 +5269,8 @@ async function init(){
   S.db.collection('alerts').onSnapshot(snap=>{ const m={}; snap.docs.forEach(d=>{ m[d.id]=d.data(); if(!m[d.id].id) m[d.id].id=d.id; }); S.alerts=m; renderAll(); }, ()=>{});
   { const sh=$('fxShip'); if(sh) sh.value=fxShipDefault(); }
   S.db.collection('listings').onSnapshot(snap=>{ const m={}; snap.docs.forEach(d=>{ m[d.id]=d.data(); }); FLUX.items=m; renderFlux(); }, ()=>{});
+  S.db.collection('buys').onSnapshot(snap=>{ const m={}; snap.docs.forEach(d=>{ m[d.id]=d.data(); }); TR.buys=m; renderTrade(); }, ()=>{});
+  S.db.collection('stock').onSnapshot(snap=>{ const m={}; snap.docs.forEach(d=>{ m[d.id]=d.data(); }); TR.stock=m; renderTrade(); }, ()=>{});
   setTimeout(()=>{ fluxPull().catch(()=>{}); }, 3500);
   S.db.collection('cards').onSnapshot(snap=>{
     const m={}; snap.docs.forEach(d=>{ const x=d.data(); m[x.id||d.id]=x; });
