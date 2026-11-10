@@ -60,6 +60,32 @@ function extract() {
   const fee = money(/Protection acheteurs?[^\d\n]{0,40}(\d+[.,]\d{2})\s*€/i), shipping = money(/(?:Livraison|Frais de port|Envoi)[^\d\n]{0,40}(\d+[.,]\d{2})\s*€/i);
   return { title: String(title || '').slice(0, 200), price: String(price || ''), url: location.href.split('?')[0], urls: list.slice(0, 24), desc: String(desc || '').slice(0, 4000), postedAt, postedSrc, postedText, fee, shipping, pageImgs, dropped, src };
 }
+// Annonce Leboncoin : les données de la page (bloc __NEXT_DATA__) donnent titre, prix, description, date et TOUTES les photos.
+function extractLbc() {
+  const d = document; let ad = null;
+  try { const nd = JSON.parse((d.getElementById('__NEXT_DATA__') || {}).textContent || '{}'); const pp = (nd.props && nd.props.pageProps) || {}; ad = pp.ad || pp.adview || null; } catch (e) {}
+  const mt = p => { const e = d.querySelector('meta[property="' + p + '"]') || d.querySelector('meta[name="' + p + '"]'); return e && e.content; };
+  let title = '', price = '', desc = '', postedAt = '', imgs = [], src = 'dom';
+  if (ad) {
+    src = 'json'; title = ad.subject || ''; desc = ad.body || '';
+    const pr = Array.isArray(ad.price) ? ad.price[0] : (ad.price_cents != null ? ad.price_cents / 100 : ad.price); if (pr != null && isFinite(+pr)) price = String(pr);
+    const im = ad.images || {}; imgs = (im.urls_large && im.urls_large.length ? im.urls_large : (im.urls || [])).slice(); if (!imgs.length && im.thumb_url) imgs = [im.thumb_url];
+    const dp = ad.first_publication_date || ad.index_date; if (dp) { const t = new Date(String(dp).replace(' ', 'T')); if (!isNaN(t)) postedAt = t.toISOString(); }
+  }
+  title = title || mt('og:title') || ((d.querySelector('h1') || {}).innerText) || d.title;
+  desc = desc || mt('og:description') || mt('description') || '';
+  const bodyText = (d.body && d.body.innerText) || '';
+  if (!price) { const x = /(\d[\d\s ]{0,6}(?:[.,]\d{1,2})?)\s*€/.exec(bodyText.slice(0, 5000)); if (x) price = x[1].replace(/[\s ]/g, ''); }
+  if (!imgs.length) {   // repli : photos visibles de la galerie, jamais celles du profil du vendeur ni des annonces similaires
+    const bad = i => { try { return !!i.closest('a[href*="/profile"], a[href*="/boutique"], a[href*="/pro/"], [data-qa-id*="profile" i], [data-test-id*="profile" i], [class*="avatar" i], [data-qa-id*="similar" i], aside, header, footer, nav'); } catch (e) { return false; } };
+    if (mt('og:image')) imgs.push(mt('og:image'));
+    d.querySelectorAll('img').forEach(i => { const u = i.currentSrc || i.src || ''; if (/img\.leboncoin\.fr/.test(u) && !bad(i) && ((i.naturalWidth || 0) >= 150 || /rule=ad-/.test(u))) imgs.push(u); });
+  }
+  const seen = {}, list = [];
+  imgs.forEach(u => { if (!u || typeof u !== 'string') return; const k = u.split('?')[0]; if (!seen[k]) { seen[k] = 1; list.push(u); } });
+  return { title: String(title || '').slice(0, 200), price: String(price || ''), url: location.href.split('?')[0], urls: list.slice(0, 24), desc: String(desc || '').slice(0, 4000), postedAt, postedSrc: postedAt ? 'page' : '', postedText: '', fee: null, shipping: null, pageImgs: list.length, dropped: 0, src };
+}
+const isLbc = u => /^https:\/\/(www\.)?leboncoin\.fr\//.test(String(u || ''));
 function b64(buf) { let s = ''; const a = new Uint8Array(buf); for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); }
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
@@ -67,12 +93,15 @@ async function sendFromTab(tab) {
   const badge = (t, c) => { try { chrome.action.setBadgeText({ text: t, tabId: tab.id }); if (c) chrome.action.setBadgeBackgroundColor({ color: c }); } catch (e) {} };
   try {
     badge('…', '#888');
-    const [{ result: info }] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: extract });
+    const lbc = isLbc(tab.url);
+    const [{ result: info }] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: lbc ? extractLbc : extract });
     const dataUrls = [];
     for (const u of info.urls) {
-      try { const r = await fetch(u, { credentials: 'omit' }); if (!r.ok) continue; const buf = await r.arrayBuffer(); const t = (r.headers.get('content-type') || 'image/jpeg').split(';')[0]; if (!/^image\/(jpeg|png|webp)$/.test(t) || buf.byteLength > 8e6) continue; dataUrls.push('data:' + t + ';base64,' + b64(buf)); } catch (e) {}
+      try { let r = null;
+        if (lbc && /\?rule=/.test(u) && !/rule=ad-large/.test(u)) { try { const r1 = await fetch(u.replace(/rule=[^&]+/, 'rule=ad-large'), { credentials: 'omit' }); if (r1.ok) r = r1; } catch (e) {} }   // la grande version d'abord
+        if (!r) r = await fetch(u, { credentials: 'omit' }); if (!r.ok) continue; const buf = await r.arrayBuffer(); const t = (r.headers.get('content-type') || 'image/jpeg').split(';')[0]; if (!/^image\/(jpeg|png|webp)$/.test(t) || buf.byteLength > 8e6) continue; dataUrls.push('data:' + t + ';base64,' + b64(buf)); } catch (e) {}
     }
-    const payload = { type: 'pikascan-annonce', ext: true, url: info.url, title: info.title, price: info.price, desc: info.desc, postedAt: info.postedAt, postedSrc: info.postedSrc, postedText: info.postedText, fee: info.fee, shipping: info.shipping, dataUrls, extVer: chrome.runtime.getManifest().version, dbg: { found: info.urls.length, pageImgs: info.pageImgs, dropped: info.dropped, src: info.src } };
+    const payload = { type: 'pikascan-annonce', ext: true, site: lbc ? 'leboncoin' : 'vinted', url: info.url, title: info.title, price: info.price, desc: info.desc, postedAt: info.postedAt, postedSrc: info.postedSrc, postedText: info.postedText, fee: info.fee, shipping: info.shipping, dataUrls, extVer: chrome.runtime.getManifest().version, dbg: { found: info.urls.length, pageImgs: info.pageImgs, dropped: info.dropped, src: info.src } };
     let [app] = await chrome.tabs.query({ url: APP + '*' }), fresh = false;
     if (app) { await chrome.tabs.update(app.id, { active: true }); await chrome.windows.update(app.windowId, { focused: true }); }
     else { app = await chrome.tabs.create({ url: APP + '#annonce' }); fresh = true; }

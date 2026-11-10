@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "PikaScan – Envoyer l'annonce",
-  "version": "1.4.2",
-  "description": "Sur une annonce Vinted, un clic envoie le titre, le prix et les photos à PikaScan ; PikaScan peut aussi lire les prix des ventes eBay terminées et les offres Cardmarket en français / Near Mint.",
+  "version": "1.5.0",
+  "description": "Sur une annonce Vinted ou Leboncoin, un clic envoie le titre, le prix et les photos à PikaScan ; PikaScan peut aussi lire les prix des ventes eBay terminées et les offres Cardmarket en français / Near Mint.",
   "permissions": [
     "activeTab",
     "scripting"
@@ -23,6 +23,8 @@
     "https://*.vinted.at/*",
     "https://*.vinted.lu/*",
     "https://*.vinted.co.uk/*",
+    "https://www.leboncoin.fr/*",
+    "https://img.leboncoin.fr/*",
     "https://flohzx.github.io/*",
     "https://www.ebay.fr/*",
     "https://www.cardmarket.com/*"

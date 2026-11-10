@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.15.4 | 2026-11-10 09:30 UTC">
+<meta name="pikascan-build" content="1.16.0 | 2026-11-10 11:40 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -704,6 +704,9 @@
 .fx-ov.edit{pointer-events:none}.fx-ov.edit polygon{fill:rgba(0,200,255,.08);stroke:#00d0ff;stroke-width:2;vector-effect:non-scaling-stroke;pointer-events:none;cursor:default}.fx-ov.edit path{fill:none;stroke:#00d0ff;stroke-width:2;vector-effect:non-scaling-stroke;stroke-dasharray:6 4}
 .fx-hd{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid #fff;background:#0aa8d6;color:#fff;font-size:16px;line-height:1;cursor:grab;touch-action:none;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 6px rgba(0,0,0,.5);padding:0;z-index:3}
 .fx-hd:active{cursor:grabbing}
+.fx-loupe{position:fixed;z-index:10050;width:150px;height:150px;border-radius:50%;overflow:hidden;border:3px solid #ffd23f;box-shadow:0 8px 28px rgba(0,0,0,.55),0 0 0 1px rgba(0,0,0,.6);pointer-events:none;background:#111}
+.fx-loupe[hidden]{display:none}
+.fx-loupe canvas{width:150px;height:150px;display:block}
 .fx-steps2{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 12px;align-items:center}.fx-steps2 b{display:inline-block;min-width:1.4em;text-align:center}
 
 .ver{ margin-top:4px; font:inherit; font-size:11.5px; padding:2px 9px; border-radius:99px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; }
@@ -727,6 +730,11 @@
 .fb-sep{ width:1px; align-self:stretch; background:var(--border); margin:0 2px; }
 
 .fl-lcw{ display:flex; flex-direction:column; align-items:stretch; gap:3px; width:74px; } .fl-lcw .fl-lc{ width:100%; flex:1; } .fl-lcw .fl-cm{ white-space:nowrap; } .fl-cmrow{ display:flex; gap:3px; margin-top:auto; } .fl-cmrow .fl-cm{ flex:1; padding:2px 0; }
+img.brand{ width:18px; height:18px; border-radius:4px; display:block; margin:0 auto; background:#fff; padding:1px; box-sizing:border-box; }
+.fl-cm{ display:flex !important; align-items:center; justify-content:center; min-height:26px; }
+.fl-cm.inl{ display:inline-flex !important; vertical-align:middle; padding:3px 6px !important; margin-left:4px; }
+.fb-cm, .fb-ebay{ display:inline-flex; align-items:center; gap:6px; }
+.fb-cm img.brand, .fb-ebay img.brand{ width:22px; height:22px; margin:0; }
 .fl-cm.eb{ border-color:rgba(245,175,2,.75); background:rgba(245,175,2,.16); }
 .fl-cm{ display:block; text-align:center; font-size:10.5px; font-weight:600; padding:2px 4px; border-radius:6px; border:1px solid rgba(44,120,220,.6); background:rgba(44,120,220,.16); color:var(--ink); text-decoration:none; } .fl-cm:hover{ filter:brightness(1.2); } .fl-cm.inl{ display:inline-block; margin-left:6px; }
 .fb-cm{ display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:12.5px; font-weight:600; padding:7px 12px; border-radius:10px; border:1px solid rgba(44,120,220,.7); background:rgba(44,120,220,.16); color:var(--ink); text-decoration:none; }
@@ -913,7 +921,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.15.4</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.16.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -1008,7 +1016,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       <h2 style="margin:0 0 4px">Annonces</h2>
       <div class="fx-ext" id="fxExt">
         <div class="fx-ext-t"><b>🧩 Prérequis : installe l'extension PikaScan</b><span class="fx-ext-s" id="fxExtState">Non détectée</span></div>
-        <div class="hint" style="margin:4px 0 8px">Sur une annonce Vinted, un clic sur l'extension envoie à PikaScan les <b>photos</b>, le <b>prix</b>, la <b>description</b> et la <b>date de mise en ligne</b> : les cartes sont lues automatiquement et le verdict s'affiche ici. Sans elle, il faut ajouter les photos à la main.</div>
+        <div class="hint" style="margin:4px 0 8px">Sur une annonce Vinted ou Leboncoin, un clic sur l'extension envoie à PikaScan les <b>photos</b>, le <b>prix</b>, la <b>description</b> et la <b>date de mise en ligne</b> : les cartes sont lues automatiquement et le verdict s'affiche ici. Sans elle, il faut ajouter les photos à la main.</div>
         <div class="fx-ext-a"><button class="btn primary" id="fxExtDl" type="button">⬇️ Télécharger l'extension</button><a href="#" id="fxExtZip" hidden class="hint" style="margin:0">Installation manuelle (ZIP)</a><span class="hint" id="fxExtMsg" style="margin:0" aria-live="polite"></span></div>
         <ol class="fx-steps" id="fxExtSteps"><li>Dans ton navigateur, ouvre <code>chrome://extensions</code> (ou <code>edge://extensions</code>) et active le <i>Mode développeur</i>.</li><li>Clique sur <i>Charger l'extension non empaquetée</i> et choisis le dossier <code>extension</code> de ton dépôt PikaScan (ou, sans dépôt local, décompresse d'abord le ZIP ci-dessus et choisis le dossier obtenu).</li><li>Épingle l'icône 🧩 → Poké Ball, puis clique dessus sur une annonce Vinted.</li></ol>
       </div>
@@ -1889,10 +1897,13 @@ function cmPrices(cm){
   mk('normal','Normale / Holo',''); mk('reverse','Reverse holo','-holo');
   return out;
 }
+/* cartes sans image française dans TCGdex (promos MEP, DP…) : l'image existe en fr ou en anglais, on reconstruit son adresse */
+let CARD_LANG={}; (async()=>{ try{ const r=await fetch('ocr/cardlang.json?v=3'); if(r.ok) CARD_LANG=await r.json(); }catch(_){} })();
+function tcImgBase(d){ if(d.image) return d.image; const sid=d.set&&d.set.id, st=sid&&SETS[sid]; if(!st||!st.serie||d.localId==null) return ''; return 'https://assets.tcgdex.net/'+(CARD_LANG[d.id]||'en')+'/'+st.serie+'/'+sid+'/'+d.localId; }
 function tcMap(d, en){
   const cm = d.pricing && d.pricing.cardmarket; const prices = cmPrices(cm);
   return { id:d.id, name:d.name, nameEn: en ? en.name : '', number:d.localId, rarity:d.rarity||'', expansion:{id:d.set&&d.set.id, name:d.set&&d.set.name, logo:d.set&&d.set.logo, symbol:d.set&&d.set.symbol, official:d.set&&d.set.cardCount&&d.set.cardCount.official},
-    imageUrl: d.image ? d.image+'/low.webp' : '', imageUrlLarge: d.image ? d.image+'/high.webp' : '',
+    imageUrl: tcImgBase(d) ? tcImgBase(d)+'/low.webp' : '', imageUrlLarge: tcImgBase(d) ? tcImgBase(d)+'/high.webp' : '',
     canonicalUrl: (cm && cm.idProduct) ? 'https://www.cardmarket.com/fr/Pokemon/Products?idProduct='+cm.idProduct+'&language=2' : '',
     prices, bestMarketPriceVariant: prices[0] && prices[0].variant, chaseTier:'' };
 }
@@ -2342,10 +2353,13 @@ async function phIndex(onMsg){
   if(cached && cached.list && Date.now()-cached.t < 14*864e5) list = cached.list;
   if(!list){ if(onMsg) onMsg('Téléchargement de la liste des cartes (une seule fois)…'); list = await tcJson(TCD+'fr/cards'); idbSet('cards_fr',{t:Date.now(), list}); }
   const byName = new Map(), bySetNum = new Map(), byLen = new Map(), byId = new Map();
+  /* cartes sans image française dans TCGdex : l'image existe quand même (fr ou en), on reconstruit son adresse */
+  let lang={}; try{ const r=await fetch(OCR_BASE+'cardlang.json?v=3'); if(r.ok) lang=await r.json(); }catch(_){}
+  const imgOf=(c,sid)=>c.image || (lang[c.id] && SETS[sid] && SETS[sid].serie ? 'https://assets.tcgdex.net/'+lang[c.id]+'/'+SETS[sid].serie+'/'+sid+'/'+c.localId : '');
   list.forEach(c=>{
     if(!c || !c.id || c.localId==null) return;
     const sid = phSetOf(c); if(!SETS[sid]) return;
-    const e = { id:c.id, sid, ln:normNum(c.localId), loc:String(c.localId), name:c.name||'', img:c.image||'' };
+    const e = { id:c.id, sid, ln:normNum(c.localId), loc:String(c.localId), name:c.name||'', img:imgOf(c,sid) };
     const k = normName(c.name); if(!k) return;
     if(!byName.has(k)) byName.set(k, []); byName.get(k).push(e);
     bySetNum.set(sid+'|'+e.ln, e); byId.set(e.id, e);
@@ -2851,11 +2865,11 @@ const CARD_AR = 0.716;
 async function phLoadIndex(onMsg){
   if(PH.vidx) return PH.vidx;
   if(onMsg) onMsg('Chargement de l\'index visuel des cartes (une seule fois, ~5 Mo)…');
-  let rec = await idbGet('vidx_v2');
+  let rec = await idbGet('vidx_v3');   /* v3 : index enrichi (promos MEP, DP, SM…) */
   if(!rec || !rec.bin || !rec.ids || !rec.clu){
-    const g=u=>fetch(OCR_BASE+u).then(r=>{ if(!r.ok) throw new Error('index visuel absent'); return r; });
+    const g=u=>fetch(OCR_BASE+u+'?v=3').then(r=>{ if(!r.ok) throw new Error('index visuel absent'); return r; });
     const [ids, bin, clu, offs] = await Promise.all([ g('cardidx.json').then(r=>r.json()), g('cardidx.bin').then(r=>r.arrayBuffer()), g('cardclu.bin').then(r=>r.arrayBuffer()), g('cardclu.json').then(r=>r.json()) ]);
-    rec = { ids, bin, clu, offs }; idbSet('vidx_v2', rec);
+    rec = { ids, bin, clu, offs }; idbSet('vidx_v3', rec); idbSet('vidx_v2', null);
   }
   const N = rec.ids.length, raw = new Uint8Array(rec.bin), D = 88, V = new Float32Array(N*D*3);
   for(let n=0;n<N;n++){ for(let ch=0;ch<3;ch++){ let mu=0; for(let i=0;i<D;i++) mu+=raw[(n*D+i)*3+ch]; mu/=D; let sd=0; for(let i=0;i<D;i++){ const v=raw[(n*D+i)*3+ch]-mu; sd+=v*v; } sd=Math.sqrt(sd/D)||1; for(let i=0;i<D;i++) V[n*264+ch*D+i]=(raw[(n*D+i)*3+ch]-mu)/sd; } }
@@ -3059,7 +3073,7 @@ async function phAutoGrid(vidx, im, onMsg){
 
 function phCellARq(im, quad, rows, cols){ const sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height, P=(u,v)=>phQuadPt(quad,u,v), d=(a,b)=>Math.hypot((a[0]-b[0])*sw,(a[1]-b[1])*sh); return ((d(P(0,0),P(1,0))+d(P(0,1),P(1,1)))/2/cols)/((d(P(0,0),P(0,1))+d(P(1,0),P(1,1)))/2/rows); }
 /* ===== segmentation : repère les groupes de cartes posés sur un fond (table, tapis…) ===== */
-function phSegment(im){
+function phSegmentBlobs(im){
   const S=400, sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height, k=Math.min(1,S/Math.max(sw,sh)), w=Math.max(16,Math.round(sw*k)), h=Math.max(16,Math.round(sh*k));
   const cv=document.createElement('canvas'); cv.width=w; cv.height=h; const cx=cv.getContext('2d',{willReadFrequently:true}); cx.imageSmoothingQuality='high'; cx.drawImage(im,0,0,w,h); const d=cx.getImageData(0,0,w,h).data, N=w*h;
   const A=new Float32Array(N), B=new Float32Array(N), Lq=new Float32Array(N);
@@ -3092,6 +3106,58 @@ function phSegment(im){
     .map(c=>{ const pad=3; return { x0:Math.max(0,(c.x0-pad)/w), y0:Math.max(0,(c.y0-pad)/h), x1:Math.min(1,(c.x1+pad)/w), y1:Math.min(1,(c.y1+pad)/h), area:c.area/N }; });
   out.sort((a,b)=>b.area-a.area); return out.filter(b=>b.area>=0.1*out[0].area);
 }
+
+/* repérage des cartes posées à plat (table, parquet…) : d'abord carte par carte grâce au cadre sombre qui entoure chaque carte,
+   sinon par groupes de cartes (ancienne méthode). Chaque zone renvoyée indique combien de rangées / colonnes de cartes elle contient. */
+function phSegIslands(im, opt){
+  opt=opt||{};
+  const S=400, sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height, k=Math.min(1,S/Math.max(sw,sh)), w=Math.max(16,Math.round(sw*k)), h=Math.max(16,Math.round(sh*k));
+  const cv=document.createElement('canvas'); cv.width=w; cv.height=h; const cx=cv.getContext('2d',{willReadFrequently:true}); cx.imageSmoothingQuality='high'; cx.drawImage(im,0,0,w,h); const d=cx.getImageData(0,0,w,h).data, N=w*h;
+  const A=new Float32Array(N), B=new Float32Array(N), L=new Float32Array(N);
+  const f=c=>{ c/=255; return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4); }, g=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116;
+  for(let i=0;i<N;i++){ const r=f(d[i*4]), gg=f(d[i*4+1]), b=f(d[i*4+2]), X=(0.4124*r+0.3576*gg+0.1805*b)/0.95047, Y=0.2126*r+0.7152*gg+0.0722*b, Z=(0.0193*r+0.1192*gg+0.9505*b)/1.08883, fx=g(X), fy=g(Y), fz=g(Z); L[i]=116*fy-16; A[i]=500*(fx-fy); B[i]=200*(fy-fz); }
+  const med=a=>{ const s=Float32Array.from(a).sort(); return s[s.length>>1]; };
+  /* couleur du fond : classe la plus fréquente de l'anneau extérieur */
+  const bw=Math.max(2,Math.round(0.08*Math.min(w,h))), ring=[]; for(let y=0;y<h;y++) for(let x=0;x<w;x++) if(x<bw||y<bw||x>=w-bw||y>=h-bw) ring.push(y*w+x);
+  const key=i=>Math.floor(L[i]/8)+'|'+Math.floor(A[i]/6)+'|'+Math.floor(B[i]/6), hist=new Map(); ring.forEach(i=>{ const kk=key(i); hist.set(kk,(hist.get(kk)||0)+1); });
+  let bk=null, bc=0; hist.forEach((c,kk)=>{ if(c>bc){ bc=c; bk=kk; } }); if(!bk) return [];
+  const bin=ring.filter(i=>key(i)===bk); let ma=med(bin.map(i=>A[i])), mb=med(bin.map(i=>B[i])), ml=med(bin.map(i=>L[i]));
+  const near=ring.filter(i=>Math.hypot(A[i]-ma,B[i]-mb)<8&&Math.abs(L[i]-ml)<14); if(near.length>20){ ma=med(near.map(i=>A[i])); mb=med(near.map(i=>B[i])); ml=med(near.map(i=>L[i])); }
+  const sd=near.length>20?Math.sqrt(near.reduce((s,i)=>s+(A[i]-ma)**2+(B[i]-mb)**2,0)/near.length):3, thr=Math.max(6,sd*2.2+2);
+  /* intérieur des cartes : ni le fond (bois, table…), ni le cadre sombre qui entoure chaque carte → chaque carte devient un îlot séparé */
+  let m=new Uint8Array(N); const dark=opt.dark!=null?opt.dark:Math.min(ml-10, 30);
+  for(let i=0;i<N;i++){ const dc=Math.hypot(A[i]-ma,B[i]-mb), dl=L[i]-ml; m[i]=((dc>thr || dl>18) && L[i]>dark)?1:0; }
+  const er=(src)=>{ const o=new Uint8Array(N); for(let y=1;y<h-1;y++) for(let x=1;x<w-1;x++){ const i=y*w+x; o[i]=src[i]&&src[i-1]&&src[i+1]&&src[i-w]&&src[i+w]?1:0; } return o; };
+  const di=(src)=>{ const o=new Uint8Array(N); for(let y=0;y<h;y++) for(let x=0;x<w;x++){ const i=y*w+x; o[i]=src[i]||(x>0&&src[i-1])||(x<w-1&&src[i+1])||(y>0&&src[i-w])||(y<h-1&&src[i+w])?1:0; } return o; };
+  m=di(er(m));                                        /* ouverture : retire les ponts d'un pixel */
+  /* composantes + remplissage des trous de chaque îlot (zones sombres de l'illustration) */
+  const lab=new Int32Array(N); let n=0; const comps=[];
+  for(let i0=0;i0<N;i0++){ if(!m[i0]||lab[i0]) continue; n++; const c=[i0]; lab[i0]=n; let x0=w,y0=h,x1=0,y1=0;
+    for(let t=0;t<c.length;t++){ const i=c[t], x=i%w, y=(i/w)|0; if(x<x0)x0=x; if(x>x1)x1=x; if(y<y0)y0=y; if(y>y1)y1=y;
+      if(x>0&&m[i-1]&&!lab[i-1]){ lab[i-1]=n; c.push(i-1); } if(x<w-1&&m[i+1]&&!lab[i+1]){ lab[i+1]=n; c.push(i+1); } if(y>0&&m[i-w]&&!lab[i-w]){ lab[i-w]=n; c.push(i-w); } if(y<h-1&&m[i+w]&&!lab[i+w]){ lab[i+w]=n; c.push(i+w); } }
+    comps.push({x0,y0,x1:x1+1,y1:y1+1,area:c.length,bw:x1-x0+1,bh:y1-y0+1}); }
+  const big=comps.filter(c=>c.area>=0.004*N);
+  /* taille d'une carte = médiane des îlots qui ont la forme d'une carte ; sans au moins 3 cartes nettes, on laisse la main à l'autre méthode */
+  const isCard=c=>{ const ar=Math.min(c.bw,c.bh)/Math.max(c.bw,c.bh); return ar>=0.58 && ar<=0.86 && c.area/(c.bw*c.bh)>=0.6; };
+  const cards=big.filter(isCard); if(cards.length<3) return null;
+  const mw=med(cards.map(c=>c.bw)), mh=med(cards.map(c=>c.bh)), ca=mw*mh, out=[];
+  let covered=0;
+  for(const c of big){
+    let rows=1, cols=1;
+    if(!(isCard(c) && c.bw<1.4*mw && c.bh<1.4*mh)){ rows=Math.max(1,Math.round(c.bh/mh)); cols=Math.max(1,Math.round(c.bw/mw)); }
+    if(c.area<0.4*ca || c.area<0.35*rows*cols*ca) continue;            /* trop petit ou trop creux pour contenir ces cartes */
+    if(rows*cols>12) continue;                                            /* très grande zone : c'est autre chose (classeur, tapis…) */
+    covered+=rows*cols;
+    /* l'îlot est l'intérieur de la carte : on rajoute son cadre sombre */
+    const px=Math.round(0.08*mw), py=Math.round(0.08*mh);
+    out.push({ x0:Math.max(0,(c.x0-px)/w), y0:Math.max(0,(c.y0-py)/h), x1:Math.min(1,(c.x1+px)/w), y1:Math.min(1,(c.y1+py)/h), area:c.area/N, rows, cols, islands:true });
+  }
+  if(out.length<2) return null;
+  const rh=mh/h; out.sort((a,b)=>Math.round(a.y0/rh*1.5)-Math.round(b.y0/rh*1.5) || a.x0-b.x0);
+  out.islands=true; out.cardW=mw/w; out.cardH=mh/h; out.cards=covered; return out;
+}
+
+function phSegment(im){ try{ const r=phSegIslands(im); if(r && r.length) return r; }catch(e){ console.warn('îlots',e); } return phSegmentBlobs(im); }
 
 /* ===== détection de la grille par les séparations entre cartes (rangées / colonnes), avec perspective ===== */
 const PH_TILTS = Array.from({length:19},(_,i)=>-0.18+i*0.02);
@@ -3536,7 +3602,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.4.2';
+const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.5.0';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
@@ -3627,6 +3693,7 @@ async function fxSegCore(url, ph, onMsg){
     try{
       const f={file:new File([blob],'z.jpg',{type:'image/jpeg'}), url:cu, thumb:'', edit:false}; PH.files=[f]; PH.items=[];
       if(onMsg) onMsg(`Zone ${z}/${use.length} · lecture des cartes…`);
+      if(bx.rows){ f.im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Zone illisible.')); i.src=cu; }); f.grid={quad:[[0,0],[1,0],[1,1],[0,1]], rows:bx.rows, cols:bx.cols}; }
       await O.phPrepare(f); await O.phRunVis(); const g=f.grid;
       const mp=p=>[Math.round((bx.x0+p[0]*(bx.x1-bx.x0))*1000)/1000, Math.round((bx.y0+p[1]*(bx.y1-bx.y0))*1000)/1000], pl=i=>{ try{ return i.cell?fxPoly(g,i.cell[0],i.cell[1]).map(mp):null; }catch(_){ return null; } };
       PH.items.forEach(i=>{ if(i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length) cs.push({id:i.cands[0].id, conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,5).map(c=>c.id), crop:i.crop||'', poly:pl(i), ph});
@@ -3668,7 +3735,7 @@ async function fxScanPhotos(files, onMsg){
         try{   /* plusieurs groupes de cartes posés sur un fond (table…) : lecture par zones plutôt qu'une grille unique */
           const im0=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url; }), sg=O.phSegment(im0);
           if(sg.length>=2){ const ux0=Math.min(...sg.map(b=>b.x0)), ux1=Math.max(...sg.map(b=>b.x1)), uy0=Math.min(...sg.map(b=>b.y0)), uy1=Math.max(...sg.map(b=>b.y1));
-            if((ux1-ux0)*(uy1-uy0)<0.75){ if(onMsg) onMsg(tag+'plusieurs groupes de cartes : lecture par zones…'); const rz=await fxSegCore(url,n,m=>onMsg&&onMsg(tag+m)); if(rz&&rz.cs.length) r=rz; } }
+            if((ux1-ux0)*(uy1-uy0)<0.75 || sg.islands){ if(onMsg) onMsg(tag+'plusieurs groupes de cartes : lecture par zones…'); const rz=await fxSegCore(url,n,m=>onMsg&&onMsg(tag+m)); if(rz&&rz.cs.length) r=rz; } }
         }catch(e){ console.warn('zones',e); }
         if(r){   /* la lecture par zones a donné quelque chose : on compare quand même avec une grille sur toute la photo et on garde la meilleure */
           try{ const gc=x=>x.cs.filter(c=>c.conf==='sure'||c.conf==='probable').length, ra=await run('auto'); if(!ra.invalid && gc(ra)>gc(r)) r=ra; }catch(e){ console.warn('grille',e); } }
@@ -3676,14 +3743,16 @@ async function fxScanPhotos(files, onMsg){
         if(r.invalid){ try{ if(onMsg) onMsg(tag+'cartes non alignées : lecture par zones…'); const rz=await fxSegCore(url,n,m=>onMsg&&onMsg(tag+m)); if(rz&&rz.cs.length) r=rz; }catch(e){ console.warn('zones',e); } if(r.invalid) r=await run('single'); }
         for(const m of ['single','full']){ if(good(r)) break; if(m==='single' && r.grid==='1x1') continue; const r2=await run(m); if(r2.cs.length && (!r.cs.length || good(r2))) r=r2; }
         read++; grids[n]=r.g; lost+=r.lc.length; r.lc.forEach(l=>lostCells.push(l));
-        for(const c of r.cs){ if(c.conf!=='sure'&&c.conf!=='probable') continue; const o=cells.get(c.id); if(!o) cells.set(c.id,Object.assign({},c)); else { o.qty=Math.max(o.qty,c.qty); if(c.s1>o.s1) Object.assign(o,{s1:c.s1,conf:c.conf,crop:c.crop,poly:c.poly,ph:c.ph,alt:c.alt}); } }   // même carte sur plusieurs photos : comptée une fois
+        /* plusieurs exemplaires d'une même carte sur UNE photo = plusieurs cartes ; la même carte revue sur une AUTRE photo = la même carte (on garde la photo qui en montre le plus) */
+        const mine=new Map(); for(const c of r.cs){ if(c.conf!=='sure'&&c.conf!=='probable') continue; if(!mine.has(c.id)) mine.set(c.id,[]); mine.get(c.id).push(Object.assign({},c)); }
+        mine.forEach((arr,id)=>{ const o=cells.get(id), q=a=>a.reduce((t,x)=>t+(x.qty||1),0), best=a=>Math.max(...a.map(x=>x.s1||0)); if(!o || q(arr)>q(o) || (q(arr)===q(o) && best(arr)>best(o))) cells.set(id,arr); });
       } finally { URL.revokeObjectURL(url); }
     }
   } finally {
     clearInterval(poll); PH.files=keep.files; PH.items=keep.items; PH.quiet=keep.quiet; try{ O.renderPhoto(); }catch(e){}
     const s=$('phStatus'); if(s) s.innerHTML='';
   }
-  return { cells:[...cells.values()], lost, lostCells, read, photos, grids };
+  return { cells:[...cells.values()].flat(), lost, lostCells, read, photos, grids };
 }
 async function fxSum(id){ return fxSummary(await tcCard(id,false)); }
 /* titre + photos -> { pick | lot | cands, note } */
@@ -3702,8 +3771,8 @@ async function fxPhotoDecide(title, files, onMsg){
     const o=await fxSum(top.id); return { pick:o, media, scanCard:sCard(o.id), note: top.conf==='sure' ? 'Carte reconnue sur la photo.' : 'Carte probable sur la photo : vérifie.' };
   }
   const list=ok.map(c=>({id:c.id,q:c.qty,src:c})); if(T && !list.some(c=>c.id===T.id)) list.push({id:T.id,q:1,src:null});
-  const cards=[]; let k=0, value=0;
-  await Promise.all(Array.from({length:4},async()=>{ while(k<Math.min(list.length,40)){ const c=list[k++]; try{ const d=await fxSum(c.id); const p1=d.mkt!=null && d.mkt>=0.3 ? d.mkt : 0; cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,cm:d.cm||'',q:c.q,p:p1, conf:c.src?c.src.conf:'titre', s1:c.src?c.src.s1:null, alts:c.src?c.src.alt:[], ph:c.src?c.src.ph:null, poly:c.src?c.src.poly:null, _crop:c.src?c.src.crop:''}); }catch(e){} } }));
+  const cards=[], sumOf=new Map(); let k=0, value=0;
+  await Promise.all(Array.from({length:4},async()=>{ while(k<Math.min(list.length,80)){ const c=list[k++]; try{ if(!sumOf.has(c.id)) sumOf.set(c.id, fxSum(c.id)); const d=await sumOf.get(c.id); const p1=d.mkt!=null && d.mkt>=0.3 ? d.mkt : 0; cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,cm:d.cm||'',q:c.q,p:p1, conf:c.src?c.src.conf:'titre', s1:c.src?c.src.s1:null, alts:c.src?c.src.alt:[], ph:c.src?c.src.ph:null, poly:c.src?c.src.poly:null, _crop:c.src?c.src.crop:''}); }catch(e){} } }));
   cards.sort((a,b)=>b.p*b.q-a.p*a.q); cards.forEach((c,i)=>{ c.k='c'+i; if(c._crop) media.crops[c.k]=c._crop; delete c._crop; value+=c.p*c.q; });
   const lostCells=sc.lostCells.map((l,i)=>{ if(l.crop) media.crops['l'+i]=l.crop; return { k:'l'+i, ph:l.ph, poly:l.poly }; });
   const n=cards.reduce((a,c)=>a+c.q,0);
@@ -3743,7 +3812,7 @@ function fxViewerRender(){
   const ov=polys.length?`<svg class="fx-ov" viewBox="0 0 1 1" preserveAspectRatio="none">${polys.map(o=>`<polygon data-fxv="card" data-i="${o.i}" points="${o.poly.map(p=>p.join(',')).join(' ')}" class="${o.i===FXV.i?'cur':''}${o.e.kind==='lost'?' lost':''}${o.e.c&&o.e.c.ok?' ok':''}"></polygon>`).join('')}</svg>`+polys.map(o=>{ const cx=o.poly.reduce((a,p)=>a+p[0],0)/4*100, cy=o.poly.reduce((a,p)=>a+p[1],0)/4*100; return `<span class="fx-lab${o.i===FXV.i?' cur':''}" style="left:${cx}%;top:${cy}%">${o.i+1}</span>`; }).join(''):'';
   const z=FXV.zoom||1, w0=$('fxPwz'), sx=w0?w0.scrollLeft:0, sy=w0?w0.scrollTop:0, box=document.querySelector('#fxMd .fx-md-box'); if(box) box.classList.toggle('big',!!FXV.big);
   $('fxMdL').innerHTML = n ? `<div class="fx-pwo"><div class="fx-pwz" id="fxPwz"><div class="fx-pw${z>1?' z':''}"${z>1?` style="width:${Math.round(z*100)}%"`:''}><img src="${esc(P[FXV.ph])}" alt="Photo ${FXV.ph+1}" referrerpolicy="no-referrer">${ed?(ed.frame?fxFrameCtx(ents,FXV.ph,ed.ref&&(ed.ref.c||ed.ref.l)):'')+fxEditOverlay(ed):ov}</div></div>${n>1&&!ed?`<button type="button" class="fx-nav l" data-fxv="pp" aria-label="Photo précédente">‹</button><button type="button" class="fx-nav r" data-fxv="pn" aria-label="Photo suivante">›</button>`:''}<div class="fx-zb"><button type="button" data-fxv="zout" aria-label="Dézoomer" title="Dézoomer">−</button><span>${Math.round(z*100)} %</span><button type="button" data-fxv="zin" aria-label="Zoomer" title="Zoomer (ou Ctrl + molette)">＋</button><button type="button" data-fxv="big" aria-label="Agrandir la fenêtre" title="${FXV.big?'Réduire':'Agrandir'} la fenêtre">${FXV.big?'⤡':'⤢'}</button></div></div>
-    ${canEd&&!ed?`<div class="fx-acts" style="margin:8px 0 0"><button type="button" class="btn small" data-fxv="edit">✂️ Ajuster le découpage de cette photo</button><button type="button" class="btn small" data-fxv="fnew">➕ Ajouter un cadre</button><button type="button" class="btn small" data-fxv="seg" title="Pour les cartes posées sur une table, sans grille : repère chaque groupe de cartes puis les relit">🧭 Détection libre</button>${n>1?`<button type="button" class="btn small danger" data-fxv="delph">${FXV.delArm===FXV.ph?'⚠ Confirmer : supprimer la photo '+(FXV.ph+1):'🗑 Supprimer cette photo'}</button>`:''}</div>`:''}${FXV.busy&&!ed?`<div class="hint" style="margin:8px 0 0"><span class="spinner" aria-hidden="true"></span> ${esc(FXV.busyMsg||'Lecture…')}</div>`:''}<div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre · double-clic pour le déplacer)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
+    ${canEd&&!ed?`<div class="fx-acts" style="margin:8px 0 0"><button type="button" class="btn small" data-fxv="edit">✂️ Ajuster le découpage de cette photo</button><button type="button" class="btn small" data-fxv="fnew">➕ Ajouter un cadre</button><button type="button" class="btn small" data-fxv="seg" title="Pour les cartes posées sur une table, sans grille : repère chaque groupe de cartes puis les relit">🧭 Détection libre</button>${polys.length?`<button type="button" class="btn small danger" data-fxv="clrph" title="Retire toutes les cartes repérées sur cette photo (la photo est gardée)">${FXV.clrArm===FXV.ph?'⚠ Confirmer : retirer les '+polys.length+' cadres':'🧹 Retirer tous les cadres'}</button>`:''}${n>1?`<button type="button" class="btn small danger" data-fxv="delph">${FXV.delArm===FXV.ph?'⚠ Confirmer : supprimer la photo '+(FXV.ph+1):'🗑 Supprimer cette photo'}</button>`:''}</div>`:''}${FXV.busy&&!ed?`<div class="hint" style="margin:8px 0 0"><span class="spinner" aria-hidden="true"></span> ${esc(FXV.busyMsg||'Lecture…')}</div>`:''}<div class="fx-cnt">Photo ${FXV.ph+1} / ${n}${polys.length?` · ${polys.length} carte${polys.length>1?'s':''} repérée${polys.length>1?'s':''} (clique un cadre · double-clic pour le déplacer)`:''}</div>${n>1?`<div class="fx-strip">${P.map((p,i)=>`<button type="button" class="${i===FXV.ph?'on':''}" data-fxv="ph" data-i="${i}"><img src="${esc(p)}" alt="Photo ${i+1}" referrerpolicy="no-referrer"></button>`).join('')}</div>`:''}` : '<div class="hint">Pas de photo enregistrée.</div>';
   { const w1=$('fxPwz'); if(w1){ if(FXV.focus&&z>1){ FXV.focus=false; const cur=ents[FXV.i], po=cur&&(cur.c||cur.l)&&(cur.c||cur.l).poly, im=w1.querySelector('img'); if(po&&im){ const go=()=>{ const cx=po.reduce((a,p)=>a+p[0],0)/4, cy=po.reduce((a,p)=>a+p[1],0)/4; w1.scrollLeft=cx*im.clientWidth-w1.clientWidth/2; w1.scrollTop=cy*im.clientHeight-w1.clientHeight/2; }; if(im.complete&&im.clientHeight) go(); else im.addEventListener('load',go,{once:true}); } } else { w1.scrollLeft=sx; w1.scrollTop=sy; } } }
   $('fxMdR').innerHTML = ed ? (ed.frame?fxFramePane(ed):fxEditPane(ed)) : ents.length ? fxReviewHTML(it,ents) : '<div class="hint">Les cartes lues apparaissent ici quand l\'annonce est analysée sur photo.</div>';
 }
@@ -3760,7 +3829,7 @@ function fxReviewHTML(it,ents){
   setTimeout(()=>alts.forEach(id=>{ if(!FXV.sums[id]) fxSumC(id).then(()=>{ const box=$('fxAlts'); if(box&&FXV.i===i) box.innerHTML=fxAltsHTML(c,alts); const a=document.querySelector('.fb-cm'), sm=FXV.sums[c.id]; if(a&&sm&&sm.cm&&FXV.i===i){ a.href=cmUrl(sm.cm); if(!c.cm) c.cm=sm.cm; } }); }),0);
   return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="Carte sur la photo">`:'<div class="fl-noimg">—</div>'}<figcaption>Sur la photo</figcaption></figure><figure>${c.img?`<img src="${esc(c.img)}" alt="Carte trouvée" referrerpolicy="no-referrer">`:'<div class="fl-noimg">?</div>'}<figcaption>Carte trouvée</figcaption></figure></div>
     ${(!cr && !c.poly)?'<div class="fx-warn">ℹ️ Cette annonce a été analysée avant l\'ajout des zones sur la photo. <b>Re-clique sur l\'icône de l\'extension depuis la page Vinted</b> : l\'annonce sera mise à jour (photos relues) avec les cadres et les cartes découpées.</div>':''}
-    <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div><div class="fb-pair"><a class="fb-cm" href="${esc(fxCmHref(Object.assign({},c,{cm:(FXV.sums[c.id]&&FXV.sums[c.id].cm)||c.cm})))}" target="_blank" rel="noopener noreferrer" title="Ouvre la fiche de la carte sur Cardmarket pour vérifier le prix">🛒 Prix Cardmarket <span aria-hidden="true">↗</span></a><a class="fb-ebay" href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer" title="Ventes terminées sur eBay.fr pour cette carte (prix réellement payés)">🏷️ Ventes eBay <span aria-hidden="true">↗</span></a></div>${cmBoxHTML(c, c.p||0, 'viewer')}${fxEbBox(c)}</div>
+    <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div><div class="fb-pair"><a class="fb-cm" href="${esc(fxCmHref(Object.assign({},c,{cm:(FXV.sums[c.id]&&FXV.sums[c.id].cm)||c.cm})))}" target="_blank" rel="noopener noreferrer" title="Ouvre la fiche de la carte sur Cardmarket pour vérifier le prix" aria-label="Cardmarket"><img class="brand" src="https://www.google.com/s2/favicons?domain=cardmarket.com&sz=64" alt="Cardmarket" width="18" height="18" referrerpolicy="no-referrer" onerror="this.replaceWith('CM')"></a><a class="fb-ebay" href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer" title="Ventes terminées sur eBay.fr pour cette carte (prix réellement payés)" aria-label="eBay"><img class="brand" src="https://www.google.com/s2/favicons?domain=ebay.fr&sz=64" alt="eBay" width="18" height="18" referrerpolicy="no-referrer" onerror="this.replaceWith('eBay')"></a></div>${cmBoxHTML(c, c.p||0, 'viewer')}${fxEbBox(c)}</div>
     ${alts.length>1?`<div class="hint" style="margin:8px 0 4px">Ce n'est pas la bonne impression ? Choisis-en une autre :</div><div class="fx-alts" id="fxAlts">${fxAltsHTML(c,alts)}</div>`:''}${search}
     <div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀</button><button type="button" class="btn primary small" data-fxv="ok">✓ Valider et suivante</button><button type="button" class="btn small" data-fxv="next">▶</button><button type="button" class="btn small danger" data-fxv="rm">🗑 Retirer du lot</button></div>
     <div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Déplacer / ajuster le cadre</button></div>`;
@@ -3807,11 +3876,14 @@ async function fxRescanApply(it, ph, res){
   }
   const L=it.lot; L.lostCells=L.lostCells||[];
   L.cards=L.cards.filter(c=>c.ph!==ph || c.conf==='manual'); L.lostCells=L.lostCells.filter(l=>l.ph!==ph);
-  const nk=Date.now().toString(36);
+  const nk=Date.now().toString(36), sums=new Map();
+  /* même carte : soit sur une autre photo (déjà comptée), soit au même endroit de cette photo ; ailleurs sur la photo = un exemplaire de plus */
+  const bb=q=>q&&q.length?{x0:Math.min(...q.map(p=>p[0])),y0:Math.min(...q.map(p=>p[1])),x1:Math.max(...q.map(p=>p[0])),y1:Math.max(...q.map(p=>p[1]))}:null;
+  const same=(x,c)=>{ if(x.ph!==ph) return true; const a=bb(x.poly), b=bb(c.poly); if(!a||!b) return true; const ix=Math.max(0,Math.min(a.x1,b.x1)-Math.max(a.x0,b.x0)), iy=Math.max(0,Math.min(a.y1,b.y1)-Math.max(a.y0,b.y0)), i=ix*iy; return i/((a.x1-a.x0)*(a.y1-a.y0)+(b.x1-b.x0)*(b.y1-b.y0)-i)>0.35; };
   for(const c of good){
-    const ex=L.cards.find(x=>x.id===c.id);
+    const ex=L.cards.find(x=>x.id===c.id && same(x,c));
     if(ex){ if(ex.conf!=='manual' && c.s1>(ex.s1||0)){ Object.assign(ex,{s1:c.s1,conf:c.conf,ph,poly:c.poly,alts:c.alt}); media.crops[ex.k]=c.crop; } continue; }
-    const d=await fxSum(c.id).catch(()=>null); if(!d) continue; const k='n'+nk+L.cards.length; media.crops[k]=c.crop;
+    if(!sums.has(c.id)) sums.set(c.id, fxSum(c.id).catch(()=>null)); const d=await sums.get(c.id); if(!d) continue; const k='n'+nk+L.cards.length; media.crops[k]=c.crop;
     L.cards.push({id:c.id,name:d.name,ed:d.ed,number:d.number,img:d.img,cm:d.cm||'',q:c.qty,p:d.mkt!=null&&d.mkt>=0.3?d.mkt:0,conf:c.conf,s1:c.s1,alts:c.alt,ph,poly:c.poly,k});
   }
   res.lc.forEach((l,i)=>{ const k='l'+nk+i; media.crops[k]=l.crop; L.lostCells.push({k,ph:l.ph,poly:l.poly}); });
@@ -3819,11 +3891,32 @@ async function fxRescanApply(it, ph, res){
   it.scanNote=`Lot lu sur les photos (découpage ajusté) : ${L.n} carte${L.n>1?'s':''} reconnue${L.n>1?'s':''} ≈ ${L.value.toFixed(2)} €${L.lost?` · ${L.lost} non lue${L.lost>1?'s':''} (comptée${L.lost>1?'s':''} 0 €)`:''}. Vérifie sur les photos.`;
   await FXI.put(it.id,media); await fxSave(it);
 }
-document.addEventListener('pointerdown',e=>{ const h=e.target.closest&&e.target.closest('.fx-hd'); if(!h) return; e.preventDefault(); const hd=h.dataset.hd; FXV.drag=hd==='m'?'m':+hd; if(hd==='m'&&FXV.edit) FXV.dragStart={x:e.clientX,y:e.clientY,q:FXV.edit.quad.map(p=>p.slice())}; try{ h.setPointerCapture(e.pointerId); }catch(_){} });
+document.addEventListener('pointerdown',e=>{ const h=e.target.closest&&e.target.closest('.fx-hd'); if(!h) return; e.preventDefault(); const hd=h.dataset.hd; FXV.drag=hd==='m'?'m':+hd; if(hd==='m'&&FXV.edit) FXV.dragStart={x:e.clientX,y:e.clientY,q:FXV.edit.quad.map(p=>p.slice())}; try{ h.setPointerCapture(e.pointerId); }catch(_){} fxLoupe(e); });
 document.addEventListener('pointermove',e=>{ if(FXV.drag==null||!FXV.edit) return; const img=document.querySelector('.fx-pw>img'); if(!img) return; const r=img.getBoundingClientRect();
   if(FXV.drag==='m'){ const st=FXV.dragStart; if(!st) return; let dx=(e.clientX-st.x)/r.width, dy=(e.clientY-st.y)/r.height; const xs=st.q.map(p=>p[0]), ys=st.q.map(p=>p[1]); dx=Math.max(-Math.min(...xs),Math.min(1-Math.max(...xs),dx)); dy=Math.max(-Math.min(...ys),Math.min(1-Math.max(...ys),dy)); FXV.edit.quad=st.q.map(p=>[Math.round((p[0]+dx)*1000)/1000,Math.round((p[1]+dy)*1000)/1000]); fxEditDraw(); return; }
   const x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)), y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)); FXV.edit.quad[FXV.drag]=[Math.round(x*1000)/1000,Math.round(y*1000)/1000]; fxEditDraw(); });
-document.addEventListener('pointerup',()=>{ FXV.drag=null; });
+document.addEventListener('pointerup',()=>{ FXV.drag=null; fxLoupe(null); });
+/* loupe : pendant qu'on tire un coin, un cercle agrandi (×3) montre ce qu'il y a sous le coin, le doigt ou le curseur ne cachent plus rien */
+function fxLoupe(e){
+  let L=document.getElementById('fxLoupe');
+  if(!e || FXV.drag==null || FXV.drag==='m' || !FXV.edit){ if(L) L.hidden=true; return; }
+  const img=document.querySelector('.fx-pw>img'); if(!img || !img.naturalWidth) return;
+  if(!L){ L=document.createElement('div'); L.id='fxLoupe'; L.className='fx-loupe'; L.setAttribute('aria-hidden','true'); L.innerHTML='<canvas width="300" height="300"></canvas>'; document.body.appendChild(L); }
+  const SZ=150, Z=3, r=img.getBoundingClientRect(), nw=img.naturalWidth, nh=img.naturalHeight, sc=r.width/nw;
+  const pt=FXV.edit.quad[FXV.drag], cx=pt[0]*nw, cy=pt[1]*nh, src=SZ/(sc*Z);              // zone de la photo couverte par la loupe (px réels)
+  const cv=L.firstChild, k=cv.width/SZ, g=cv.getContext('2d'); g.setTransform(k,0,0,k,0,0);
+  g.fillStyle='#111'; g.fillRect(0,0,SZ,SZ); g.imageSmoothingEnabled=true; g.imageSmoothingQuality='high';
+  try{ g.drawImage(img, cx-src/2, cy-src/2, src, src, 0, 0, SZ, SZ); }catch(_){}
+  const T=q=>[(q[0]*nw-(cx-src/2))/src*SZ,(q[1]*nh-(cy-src/2))/src*SZ], Q=FXV.edit.quad.map(T);
+  g.lineWidth=2; g.strokeStyle='#0aa8d6'; g.beginPath(); Q.forEach((q,i)=>i?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1])); g.closePath(); g.stroke();
+  g.strokeStyle='rgba(255,255,255,.9)'; g.lineWidth=1; g.beginPath(); g.moveTo(SZ/2,SZ/2-14); g.lineTo(SZ/2,SZ/2+14); g.moveTo(SZ/2-14,SZ/2); g.lineTo(SZ/2+14,SZ/2); g.stroke();
+  g.fillStyle='#ffd23f'; g.beginPath(); g.arc(SZ/2,SZ/2,3,0,Math.PI*2); g.fill();
+  // placée au-dessus et à gauche du pointeur, retournée si elle sortirait de l'écran
+  let lx=e.clientX-SZ-28, ly=e.clientY-SZ-28; if(lx<6) lx=e.clientX+28; if(ly<6) ly=e.clientY+28; if(lx+SZ>innerWidth-6) lx=innerWidth-SZ-6;
+  L.style.left=lx+'px'; L.style.top=ly+'px'; L.hidden=false;
+}
+document.addEventListener('pointermove',e=>{ if(FXV.drag!=null && FXV.drag!=='m') fxLoupe(e); });
+document.addEventListener('pointercancel',()=>fxLoupe(null));
 
 
 /* --- ajustement d'un seul cadre (une carte) : déplacer / déformer le cadre puis relire uniquement cette carte --- */
@@ -3857,6 +3950,15 @@ async function fxFrameApply(it, ed, res){
   else { media.crops[nk]=crop; L.lostCells.push({k:nk,ph,poly}); }
   L.cards.sort((a,b)=>b.p*b.q-a.p*a.q); L.lost=L.lostCells.length; if(L.cards.length) fxLotCalc(it); else { L.n=0; L.value=0; it.mkt=0; }
   await FXI.put(it.id,media); await fxSave(it); return nk;
+}
+/* retire toutes les cartes (lues ou non) repérées sur une photo, sans supprimer la photo */
+async function fxClearFrames(it, ph){
+  let n=0;
+  if(it.lot){ const L=it.lot, b=L.cards.length+(L.lostCells||[]).length; L.cards=L.cards.filter(c=>c.ph!==ph); L.lostCells=(L.lostCells||[]).filter(l=>l.ph!==ph); L.lost=L.lostCells.length; n=b-L.cards.length-L.lostCells.length;
+    if(L.cards.length) fxLotCalc(it); else { L.n=0; L.value=0; it.mkt=0; } }
+  else if(it.scanCard && it.scanCard.ph===ph){ delete it.scanCard; n=1; }
+  FXV.edit=null; const es=fxEntries(it); FXV.i=Math.max(0,Math.min(FXV.i,es.length-1));
+  await fxSave(it); return n;
 }
 async function fxDeletePhoto(it, ph){
   const media=FXV.media, useMedia=!!(media&&media.photos&&media.photos.length), arr=useMedia?media.photos:(it.photos||[]); if(arr.length<=1) throw new Error('Il faut garder au moins une photo.');
@@ -3944,7 +4046,7 @@ function cmBoxHTML(x, ref, tag){
     <button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" data-cmforce="1">↻ Réessayer</button></div>`;
   if(!e) return `<div class="fx-cm">${head}<div class="hint" style="margin:4px 0 6px">Le prix tendance ci-dessus mélange toutes les langues et tous les états.</div>
     <button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" ${ok?'':'disabled'} title="${ok?'Lit les offres françaises en Near Mint sur Cardmarket (via l\'extension)':'Nécessite l\'extension PikaScan v1.4.0'}">🇫🇷 Lire les offres françaises</button>
-    ${ok?'':'<div class="hint" style="margin:6px 0 0">Nécessite l\'extension PikaScan v1.4.0.</div>'}</div>`;
+    ${ok?'':'<div class="hint" style="margin:6px 0 0">Nécessite l\'extension PikaScan à jour.</div>'}</div>`;
   if(e.empty || !e.n) return `<div class="fx-cm">${head}<div class="hint" style="margin:4px 0 6px">Aucune offre française en Near Mint pour cette carte (${esc(cmAge(e))}${e.rows?` · ${e.rows} ligne${e.rows>1?'s':''} vue${e.rows>1?'s':''} sur la page`:''}${e.hl?` · page de ${Math.round(e.hl/1024)} Ko`:''}). Le prix tendance reste la seule référence.</div>
     ${e.dbg?`<details class="eb-det"><summary>Diagnostic de lecture (à m'envoyer si le chiffre semble faux)</summary><textarea readonly rows="5" style="width:100%;font-size:11px">${esc(e.dbg)}</textarea></details>`:''}
     <button type="button" class="btn small cm-go" data-cmid="${esc(id)}" data-cmtag="${esc(tag||'')}" data-cmforce="1">↻ Relire</button></div>`;
@@ -4094,6 +4196,11 @@ async function fxViewerClick(e){
     }catch(err){ toast(String(err&&err.message||err)); }
     FXV.busy=false; FXV.busyMsg=''; fxViewerRender(); return;
   }
+  if(a==='clrph'){
+    if(FXV.clrArm!==FXV.ph){ FXV.clrArm=FXV.ph; fxViewerRender(); setTimeout(()=>{ if(FXV.clrArm!=null){ FXV.clrArm=null; if($('fxMd')) fxViewerRender(); } },4500); return; }
+    FXV.clrArm=null; try{ const k=await fxClearFrames(it,FXV.ph); toast(k+' cadre'+(k>1?'s':'')+' retiré'+(k>1?'s':'')+' de la photo '+(FXV.ph+1)+'. Ajoute-les avec « ➕ Ajouter un cadre » ou relance une détection.'); }catch(err){ toast(String(err&&err.message||err)); }
+    fxViewerRender(); renderFlux(); return;
+  }
   if(a==='delph'){
     if(n0<=1) return;
     if(FXV.delArm!==FXV.ph){ FXV.delArm=FXV.ph; fxViewerRender(); setTimeout(()=>{ if(FXV.delArm!=null){ FXV.delArm=null; if($('fxMd')) fxViewerRender(); } },4500); return; }
@@ -4222,6 +4329,7 @@ async function fluxPull(){
   }
   if(added){ renderFlux(); toast(added+' nouvelle'+(added>1?'s':'')+' annonce'+(added>1?'s':'')+' dans les annonces.'); }
 }
+function fxSite(it){ return /leboncoin\.fr/.test(String(it&&it.url||'')) ? {dom:'leboncoin.fr', name:'Leboncoin'} : {dom:'vinted.fr', name:'Vinted'}; }
 function fxVinted(it){ return it.url || ('https://www.vinted.fr/catalog?search_text='+encodeURIComponent(((it.name||it.title||'')+' '+(it.number||'')).trim())); }
 function fxCmHref(c){ return c&&c.cm?cmUrl(c.cm):'https://www.cardmarket.com/fr/Pokemon/Products/Singles?searchString='+encodeURIComponent(((c&&c.name)||'')+' '+String((c&&c.number)||'').split('/')[0])+'&language=2'; }
 function fxEbayHref(c){ const num=String((c&&c.number)||'').split('/')[0]; return 'https://www.ebay.fr/sch/i.html?_nkw='+encodeURIComponent(((c&&c.name)||'')+' '+num+' pokemon -lot -psa -cgc -bgs -proxy -custom')+'&LH_Sold=1&LH_Complete=1&_sop=13'; }
@@ -4256,7 +4364,7 @@ function fxDescHTML(it){
 function fxItemHTML(it){
   const ev=fxEval(it), v=ev.v, when=dtFmt(it.t);
   const img = it.img ? `<img src="${esc(it.img)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.visibility='hidden'">` : `<div class="fl-noimg">?</div>`;
-  const head = it.lot ? `<b>Lot · ${esc(it.lot.n)} carte${it.lot.n>1?'s':''} reconnue${it.lot.n>1?'s':''}</b>` : it.cardId ? `<b>${esc(it.name)}</b> <span class="fl-ed">${esc(it.ed||'')} · ${esc(it.number||'')}</span> <a class="fl-cm inl" href="${esc(fxCmHref(it))}" target="_blank" rel="noopener noreferrer" title="Vérifier le prix sur Cardmarket">Cardmarket ↗</a> <a class="fl-cm eb inl" href="${esc(fxEbayHref(it))}" target="_blank" rel="noopener noreferrer" title="Ventes eBay terminées">eBay ↗</a>` : `<b>Carte à confirmer</b>`;
+  const head = it.lot ? `<b>Lot · ${esc(it.lot.n)} carte${it.lot.n>1?'s':''} reconnue${it.lot.n>1?'s':''}</b>` : it.cardId ? `<b>${esc(it.name)}</b> <span class="fl-ed">${esc(it.ed||'')} · ${esc(it.number||'')}</span> <a class="fl-cm inl" href="${esc(fxCmHref(it))}" target="_blank" rel="noopener noreferrer" title="Vérifier le prix sur Cardmarket" aria-label="Cardmarket"><img class="brand" src="https://www.google.com/s2/favicons?domain=cardmarket.com&sz=64" alt="Cardmarket" width="18" height="18" referrerpolicy="no-referrer" onerror="this.replaceWith('CM')"></a> <a class="fl-cm eb inl" href="${esc(fxEbayHref(it))}" target="_blank" rel="noopener noreferrer" title="Ventes eBay terminées" aria-label="eBay"><img class="brand" src="https://www.google.com/s2/favicons?domain=ebay.fr&sz=64" alt="eBay" width="18" height="18" referrerpolicy="no-referrer" onerror="this.replaceWith('eBay')"></a>` : `<b>Carte à confirmer</b>`;
   const flags=[]; if(ev.weak) flags.push(`<span class="flag warn">▼ marché en baisse${it.mom7!=null?' ('+esc(pctS(it.mom7))+' / 7 j)':''}</span>`);
   if(it.lot && v && v.cost>0 && v.marketEur>8*v.cost) flags.push(`<span class="flag warn">⚠ Valeur très supérieure au prix : vérifie sur les photos (fausses cartes, photos d'écran…)</span>`);
   if(v && v.cost>0 && v.marketEur>0 && it.ask!=null && it.ask > v.marketEur) flags.push(`<span class="flag bad">Prix demandé au-dessus de la valeur</span>`);
@@ -4265,7 +4373,7 @@ function fxItemHTML(it){
       <span><i>Valeur</i><b class="num">${esc(eur(v.marketEur))}</b><small>${it.lot?'somme des cartes lues':'Cardmarket'}${it.mom30!=null?' · '+esc(pctS(it.mom30))+' / 30 j':''}</small></span>
       <span><i>Marge</i><b class="num ${v.margin>=0?'up':'down'}">${v.cost>0?(v.margin>=0?'+':'−')+esc(eur(Math.abs(v.margin))):'—'}</b><small>${v.marginPct!=null?esc(pctS(v.marginPct)):''}</small></span>
       <span><i>Achat max</i><b class="num">${esc(eur(Math.max(0,v.maxBuy)))}</b><small>marge ${S.settings.targetMargin} %</small></span></div>` : '';
-  const lotBox = it.lot ? `<div class="fl-lot"><div class="hint" style="margin:0 0 6px">Cartes lues sur la photo (valeur Cardmarket) · ${it.lot.cards.filter(c=>c.ok).length}/${it.lot.cards.length} vérifiées${it.lot.lost?` · ${esc(it.lot.lost)} non lue${it.lot.lost>1?'s':''}, comptée${it.lot.lost>1?'s':''} 0 €`:''}</div><div class="fl-lotc">${it.lot.cards.slice(0,12).map((c,ci)=>`<div class="fl-lcw"><button type="button" class="fl-lc" data-fx="rev" data-id="${esc(it.id)}" data-i="${ci}" title="${esc(c.name)} · ${esc(c.ed||'')} ${esc(c.number||'')}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<b>${esc(c.name)}${c.q>1?' ×'+esc(c.q):''}</b><small>${c.p?esc(eur(c.p*c.q)):'< 0,30 €'}</small>${(()=>{ const eb=fxEbGet(c); return eb&&eb.n?`<small class="fl-ebv" title="Médiane des ventes eBay">eBay ${esc(eur(eb.med*c.q))}</small>`:''; })()}${c.ok?'<em class="fl-v">✔</em>':''}</button><div class="fl-cmrow"><a class="fl-cm" href="${esc(fxCmHref(c))}" target="_blank" rel="noopener noreferrer" title="Vérifier le prix de ${esc(c.name)} sur Cardmarket">CM ↗</a><a class="fl-cm eb" href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer" title="Voir les ventes eBay terminées de ${esc(c.name)}">eBay ↗</a></div></div>`).join('')}</div></div>` : '';
+  const lotBox = it.lot ? `<div class="fl-lot"><div class="hint" style="margin:0 0 6px">Cartes lues sur la photo (valeur Cardmarket) · ${it.lot.cards.filter(c=>c.ok).length}/${it.lot.cards.length} vérifiées${it.lot.lost?` · ${esc(it.lot.lost)} non lue${it.lot.lost>1?'s':''}, comptée${it.lot.lost>1?'s':''} 0 €`:''}</div><div class="fl-lotc">${it.lot.cards.slice(0,12).map((c,ci)=>`<div class="fl-lcw"><button type="button" class="fl-lc" data-fx="rev" data-id="${esc(it.id)}" data-i="${ci}" title="${esc(c.name)} · ${esc(c.ed||'')} ${esc(c.number||'')}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<b>${esc(c.name)}${c.q>1?' ×'+esc(c.q):''}</b><small>${c.p?esc(eur(c.p*c.q)):'< 0,30 €'}</small>${(()=>{ const eb=fxEbGet(c); return eb&&eb.n?`<small class="fl-ebv" title="Médiane des ventes eBay">eBay ${esc(eur(eb.med*c.q))}</small>`:''; })()}${c.ok?'<em class="fl-v">✔</em>':''}</button><div class="fl-cmrow"><a class="fl-cm" href="${esc(fxCmHref(c))}" target="_blank" rel="noopener noreferrer" title="Vérifier le prix de ${esc(c.name)} sur Cardmarket" aria-label="Cardmarket"><img class="brand" src="https://www.google.com/s2/favicons?domain=cardmarket.com&sz=64" alt="Cardmarket" width="18" height="18" referrerpolicy="no-referrer" onerror="this.replaceWith('CM')"></a><a class="fl-cm eb" href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer" title="Voir les ventes eBay terminées de ${esc(c.name)}" aria-label="eBay"><img class="brand" src="https://www.google.com/s2/favicons?domain=ebay.fr&sz=64" alt="eBay" width="18" height="18" referrerpolicy="no-referrer" onerror="this.replaceWith('eBay')"></a></div></div>`).join('')}</div></div>` : '';
   let pick='';
   if(!it.cardId){
     pick = `<div class="fl-pick">${(it.cands||[]).length?'<div class="hint" style="margin:0 0 6px">Quelle carte ?</div><div class="fl-cands">'+it.cands.map((c,i)=>`<button type="button" class="fl-cand" data-fx="pick" data-id="${esc(it.id)}" data-i="${i}" title="${esc(c.name)}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<span>${esc(c.name)}<small>${esc(c.ed||'')} · ${esc(c.number||'')}</small></span></button>`).join('')+'</div>':'<div class="hint" style="margin:0 0 6px">Aucune carte reconnue dans le titre.</div>'}
@@ -4287,7 +4395,7 @@ function fxItemHTML(it){
       ${(it.scanNote||(it.src==='auto'&&it.note))?`<div class="fl-auto">🤖 ${esc(String(it.scanNote||it.note).replace(/\s*⚠ Valeur.*$/,''))}</div>`:''}
       <input class="fl-note" type="text" placeholder="Note (état, vendeur, négociation…)" value="${esc(it.note||'')}" data-fx-f="note" data-id="${esc(it.id)}">
       <div class="fl-acts">
-        <a class="fb fb-vinted" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer"><img class="fb-logo" src="https://www.google.com/s2/favicons?domain=vinted.fr&sz=64" alt="" onerror="this.remove()">${it.url?'Ouvrir l\'annonce':'Chercher sur Vinted'} <span aria-hidden="true">↗</span></a>
+        <a class="fb fb-vinted" href="${esc(fxVinted(it))}" target="_blank" rel="noopener noreferrer"><img class="fb-logo" src="https://www.google.com/s2/favicons?domain=${fxSite(it).dom}&sz=64" alt="" onerror="this.remove()">${it.url?'Ouvrir l\'annonce '+fxSite(it).name:'Chercher sur Vinted'} <span aria-hidden="true">↗</span></a>
         ${(it.nph||(it.photos&&it.photos.length))?`<button class="fb fb-photos" type="button" data-fx="photos" data-id="${esc(it.id)}">🖼️ Photos (${esc(it.nph||it.photos.length)})</button>`:''}${fxEntries(it).length?`<button class="fb fb-check" type="button" data-fx="rev" data-i="0" data-id="${esc(it.id)}">🔍 Vérifier les cartes (${fxEntries(it).length})</button>`:''}
         <span class="fb-sep" aria-hidden="true"></span>
         ${(it.lot||it.cardId)?`<button class="fb fb-cm2" type="button" data-fx="cmall" data-id="${esc(it.id)}" ${FLUX.cmBusy===it.id?'disabled':''} title="Lit les offres Cardmarket en français, état Near Mint ou mieux, pour chaque carte">${FLUX.cmBusy===it.id?'⏳ Cardmarket…':'🇫🇷 Offres françaises NM+'}</button>`:''}
@@ -4348,7 +4456,7 @@ window.addEventListener('message', async e=>{
   if(d.type!=='pikascan-annonce') return;
   setTab('flux'); if(FLUX.busy){ toast('Une lecture est déjà en cours : réessaie dans un instant.'); return; }
   const title=String(d.title||'').replace(/\s+/g,' ').trim().slice(0,200), price=String(d.price||'').replace(',', '.').replace(/[^\d.]/g,'').slice(0,8);
-  const url=/^https:\/\/(www\.)?vinted\.[a-z.]+\/items\/[^\s]*$/.test(String(d.url||'')) ? String(d.url) : '';
+  const url=(/^https:\/\/(www\.)?vinted\.[a-z.]+\/items\/[^\s]*$/.test(String(d.url||'')) || /^https:\/\/(www\.)?leboncoin\.fr\/[^\s]+$/.test(String(d.url||''))) ? String(d.url) : '';
   const files=[]; const bl=Array.isArray(d.blobs)?d.blobs:[], urls=Array.isArray(d.urls)?d.urls:[], du=Array.isArray(d.dataUrls)?d.dataUrls:[];
   const found=(d.dbg&&+d.dbg.found)||urls.length||du.length;
   if(ext && !d.extVer) setTimeout(()=>toast('⚠ Extension PikaScan trop ancienne (4 photos max) : chrome://extensions → Recharger, puis ré-envoie l\'annonce.'),600);
