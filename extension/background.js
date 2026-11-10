@@ -61,25 +61,36 @@ function extract() {
   return { title: String(title || '').slice(0, 200), price: String(price || ''), url: location.href.split('?')[0], urls: list.slice(0, 24), desc: String(desc || '').slice(0, 4000), postedAt, postedSrc, postedText, fee, shipping, pageImgs, dropped, src };
 }
 // Annonce Leboncoin : les données de la page (bloc __NEXT_DATA__) donnent titre, prix, description, date et TOUTES les photos.
-function extractLbc() {
+async function extractLbc() {
   const d = document; let ad = null;
+  const urlId = (/\/(\d{6,})(?:[/?#.]|$)/.exec(location.pathname) || [])[1] || '';
+  const adOf = html => { try { const m = /<script[^>]*id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/.exec(html); if (!m) return null; const pp = (JSON.parse(m[1]).props || {}).pageProps || {}; return pp.ad || pp.adview || null; } catch (e) { return null; } };
+  const okAd = a => a && a.images && (!urlId || !a.list_id || String(a.list_id) === urlId);
   try { const nd = JSON.parse((d.getElementById('__NEXT_DATA__') || {}).textContent || '{}'); const pp = (nd.props && nd.props.pageProps) || {}; ad = pp.ad || pp.adview || null; } catch (e) {}
+  // navigation interne de Leboncoin : le JSON embarqué peut être celui d'une AUTRE page -> on relit la page de l'annonce elle-même
+  if (!okAd(ad)) { try { const r = await fetch(location.href.split('#')[0], { credentials: 'include' }); const a2 = adOf(await r.text()); if (okAd(a2)) ad = a2; } catch (e) {} }
+  if (!okAd(ad)) ad = null;
   const mt = p => { const e = d.querySelector('meta[property="' + p + '"]') || d.querySelector('meta[name="' + p + '"]'); return e && e.content; };
+  const best = u => String(u || '').replace(/([?&]rule=)[^&]*/, '$1ad-large');   // « ad-large » = la plus grande version servie par Leboncoin (≈ 800 px)
   let title = '', price = '', desc = '', postedAt = '', imgs = [], src = 'dom';
   if (ad) {
     src = 'json'; title = ad.subject || ''; desc = ad.body || '';
     const pr = Array.isArray(ad.price) ? ad.price[0] : (ad.price_cents != null ? ad.price_cents / 100 : ad.price); if (pr != null && isFinite(+pr)) price = String(pr);
-    const im = ad.images || {}; imgs = (im.urls_large && im.urls_large.length ? im.urls_large : (im.urls || [])).slice(); if (!imgs.length && im.thumb_url) imgs = [im.thumb_url];
+    const im = ad.images || {}; imgs = (im.urls_large && im.urls_large.length ? im.urls_large : (im.urls || [])).map(best); if (!imgs.length && im.thumb_url) imgs = [best(im.thumb_url)];
     const dp = ad.first_publication_date || ad.index_date; if (dp) { const t = new Date(String(dp).replace(' ', 'T')); if (!isNaN(t)) postedAt = t.toISOString(); }
   }
   title = title || mt('og:title') || ((d.querySelector('h1') || {}).innerText) || d.title;
   desc = desc || mt('og:description') || mt('description') || '';
   const bodyText = (d.body && d.body.innerText) || '';
-  if (!price) { const x = /(\d[\d\s ]{0,6}(?:[.,]\d{1,2})?)\s*€/.exec(bodyText.slice(0, 5000)); if (x) price = x[1].replace(/[\s ]/g, ''); }
-  if (!imgs.length) {   // repli : photos visibles de la galerie, jamais celles du profil du vendeur ni des annonces similaires
-    const bad = i => { try { return !!i.closest('a[href*="/profile"], a[href*="/boutique"], a[href*="/pro/"], [data-qa-id*="profile" i], [data-test-id*="profile" i], [class*="avatar" i], [data-qa-id*="similar" i], aside, header, footer, nav'); } catch (e) { return false; } };
-    if (mt('og:image')) imgs.push(mt('og:image'));
-    d.querySelectorAll('img').forEach(i => { const u = i.currentSrc || i.src || ''; if (/img\.leboncoin\.fr/.test(u) && !bad(i) && ((i.naturalWidth || 0) >= 150 || /rule=ad-/.test(u))) imgs.push(u); });
+  if (!price) { const x = /(\d[\d\s ]{0,6}(?:[.,]\d{1,2})?)\s*€/.exec(bodyText.slice(0, 5000)); if (x) price = x[1].replace(/[\s ]/g, ''); }
+  if (!imgs.length) {   // repli : galerie de l'annonce uniquement (carrousel), jamais le profil du vendeur ni les annonces similaires
+    const car = d.querySelectorAll('[data-qa-id="classified-carousel"] img, [data-test-id="gallery"] img');
+    car.forEach(i => { const u = i.currentSrc || i.src || i.getAttribute('data-src') || ''; if (/img\.leboncoin\.fr\/api\/v1\/lbcpb1\//.test(u)) imgs.push(best(u)); });
+    if (!imgs.length) {
+      const bad = i => { try { return !!i.closest('a[href*="/profile"], a[href*="/boutique"], a[href*="/pro/"], [data-qa-id*="profile" i], [data-qa-id*="aditem" i], [data-test-id*="profile" i], [class*="avatar" i], [data-qa-id*="similar" i], aside, header, footer, nav'); } catch (e) { return false; } };
+      if (mt('og:image')) imgs.push(best(mt('og:image')));
+      d.querySelectorAll('img').forEach(i => { const u = i.currentSrc || i.src || ''; if (/img\.leboncoin\.fr\/api\/v1\/lbcpb1\//.test(u) && !bad(i)) imgs.push(best(u)); });
+    }
   }
   const seen = {}, list = [];
   imgs.forEach(u => { if (!u || typeof u !== 'string') return; const k = u.split('?')[0]; if (!seen[k]) { seen[k] = 1; list.push(u); } });

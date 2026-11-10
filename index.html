@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.16.2 | 2026-11-10 13:10 UTC">
+<meta name="pikascan-build" content="1.16.3 | 2026-11-10 13:40 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -927,7 +927,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.16.2</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.16.3</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -3608,7 +3608,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.5.0';
+const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.5.1';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
