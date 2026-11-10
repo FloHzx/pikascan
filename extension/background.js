@@ -34,9 +34,10 @@ function extract() {
   /* photos de l'annonce : toutes celles de la galerie (y compris les miniatures pas encore chargées), sans mélanger avec les autres articles du vendeur */
   const srcOf = i => { let u = i.currentSrc || i.src || i.getAttribute('data-src') || i.getAttribute('data-lazy-src') || ''; if (!u) { const ss = i.getAttribute('srcset') || i.getAttribute('data-srcset') || ''; const last = ss.split(',').map(x => x.trim().split(/\s+/)[0]).filter(Boolean).pop(); if (last) u = last; } return u; };
   let pageImgs = 0;
-  d.querySelectorAll('img').forEach(i => { const u = srcOf(i); if (u && /vinted/.test(u) && !/avatar|\/users?\/|portrait|\/assets\/|logo|icon/.test(u) && (/\/t\//.test(u) || (i.naturalWidth || 0) >= 150)) { imgs.push(u); pageImgs++; } });
-  const sizeOf = u => { const m = /\/(?:f|c)?(\d{3,4})(?:x\d+)?\//.exec(u.split('?')[0]); return m ? +m[1] : 0; };
-  const keyOf = u => u.split('?')[0].replace(/\/(?:f\d+|\d+x\d+)\//, '/');
+  const notPhoto = i => { try { return !!i.closest('a[href*="/member/"], a[href*="/members/"], a[href*="/users/"], [data-testid*="avatar" i], [class*="avatar" i], [data-testid*="profile" i], [data-testid*="seller" i], [data-testid*="user" i], [class*="user-photo" i], header, nav, footer'); } catch (e) { return false; } };
+  d.querySelectorAll('img').forEach(i => { const u = srcOf(i); if (u && /vinted/.test(u) && !/avatar|\/users?\/|portrait|\/assets\/|logo|icon/.test(u) && !notPhoto(i) && (/\/t\//.test(u) || (i.naturalWidth || 0) >= 150)) { imgs.push(u); pageImgs++; } });
+  const sizeOf = u => { const p = u.split('?')[0], m = /\/(?:f|c)?(\d{3,4})(?:x\d+)?\//.exec(p); return m ? +m[1] : (/\/tc?\/[^\/]+\/[^\/]+\.(?:jpe?g|png|webp)$/i.test(p) ? 3000 : 0); };
+  const keyOf = u => { const p = u.split('?')[0], m = /\/tc?\/([^\/]+)\/(?:(?:f\d+|\d+x\d+)\/)?([^\/]+)$/.exec(p); return m ? m[1] + '/' + m[2] : p.replace(/\/(?:f\d+|\d+x\d+)\//, '/'); };
   const tsOf = u => { const m = /\/(1[3-9]\d{8})\.(?:jpe?g|png|webp)/.exec(u); return m ? +m[1] : 0; };
   const best = {}, order = [];
   imgs.forEach(u => { if (!u || typeof u !== 'string') return; const k = keyOf(u); if (!best[k]) { best[k] = u; order.push(k); } else if (sizeOf(u) > sizeOf(best[k])) best[k] = u; });
@@ -51,7 +52,7 @@ function extract() {
   } catch (e) {}
   /* les photos d'une même annonce sont envoyées à quelques minutes d'écart : on écarte celles des autres articles (horodatage dans le nom du fichier) */
   const refTs = tsOf(mt('og:image') || '') || (list.length ? tsOf(list[0]) : 0);
-  let dropped = 0; if (refTs && src === 'dom') { const keep = list.filter(u => { const t = tsOf(u); return !t || Math.abs(t - refTs) <= 1800; }); dropped = list.length - keep.length; list = keep; }
+  let dropped = 0; if (refTs && src === 'dom') { const withTs = list.filter(u => tsOf(u)).length; const keep = list.filter(u => { const t = tsOf(u); return t ? Math.abs(t - refTs) <= 1800 : withTs < 2; }); dropped = list.length - keep.length; if (keep.length) list = keep; }
   const seen = {};
   if (!postedAt && !postedText) { for (const u of list) { const m = /\/(1[3-9]\d{8})\.(?:jpe?g|png|webp)/.exec(u); if (m && +m[1] * 1000 < Date.now()) { postedAt = new Date(+m[1] * 1000).toISOString(); postedSrc = 'photo'; break; } } }
   /* frais lus sur la page (protection acheteurs, livraison) : repérage simple, à vérifier */

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.15.2 | 2026-11-09 16:00 UTC">
+<meta name="pikascan-build" content="1.15.4 | 2026-11-10 09:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -913,7 +913,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.15.2</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.15.4</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -3536,7 +3536,7 @@ function fxThumbsRender(){
 }
 /* --- extension : téléchargement (ZIP fabriqué dans le navigateur à partir des fichiers du site) et détection --- */
 const FX_EXT_STORE='';   // adresse de la fiche Chrome Web Store (installation en un clic) : à renseigner une fois l'extension publiée
-const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.4.1';
+const FX_EXT_FILES=['manifest.json','background.js','ebay.js','cardmarket.js','content.js','icon16.png','icon48.png','icon128.png'], FX_EXT_VER='1.4.2';
 const FX_CRC=(()=>{ const t=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; t[n]=c>>>0; } return t; })();
 function fxCrc(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=FX_CRC[(c^u8[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
 function fxZip(files){
@@ -3621,7 +3621,7 @@ async function fxSegCore(url, ph, onMsg){
   const use=O.phSegment(im); if(!use.length) return null;
   const cs=[], lc=[], sw=im.naturalWidth||im.width, sh=im.naturalHeight||im.height; let z=0;
   for(const bx of use){
-    z++; const cw=Math.max(8,Math.round((bx.x1-bx.x0)*sw)), ch=Math.max(8,Math.round((bx.y1-bx.y0)*sh)), k=Math.min(1,1400/Math.max(cw,ch)), cv=document.createElement('canvas'); cv.width=Math.max(8,Math.round(cw*k)); cv.height=Math.max(8,Math.round(ch*k));
+    z++; const cw=Math.max(8,Math.round((bx.x1-bx.x0)*sw)), ch=Math.max(8,Math.round((bx.y1-bx.y0)*sh)), k=Math.min(2,1400/Math.max(cw,ch)), cv=document.createElement('canvas'); cv.width=Math.max(8,Math.round(cw*k)); cv.height=Math.max(8,Math.round(ch*k));
     cv.getContext('2d').drawImage(im,bx.x0*sw,bx.y0*sh,cw,ch,0,0,cv.width,cv.height);
     const blob=await new Promise(r=>cv.toBlob(r,'image/jpeg',0.92)), cu=URL.createObjectURL(blob);
     try{
@@ -3670,6 +3670,8 @@ async function fxScanPhotos(files, onMsg){
           if(sg.length>=2){ const ux0=Math.min(...sg.map(b=>b.x0)), ux1=Math.max(...sg.map(b=>b.x1)), uy0=Math.min(...sg.map(b=>b.y0)), uy1=Math.max(...sg.map(b=>b.y1));
             if((ux1-ux0)*(uy1-uy0)<0.75){ if(onMsg) onMsg(tag+'plusieurs groupes de cartes : lecture par zones…'); const rz=await fxSegCore(url,n,m=>onMsg&&onMsg(tag+m)); if(rz&&rz.cs.length) r=rz; } }
         }catch(e){ console.warn('zones',e); }
+        if(r){   /* la lecture par zones a donné quelque chose : on compare quand même avec une grille sur toute la photo et on garde la meilleure */
+          try{ const gc=x=>x.cs.filter(c=>c.conf==='sure'||c.conf==='probable').length, ra=await run('auto'); if(!ra.invalid && gc(ra)>gc(r)) r=ra; }catch(e){ console.warn('grille',e); } }
         if(!r) r=await run('auto');
         if(r.invalid){ try{ if(onMsg) onMsg(tag+'cartes non alignées : lecture par zones…'); const rz=await fxSegCore(url,n,m=>onMsg&&onMsg(tag+m)); if(rz&&rz.cs.length) r=rz; }catch(e){ console.warn('zones',e); } if(r.invalid) r=await run('single'); }
         for(const m of ['single','full']){ if(good(r)) break; if(m==='single' && r.grid==='1x1') continue; const r2=await run(m); if(r2.cs.length && (!r.cs.length || good(r2))) r=r2; }
@@ -3909,7 +3911,7 @@ function cmFetch(x,force){
     const done=r=>{ window.removeEventListener('message',on); clearTimeout(tm); res(r); };
     const on=e=>{
       const d=e.data; if(e.origin!==location.origin||!d||d.type!=='pikascan-cm-res'||d.id!==rid) return;
-      if(d.error) return done({err:d.error,status:d.status,head:d.head,finalUrl:d.finalUrl});
+      if(d.error){ if(d.status===403||d.status===429){ cmPause=Date.now()+60*60000; return done({err:'refused',status:d.status,head:d.head,finalUrl:d.finalUrl}); } return done({err:d.error,status:d.status,head:d.head,finalUrl:d.finalUrl}); }
       if(d.blocked){ cmPause=Date.now()+10*60000; return done({err:'blocked',finalUrl:d.finalUrl,head:d.head}); }
       if(d.needLogin) return done({err:'login'});
       cmStore(id,d); done(cmRead()[id]||{err:'cache'});
@@ -3922,6 +3924,7 @@ function cmFetch(x,force){
 function cmErr(r){
   return r.err==='ext' ? "Prix Cardmarket FR : il faut l'extension PikaScan v1.4.0 (remplace le dossier « extension » puis ↻ Recharger dans chrome://extensions)."
   : r.err==='noid' ? "Cette carte n'a pas de fiche Cardmarket connue."
+  : r.err==='refused' ? "Cardmarket refuse les lectures automatiques (HTTP "+esc(String(r.status||403))+"). PikaScan arrête d'essayer pendant 1 h pour ne pas insister. Les offres FR restent consultables en ouvrant la page toi-même."
   : r.err==='blocked' ? "Cardmarket demande une vérification anti-robot : ouvre cardmarket.com dans un onglet, passe la vérification, puis réessaie dans quelques minutes."
   : r.err==='login' ? "Cardmarket demande une connexion : connecte-toi sur cardmarket.com dans le navigateur, puis réessaie."
   : 'Prix Cardmarket FR : '+esc(String(r.err||'échec'))+(r.status?' (HTTP '+esc(String(r.status))+')':'');
