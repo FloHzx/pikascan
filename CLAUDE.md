@@ -39,6 +39,7 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 ## Tests
 - Servir le site en local (`python3 -m http.server 8765`) et piloter avec Playwright. Dans le sandbox : `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt`.
 - Vérifier : syntaxe du script principal, absence de débordement horizontal à 390 px, clair/sombre.
+- Skills du dépôt (`.claude/skills/`, chargés à chaque session) : `webapp-testing` (tests/captures Playwright) et `frontend-design` (direction visuelle), tous deux d'`anthropics/skills` (Apache 2.0). Graphiques : suivre le skill `dataviz`.
 - Les notes détaillées de conception sont dans `docs/` (commencer par `docs/README.md`). Les mettre à jour quand une fonction change.
 
 ## Chantiers ouverts (non demandés à nouveau)
