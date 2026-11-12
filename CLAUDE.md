@@ -5,6 +5,7 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 ## Déploiement
 - Site : https://flohzx.github.io/pikascan/ (GitHub Pages, branche `main`, racine). Dépôt public `FloHzx/pikascan`.
 - **Push auto** (autorisé explicitement par Flo, 12/11/2026) : à chaque livraison, Claude commit et pousse directement sur `main` du dépôt GitHub en ligne (plus de GitHub Desktop). Incrémenter la version avant de pousser.
+- **Prévisualisations systématiques** (demandé par Flo) : pour chaque changement visible, fournir des captures (thème sombre, 390 px mobile + desktop) via Playwright en local avant/avec le push, et les montrer à Flo.
 - Netlify est bloqué (crédits épuisés) : ne pas l'utiliser.
 - Aucun secret dans le dépôt. `firebase-config.js` ne contient que des clés publiques (la protection vient des règles Firestore). Les secrets (ex. `APIFY_TOKEN`) sont dans GitHub Secrets.
 
