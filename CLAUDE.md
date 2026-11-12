@@ -10,9 +10,10 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 - Aucun secret dans le dépôt. `firebase-config.js` ne contient que des clés publiques (la protection vient des règles Firestore). Les secrets (ex. `APIFY_TOKEN`) sont dans GitHub Secrets.
 
 ## Structure
-- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.18.0 | date UTC`) : l'incrémenter à chaque livraison.
+- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.19.0 | date UTC`, + badge `#verBadge`) : l'incrémenter à chaque livraison.
   - Le script principal est le **3ᵉ bloc `<script>` inline** (index 2). Vérif syntaxe : extraire avec `re.findall(r'<script(?![^>]*src)[^>]*>(.*?)</script>', s, re.S)[2]` puis `node --check`.
-  - **Fin de ligne CRLF** : lire/écrire en Python avec `newline=''`, ne pas normaliser.
+  - **Fins de ligne LF** (vérifié le 12/11/2026) : lire/écrire en Python avec `newline=''`, ne pas normaliser.
+  - Interface : `body[data-tab]` suit l'onglet actif (`setTab`). La bannière n'apparaît que sur « Repérer » ; ailleurs, en-tête compact. ≤ 600 px : barre d'onglets fixe en bas (libellés courts `.ts`).
 - `ocr/` : index visuel (~17 000 cartes FR : `cardidx.bin/json`, `cardclu.*`, `cardlang.json`) + Tesseract (`fra.traineddata.gz`, wasm). Aucune IA payante : comparaison de pixels en JS.
 - `extension/` : extension Chrome/Edge MV3 (v1.5.1). `background.js` (`extractLbc`, Vinted, Cardmarket), `content.js`, `cardmarket.js`, `ebay.js`. Importe les annonces Vinted/Leboncoin dans l'onglet Annonces. `store/` = paquet pour le Chrome Web Store.
 - `sw.js`, `manifest.webmanifest`, icônes : PWA.

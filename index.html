@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.18.0 | 2026-11-10 17:30 UTC">
+<meta name="pikascan-build" content="1.19.0 | 2026-11-12 20:00 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -978,7 +978,30 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
   .tr-st{ margin-left:0; } .tr-q{ max-width:none; }
   .tr-ln{ grid-template-columns:auto 30px minmax(0,1fr) auto; } .tr-ln select,.tr-ln-c{ grid-column:3; justify-self:start; } .tr-ln>button{ grid-column:4; grid-row:1; }
 }
-</style></head><body>
+
+/* ===== v1.19 : en-tête compact hors accueil + barre d'onglets en bas sur mobile ===== */
+body:not([data-tab="scan"]) .hero{ display:none; }
+body:not([data-tab="scan"]) header.mast .pokeball{ display:block; width:44px; height:44px; flex:0 0 auto; }
+body:not([data-tab="scan"]) header.mast h1{ position:static; width:auto; height:auto; overflow:visible; clip:auto; font-size:30px; line-height:1.05; }
+body:not([data-tab="scan"]) .tg{ display:none; }
+body:not([data-tab="scan"]) header.mast{ align-items:center; }
+.tab .ts{ display:none; }
+@media (max-width:600px){
+  body:not([data-tab="scan"]) .mast-meta, body:not([data-tab="scan"]) .tg2{ display:none; }
+  body:not([data-tab="scan"]) header.mast{ padding-bottom:10px; margin-bottom:14px; }
+  body:not([data-tab="scan"]) header.mast h1{ font-size:24px; }
+  body:not([data-tab="scan"]) header.mast .pokeball{ width:36px; height:36px; }
+  .tabs{ position:fixed; left:0; right:0; bottom:0; z-index:45; flex-wrap:nowrap; justify-content:space-between; gap:2px; margin:0; padding:6px 4px calc(6px + env(safe-area-inset-bottom)); border-bottom:none; border-top:1px solid var(--hairline); background:color-mix(in srgb, var(--card) 92%, transparent); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); box-shadow:0 -6px 20px rgba(0,0,0,.25); }
+  .tab{ flex:1 1 0; min-width:0; flex-direction:column; gap:2px; padding:4px 0 3px; border-radius:12px; font-size:10.5px; letter-spacing:0; box-shadow:none !important; transform:none !important; }
+  .tab .tl{ display:none; } .tab .ts{ display:block; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .tab .ti{ width:30px; height:26px; border-radius:9px; }
+  .tab:hover .ti{ transform:none; }
+  .tab[aria-selected="true"]{ background:rgba(var(--tc),.14); border-color:transparent; box-shadow:none; }
+  .tab .badge{ position:absolute; top:0; left:calc(50% + 6px); font-size:9.5px; padding:0 5px; line-height:15px; }
+  .wrap{ padding-bottom:calc(96px + env(safe-area-inset-bottom)); }
+  .toast{ bottom:calc(84px + env(safe-area-inset-bottom)); }
+}
+</style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
   <div class="hero"><img src="banner.jpg" width="1600" height="533" alt="PikaScan : scan, inventaire, prix, marché" fetchpriority="high"></div>
@@ -996,21 +1019,21 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
       </svg>
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
-        <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> + ventes réelles <b>eBay</b>, en direct.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.18.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> suivis chaque jour, verdict d'achat et suivi de revente.</span></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.19.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
   </header>
 
   <div class="tabs" role="tablist" aria-label="Sections">
-    <button class="tab" role="tab" id="tab-scan" data-tab="scan" aria-selected="true"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></span><span class="tl">Repérer une carte</span></button>
-    <button class="tab" role="tab" id="tab-photo" data-tab="photo" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span class="tl">Scanner photo</span></button>
-    <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.8"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><span class="tl">Annonces</span> <span class="badge" id="badgeFlux" data-n="0"></span></button>
-    <button class="tab" role="tab" id="tab-trade" data-tab="trade" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/><path d="M10 13l1.5 1.5L14.5 11"/></svg></span><span class="tl">Achats/Ventes</span> <span class="badge" id="badgeTrade" data-n="0"></span></button>
-    <button class="tab" role="tab" id="tab-base" data-tab="base" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/></svg></span><span class="tl">Ma base</span> <span class="badge" id="badgeCards" data-n="0"></span></button>
-    <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></span><span class="tl">Alertes</span> <span class="badge" id="badgeAlerts" data-n="0"></span></button>
-    <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tl">Réglages</span></button>
+    <button class="tab" role="tab" id="tab-scan" data-tab="scan" aria-selected="true"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l5 5"/></svg></span><span class="tl">Repérer une carte</span><span class="ts" aria-hidden="true">Repérer</span></button>
+    <button class="tab" role="tab" id="tab-photo" data-tab="photo" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/></svg></span><span class="tl">Scanner photo</span><span class="ts" aria-hidden="true">Scanner</span></button>
+    <button class="tab" role="tab" id="tab-flux" data-tab="flux" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.8"/><path d="M7.8 7.8a6 6 0 0 0 0 8.4M16.2 7.8a6 6 0 0 1 0 8.4M4.9 4.9a10 10 0 0 0 0 14.2M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></span><span class="tl">Annonces</span><span class="ts" aria-hidden="true">Annonces</span> <span class="badge" id="badgeFlux" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-trade" data-tab="trade" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/><path d="M10 13l1.5 1.5L14.5 11"/></svg></span><span class="tl">Achats/Ventes</span><span class="ts" aria-hidden="true">Achats</span> <span class="badge" id="badgeTrade" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-base" data-tab="base" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5"/><path d="M3 16.5l9 5 9-5"/></svg></span><span class="tl">Ma base</span><span class="ts" aria-hidden="true">Ma base</span> <span class="badge" id="badgeCards" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-alerts" data-tab="alerts" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/></svg></span><span class="tl">Alertes</span><span class="ts" aria-hidden="true">Alertes</span> <span class="badge" id="badgeAlerts" data-n="0"></span></button>
+    <button class="tab" role="tab" id="tab-settings" data-tab="settings" aria-selected="false"><span class="ti" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg></span><span class="tl">Réglages</span><span class="ts" aria-hidden="true">Réglages</span></button>
   </div>
 
 
@@ -2148,7 +2171,7 @@ async function refreshOne(id){
 /* ---------- actions UI ---------- */
 function setTab(t){
   /*RESTORE_ANALYSIS*/ if(t!=='photo'){ const an=$('analysis'), hp=$('panel-scan'); if(an&&hp&&an.parentNode!==hp) hp.appendChild(an); }
-  S.tab=t;
+  S.tab=t; document.body.dataset.tab=t; if(innerWidth<=600) scrollTo(0,0);
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.tab===t)));
   document.querySelectorAll('.panel').forEach(p=>{ p.hidden = p.id!=='panel-'+t; });
   if(t==='base') renderAll();
@@ -5263,7 +5286,7 @@ async function init(){
   renderAll(); setTab('scan'); renderSettings();
   loadCatalog().then(ok=>{ if(ok) renderAll(); });
   S.mcp = true; S.db = LocalDB; setTimeout(pwaLaunchParams,400); setTimeout(()=>CloudSync.init(),900); await seedIfEmpty(); setTimeout(autoImportFromUrl, 700); setTimeout(()=>scheduleSync(0), 2500);
-  $('footStatus').textContent = 'Prix Cardmarket via TCGdex · base enregistrée dans ce navigateur · version 27 oct. (import CSV)';
+  $('footStatus').textContent = 'Prix Cardmarket via TCGdex · base enregistrée dans ce navigateur (synchro cloud en option)';
   let first = true;
   S.db.collection('settings').doc('config').onSnapshot(s=>{ if(s.exists){ S.settings = Object.assign({},DEFAULTS,s.data()); } renderAll(); }, ()=>{});
   S.db.collection('alerts').onSnapshot(snap=>{ const m={}; snap.docs.forEach(d=>{ m[d.id]=d.data(); if(!m[d.id].id) m[d.id].id=d.id; }); S.alerts=m; renderAll(); }, ()=>{});
