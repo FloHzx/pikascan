@@ -1,0 +1,21 @@
+# Journal de développement — novembre 2026 (v1.16 → v1.18)
+
+Résumé de ce qui a été fait en session avec Flo (assistant dans l'appli Claude) avant le passage à Claude Code. Ordre chronologique.
+
+- **v1.16.2 — Badges sobres** : boutons Cardmarket/eBay remplacés par des badges texte (`.bdg`, `.bdg-cm` bleu `#7db4ff`, `.bdg-eb` jaune `#f7c948`) à la place des favicons, dans le visualiseur (`.fb-cm/.fb-ebay`), l'en-tête d'annonce (`.fl-cm`) et les lignes de lot (`.fl-cmrow`).
+- **v1.16.3 + extension 1.5.1 — Import Leboncoin** : l'import ne récupérait qu'une photo basse qualité. `extractLbc()` (extension/background.js) lit maintenant `__NEXT_DATA__` → `props.pageProps.ad` (`list_id`, `images.urls`, `price`, `first_publication_date`), compare `list_id` à l'URL (la navigation client laisse parfois un `__NEXT_DATA__` périmé → re-fetch de `location.href`), force la règle d'image `ad-large` (max ≈ 800 px ; les règles inconnues échouent), et retombe sur le carrousel `[data-qa-id="classified-carousel"] img`.
+- **v1.17.0 — Détection fiable des cartes** : Flo n'obtenait jamais le bon cadrage selon la photo (taille, zoom, nombre de cartes). Nouveau détecteur par carte `phDetectCards` (voir `achats_ventes.md`). Cadres justes sur 7 pages de classeur sur 8. Reste difficile : promos absentes de l'index (ex. Évoli page 8), reflets des pochettes.
+- **v1.18.0 — Pré-traitement + Achats/Ventes** : `phRectify` (redressement, agrandissement, contraste, netteté) appliqué à chaque carte ; nouvel onglet **Achats/Ventes** (`#tab-trade`, `#panel-trade`) relié au bouton « 🛒 J'ai acheté » des annonces. Tests e2e (Playwright) : achat depuis un lot de 4 lignes (coûts 11,16 / 8,40 / 1,97 / 1,97 pour 23,50 €), vente d'1 exemplaire sur 2 (aperçu « Net encaissé 11,80 € · bénéfice +0,07 € »), bandeau « Acheté le … · suivre la revente → », pas de débordement horizontal à 390 px.
+
+## Environnement et habitudes de travail
+- Les fichiers ont été écrits dans le clone local de Flo ; il commit/pousse lui-même avec GitHub Desktop.
+- Les tests réels passent par le navigateur de Flo (pas d'accès depuis un sandbox cloud à `assets.tcgdex.net`, `img.leboncoin.fr`, Vinted).
+- Sauvegardes de travail locales à la fin de chaque étape (copies `index.before_*.html`, non versionnées).
+
+## Reste à faire / idées non demandées de nouveau
+- Règles Firestore pour `buys` et `stock` (voir CLAUDE.md).
+- Prix Cardmarket FR / NM (source directe bloquée ; TCGGraph tiers possible).
+- Estimation des frais de port selon la zone du vendeur.
+- Extension sur mobile (Vivaldi / Web Store non répertorié) ; PWA sur Edge Android.
+- « Ajuster un cadre → recaler les autres cartes » dans l'éditeur de grille.
+- Limite Leboncoin : 800 px max, pas de contournement connu.
