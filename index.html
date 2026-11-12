@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.19.1 | 2026-11-12 21:00 UTC">
+<meta name="pikascan-build" content="1.19.2 | 2026-11-12 21:40 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1020,7 +1020,7 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> suivis chaque jour, verdict d'achat et suivi de revente.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.19.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.19.2</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -1236,7 +1236,7 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
       </details>
     </div>
     <div class="section-head"><h2>Sauvegarde de ta base</h2></div>
-    <div class="card-box"><div class="inline-edit"><button class="btn small" id="exportBtn">⬇ Exporter ma base (JSON)</button><button class="btn small" id="trackBtn" title="Fichier à déposer dans le dossier data/ du dépôt GitHub pour le relevé quotidien des prix">⬇ Liste des cartes suivies (tracked.json)</button><label class="btn small" for="importFile" style="cursor:pointer">⬆ Importer</label><input type="file" id="importFile" accept="application/json,.json" hidden></div>
+    <div class="card-box"><div class="inline-edit"><button class="btn small" id="exportBtn">⬇ Exporter ma base (JSON)</button><button class="btn small" id="trackBtn" title="Plus nécessaire si la synchro cloud est active : la liste est publiée automatiquement pour le relevé quotidien. Sinon, déposer ce fichier dans data/ du dépôt.">⬇ Liste des cartes suivies (tracked.json)</button><label class="btn small" for="importFile" style="cursor:pointer">⬆ Importer</label><input type="file" id="importFile" accept="application/json,.json" hidden></div>
     <div class="hint">Ta base est enregistrée dans ce navigateur, sur cet appareil. Exporte-la pour la sauvegarder ou la retrouver sur un autre appareil.</div></div>
     <div class="section-head"><h2>Méthodologie &amp; limites</h2></div>
     <div class="provenance" id="method"></div>
@@ -4792,12 +4792,23 @@ const CloudSync=(function(){
   }
   function renderPop(){
     const pop=document.getElementById('syncPop'); if(!pop) return;
+    setTimeout(()=>{ if(user&&!pop.hidden&&!pop.querySelector('.pub-st')) pop.insertAdjacentHTML('beforeend','<div class="hint pub-st" style="margin-top:8px">'+(pubErr?'⚠ Relevé quotidien des prix : '+esc(pubErr):pubLast?'✔ Relevé quotidien : '+Object.keys(JSON.parse(pubLast)).length+' cartes suivies':'')+'</div>'); },0);
     pop.innerHTML = state==='off'
       ? '<b>Synchro non configurée</b><p class="hint">Renseigne ta configuration Firebase dans <code>firebase-config.js</code> (voir les étapes dans le chat), puis publie le site.</p>'
       : !user ? '<b>Retrouve tes données partout</b><p class="hint">Connecte-toi avec Google : tes annonces, ton suivi et ton historique seront recopiés sur tous tes appareils.</p><button type="button" class="btn small primary" data-sync="login">Se connecter avec Google</button>'
       : `<b>${esc(user.displayName||user.email||'Connecté')}</b><div class="hint" style="margin:2px 0 8px">${esc(user.email||'')}</div><div class="hint" style="margin:0 0 8px">${state==='err'?'⚠ '+esc(msg):state==='sync'?'Recopie en cours…':'✔ À jour'}${mp.err?'<br>⚠ Photos : '+esc(mp.err):mp.total&&mp.done<mp.total?'<br>📷 Photos : envoi '+mp.done+'/'+mp.total+'…':''}</div><div class="fx-acts"><button type="button" class="btn small" data-sync="resync">↻ Forcer la synchro</button><button type="button" class="btn small danger" data-sync="logout">Se déconnecter</button></div><p class="hint" style="margin:8px 0 0">Les photos des annonces sont copiées (réduites) et se téléchargent à l'ouverture d'une annonce sur un autre appareil.</p>`;
   }
   function flushSoon(){ clearTimeout(timer); timer=setTimeout(flush,350); }
+  /* liste des cartes suivies, publiée pour le relevé quotidien des prix (GitHub Actions lit public/{uid}) : uniquement des identifiants de cartes */
+  let pubT=null, pubLast='', pubErr='';
+  function trackedNow(){ const o={}, ok=id=>typeof id==='string'&&/^[A-Za-z0-9_.\-]{2,40}$/.test(id);
+    const cs=LocalDB.all('cards')||{}; Object.keys(cs).forEach(k=>{ const c=cs[k]; if(!c||typeof c!=='object') return; const id=c.id||k; if(ok(id)) o[id]={v:c.variant==='reverse'?'reverse':'normal'}; });
+    const st=LocalDB.all('stock')||{}; Object.keys(st).forEach(k=>{ const l=st[k]; if(l&&ok(l.cardId)&&l.status!=='sold'&&!o[l.cardId]) o[l.cardId]={v:'normal'}; });
+    return o; }
+  function pubSoon(){ if(!user||!M) return; clearTimeout(pubT); pubT=setTimeout(async()=>{ if(!user) return;
+      try{ const j=JSON.stringify(trackedNow()); if(j===pubLast) return; await M.fs.setDoc(M.fs.doc(fdb,'public',user.uid),{j,u:Date.now()}); pubLast=j; pubErr=''; }
+      catch(e){ pubErr=e&&e.code==='permission-denied'?'règle « public » à publier dans Firestore (fichier firestore.rules du dépôt)':String(e&&e.message||e); }
+      render(); }, 4000); }
   function enqueue(n,id,d,del){ if(!user||applying||!COLS.includes(n)) return; q.set(n+'/'+id,{n,id,d,del}); set('sync'); flushSoon(); }
   async function flush(){
     if(!user||!q.size) { if(user&&!q.size&&state==='sync') set('ok'); return; }
@@ -4827,6 +4838,7 @@ const CloudSync=(function(){
     }
     if(Object.keys(firstDone).length===COLS.length && !q.size && state!=='err') set('ok');
     if(n==='listings') setTimeout(()=>mediaBackfill(),1500);
+    if(n==='cards'||n==='stock') pubSoon();
   }
   function start(){
     stop(); firstDone={}; backfilled=false; set('sync');
@@ -4881,7 +4893,7 @@ async function init(){
     try{
       const [a,au,fs]=await Promise.all([import(SDK+'firebase-app.js'),import(SDK+'firebase-auth.js'),import(SDK+'firebase-firestore.js')]);
       M={app:a,au,fs}; const app=a.initializeApp(cfg()); auth=au.getAuth(app); fdb=fs.getFirestore(app);
-      LocalDB.onChange((n,id,d,del)=>{ if(n==='*'){ if(!user) return; COLS.forEach(c=>{ const all=LocalDB.all(c); Object.keys(all).forEach(i=>enqueue(c,i,all[i],false)); }); return; } enqueue(n,id,d,del); });
+      LocalDB.onChange((n,id,d,del)=>{ if(n==='*'||n==='cards'||n==='stock') pubSoon(); if(n==='*'){ if(!user) return; COLS.forEach(c=>{ const all=LocalDB.all(c); Object.keys(all).forEach(i=>enqueue(c,i,all[i],false)); }); return; } enqueue(n,id,d,del); });
       try{ au.getRedirectResult(auth).catch(()=>{}); }catch(_){}
       au.onAuthStateChanged(auth,u=>{ user=u||null; if(user) start(); else { stop(); q.clear(); set('out'); } render(); });
     }catch(e){ set('err','Chargement de Firebase impossible : '+String(e&&e.message||e)); }

@@ -10,7 +10,7 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 - Aucun secret dans le dépôt. `firebase-config.js` ne contient que des clés publiques (la protection vient des règles Firestore). Les secrets (ex. `APIFY_TOKEN`) sont dans GitHub Secrets.
 
 ## Structure
-- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.19.1 | date UTC`, + badge `#verBadge`) : l'incrémenter à chaque livraison.
+- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.19.2 | date UTC`, + badge `#verBadge`) : l'incrémenter à chaque livraison.
   - Le script principal est le **3ᵉ bloc `<script>` inline** (index 2). Vérif syntaxe : extraire avec `re.findall(r'<script(?![^>]*src)[^>]*>(.*?)</script>', s, re.S)[2]` puis `node --check`.
   - **Fins de ligne LF** (vérifié le 12/11/2026) : lire/écrire en Python avec `newline=''`, ne pas normaliser.
   - Interface : `body[data-tab]` suit l'onglet actif (`setTab`). La bannière n'apparaît que sur « Repérer » ; ailleurs, en-tête compact. ≤ 600 px : barre d'onglets fixe en bas (libellés courts `.ts`).
@@ -22,7 +22,7 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 - `collection.csv` : exemple de collection (la vraie est importée par Flo dans Réglages).
 
 ## Architecture de l'appli (index.html)
-- Données : `LocalDB` (localStorage `pikascan_live_v1`, collections `set/update/delete/onSnapshot/setMany`), `S` (état, `S.db=LocalDB`, `S.cards`). Sync cloud : `CloudSync` (Firestore, liste `COLS=['cards','alerts','listings','settings','buys','stock']`, docs `{j:JSON,u:timestamp}` sous `users/{uid}/{collection}/{id}`). **Toute nouvelle collection doit être ajoutée à `COLS` et autorisée dans les règles Firestore** (sinon « Règles Firestore non publiées »).
+- Données : `LocalDB` (localStorage `pikascan_live_v1`, collections `set/update/delete/onSnapshot/setMany`), `S` (état, `S.db=LocalDB`, `S.cards`). Sync cloud : `CloudSync` (Firestore, liste `COLS=['cards','alerts','listings','settings','buys','stock']`, docs `{j:JSON,u:timestamp}` sous `users/{uid}/{collection}/{id}`). **Toute nouvelle collection doit être ajoutée à `COLS` et autorisée dans les règles Firestore** (sinon « Règles Firestore non publiées »). Règles de référence : `firestore.rules` (à coller par Flo dans la console Firebase). Relevé quotidien : l'appli connectée publie `public/{uid}` = `{j: liste des cartes suivies (base + stock non vendu), u}` (`pubSoon` dans `CloudSync`), lu sans clé par `snapshot.mjs` via l'API REST Firestore.
 - Prix : API gratuite **TCGdex** (prix Cardmarket 24 h / 7 j / 30 j) via `tcCard/tcSearch/fxSum/fxSummary/fxSave`. Cardmarket direct est bloqué (403).
 - Onglets : Ma base, Scanner (« Par l'image »), Annonces (`FLUX`), **Achats/Ventes** (module `TR*`, `renderTrade`, `trAction`, `trBuyOpen`, `trCalc`…), Réglages.
 - Scanner : `window.__ocr`, `phRunVis`, `phMatchAll`, `phWork`, `phCellState`, `fxScanPhotos`.
@@ -48,4 +48,4 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 - Estimation des frais de port selon la zone du vendeur.
 - Extension sur mobile (Vivaldi / Web Store non répertorié) ; installation PWA sur Edge Android.
 - « Ajuster un cadre → recaler les autres cartes » dans l'éditeur de grille.
-- Vérifier que les règles Firestore autorisent `buys` et `stock`.
+- Flo doit publier `firestore.rules` (couvre `buys`, `stock`, `media` et `public/{uid}` pour le relevé quotidien). Tant que ce n'est pas fait, le relevé lit 403 et ne relève rien.

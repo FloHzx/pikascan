@@ -1,0 +1,19 @@
+rules_version = '2';
+// Règles Firestore de PikaScan — à copier dans la console Firebase :
+// Firestore Database > Règles > coller ce fichier > Publier.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Données personnelles (cards, alerts, listings, settings, buys, stock, media) : seulement leur propriétaire.
+    match /users/{uid}/{col}/{doc} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // Liste des cartes suivies (identifiants seulement), lue par le relevé quotidien des prix (GitHub Actions).
+    match /public/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['j', 'u'])
+        && request.resource.data.j is string && request.resource.data.j.size() < 300000;
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

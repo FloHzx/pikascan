@@ -9,6 +9,7 @@ Résumé de ce qui a été fait en session avec Flo (assistant dans l'appli Clau
 
 - **v1.19.0 (12 nov., Claude Code) — Interface** : bannière réservée à l'onglet « Repérer » (en-tête compact ailleurs) ; sur mobile (≤ 600 px), onglets dans une barre fixe en bas avec libellés courts, retour en haut de page au changement d'onglet, toast au-dessus de la barre. Sous-titre et pied de page actualisés.
 - **v1.19.1 — Index du scanner automatique** : `scripts/build_index.mjs` + tâche hebdomadaire `index.yml` ; version d'index `ocr/idxver.json` lue par l'appli (voir `scanner_image.md`).
+- **v1.19.2 — Relevé quotidien automatique** : `data/tracked.json` était vide (le relevé tournait sans rien relever). L'appli connectée publie maintenant sa liste suivie dans Firestore `public/{uid}` ; `snapshot.mjs` la lit chaque nuit (API REST, lecture publique). Fichier `firestore.rules` à publier par Flo. Testé avec une réponse Firestore simulée (2 cartes → point de prix ajouté) ; en réel, Firestore répond 403 tant que les règles ne sont pas publiées.
 
 ## Environnement et habitudes de travail
 - Les fichiers ont été écrits dans le clone local de Flo ; il commit/pousse lui-même avec GitHub Desktop.
