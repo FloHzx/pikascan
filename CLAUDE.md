@@ -10,15 +10,15 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 - Aucun secret dans le dépôt. `firebase-config.js` ne contient que des clés publiques (la protection vient des règles Firestore). Les secrets (ex. `APIFY_TOKEN`) sont dans GitHub Secrets.
 
 ## Structure
-- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.19.0 | date UTC`, + badge `#verBadge`) : l'incrémenter à chaque livraison.
+- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.19.1 | date UTC`, + badge `#verBadge`) : l'incrémenter à chaque livraison.
   - Le script principal est le **3ᵉ bloc `<script>` inline** (index 2). Vérif syntaxe : extraire avec `re.findall(r'<script(?![^>]*src)[^>]*>(.*?)</script>', s, re.S)[2]` puis `node --check`.
   - **Fins de ligne LF** (vérifié le 12/11/2026) : lire/écrire en Python avec `newline=''`, ne pas normaliser.
   - Interface : `body[data-tab]` suit l'onglet actif (`setTab`). La bannière n'apparaît que sur « Repérer » ; ailleurs, en-tête compact. ≤ 600 px : barre d'onglets fixe en bas (libellés courts `.ts`).
-- `ocr/` : index visuel (~17 000 cartes FR : `cardidx.bin/json`, `cardclu.*`, `cardlang.json`) + Tesseract (`fra.traineddata.gz`, wasm). Aucune IA payante : comparaison de pixels en JS.
+- `ocr/` : index visuel (18 599 cartes : `cardidx.bin/json`, `cardclu.*`, `cardlang.json`, version dans `idxver.json`) + Tesseract (`fra.traineddata.gz`, wasm). Aucune IA payante : comparaison de pixels en JS. Mise à jour auto chaque lundi : `index.yml` → `scripts/build_index.mjs` (ajoute les cartes dont l'image TCGdex est en ligne, hors TCG Pocket ; incrémente `idxver.json`, l'appli recharge alors l'index).
 - `extension/` : extension Chrome/Edge MV3 (v1.5.1). `background.js` (`extractLbc`, Vinted, Cardmarket), `content.js`, `cardmarket.js`, `ebay.js`. Importe les annonces Vinted/Leboncoin dans l'onglet Annonces. `store/` = paquet pour le Chrome Web Store.
 - `sw.js`, `manifest.webmanifest`, icônes : PWA.
 - `data/` : `tracked.json` (cartes suivies), `history.json` (prix quotidiens), `annonces.json` (flux auto).
-- `scripts/` + `.github/workflows/` : `snapshot.yml` (relevé quotidien 05:00 UTC → `snapshot.mjs`), `annonces.yml` (toutes les 5 min → `pull_annonces.mjs`, Apify, lit les photos via `photo_engine.mjs` = Chromium headless + scanner de l'appli).
+- `scripts/` + `.github/workflows/` : `index.yml` (index du scanner, lundi 03:17 UTC), `snapshot.yml` (relevé quotidien 05:00 UTC → `snapshot.mjs`), `annonces.yml` (toutes les 5 min → `pull_annonces.mjs`, Apify, lit les photos via `photo_engine.mjs` = Chromium headless + scanner de l'appli).
 - `collection.csv` : exemple de collection (la vraie est importée par Flo dans Réglages).
 
 ## Architecture de l'appli (index.html)

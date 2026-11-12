@@ -1,0 +1,39 @@
+name: Index du scanner
+# Ajoute à l'index visuel (ocr/) les nouvelles cartes dès que TCGdex publie leurs images.
+on:
+  schedule:
+    - cron: '17 3 * * 1'   # chaque lundi 03:17 UTC
+  workflow_dispatch:       # bouton « Run workflow » pour lancer à la main
+permissions:
+  contents: write
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Nouvelles cartes avec image ?
+        id: pre
+        run: node scripts/build_index.mjs --count
+      # Chromium n'est installé que s'il y a des cartes à ajouter.
+      - name: Installer Chromium
+        if: steps.pre.outputs.new != '' && steps.pre.outputs.new != '0'
+        run: |
+          npm install --no-save --no-audit --no-fund playwright@1.49.1
+          npx playwright install --with-deps chromium
+      - name: Mettre à jour l'index
+        if: steps.pre.outputs.new != '' && steps.pre.outputs.new != '0'
+        run: node scripts/build_index.mjs
+      - name: Enregistrer si changement
+        run: |
+          if [ -n "$(git status --porcelain ocr/)" ]; then
+            git config user.name "pikascan-bot"
+            git config user.email "pikascan-bot@users.noreply.github.com"
+            git add ocr/
+            git commit -m "Index du scanner : $(node -p "require('./ocr/idxver.json').n") cartes"
+            git pull --rebase -q origin main || true
+            git push
+          fi

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.19.0 | 2026-11-12 20:00 UTC">
+<meta name="pikascan-build" content="1.19.1 | 2026-11-12 21:00 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1020,7 +1020,7 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> suivis chaque jour, verdict d'achat et suivi de revente.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.19.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.19.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -2012,7 +2012,7 @@ function cmPrices(cm){
   return out;
 }
 /* cartes sans image française dans TCGdex (promos MEP, DP…) : l'image existe en fr ou en anglais, on reconstruit son adresse */
-let CARD_LANG={}; (async()=>{ try{ const r=await fetch('ocr/cardlang.json?v=3'); if(r.ok) CARD_LANG=await r.json(); }catch(_){} })();
+let CARD_LANG={}; (async()=>{ try{ let v='3'; try{ v=localStorage.getItem('pk_idxv')||'3'; }catch(_){} const r=await fetch('ocr/cardlang.json?v='+v); if(r.ok) CARD_LANG=await r.json(); }catch(_){} })();
 function tcImgBase(d){ if(d.image) return d.image; const sid=d.set&&d.set.id, st=sid&&SETS[sid]; if(!st||!st.serie||d.localId==null) return ''; return 'https://assets.tcgdex.net/'+(CARD_LANG[d.id]||'en')+'/'+st.serie+'/'+sid+'/'+d.localId; }
 function tcMap(d, en){
   const cm = d.pricing && d.pricing.cardmarket; const prices = cmPrices(cm);
@@ -2469,7 +2469,7 @@ async function phIndex(onMsg){
   if(!list){ if(onMsg) onMsg('Téléchargement de la liste des cartes (une seule fois)…'); list = await tcJson(TCD+'fr/cards'); idbSet('cards_fr',{t:Date.now(), list}); }
   const byName = new Map(), bySetNum = new Map(), byLen = new Map(), byId = new Map();
   /* cartes sans image française dans TCGdex : l'image existe quand même (fr ou en), on reconstruit son adresse */
-  let lang={}; try{ const r=await fetch(OCR_BASE+'cardlang.json?v=3'); if(r.ok) lang=await r.json(); }catch(_){}
+  let lang={}; try{ const r=await fetch(OCR_BASE+'cardlang.json?v='+(await phIdxVer())); if(r.ok) lang=await r.json(); }catch(_){}
   const imgOf=(c,sid)=>c.image || (lang[c.id] && SETS[sid] && SETS[sid].serie ? 'https://assets.tcgdex.net/'+lang[c.id]+'/'+SETS[sid].serie+'/'+sid+'/'+c.localId : '');
   list.forEach(c=>{
     if(!c || !c.id || c.localId==null) return;
@@ -2977,14 +2977,24 @@ async function phFiche(k, auto){
 /*FIND-BEGIN*/
 /* ===== Reconnaissance par l'image : découpage en cases (grille / carte seule) + comparaison avec l'index visuel des ~17 000 cartes ===== */
 const CARD_AR = 0.716;
+let PH_IV=null;
+async function phIdxVer(){
+  if(PH_IV) return PH_IV;
+  let v=null; try{ const r=await fetch(OCR_BASE+'idxver.json',{cache:'no-cache'}); if(r.ok) v=String((await r.json()).v); }catch(_){}
+  if(!v){ try{ v=localStorage.getItem('pk_idxv'); }catch(_){} }
+  v=v||'3'; try{ localStorage.setItem('pk_idxv',v); }catch(_){}
+  return PH_IV=v;
+}
 async function phLoadIndex(onMsg){
   if(PH.vidx) return PH.vidx;
   if(onMsg) onMsg('Chargement de l\'index visuel des cartes (une seule fois, ~5 Mo)…');
-  let rec = await idbGet('vidx_v3');   /* v3 : index enrichi (promos MEP, DP, SM…) */
+  /* version de l'index (ocr/idxver.json, incrémentée par scripts/build_index.mjs) : une nouvelle version remplace la copie locale */
+  const IV = await phIdxVer(), key = 'vidx_v'+IV;
+  let rec = await idbGet(key);
   if(!rec || !rec.bin || !rec.ids || !rec.clu){
-    const g=u=>fetch(OCR_BASE+u+'?v=3').then(r=>{ if(!r.ok) throw new Error('index visuel absent'); return r; });
+    const g=u=>fetch(OCR_BASE+u+'?v='+IV).then(r=>{ if(!r.ok) throw new Error('index visuel absent'); return r; });
     const [ids, bin, clu, offs] = await Promise.all([ g('cardidx.json').then(r=>r.json()), g('cardidx.bin').then(r=>r.arrayBuffer()), g('cardclu.bin').then(r=>r.arrayBuffer()), g('cardclu.json').then(r=>r.json()) ]);
-    rec = { ids, bin, clu, offs }; idbSet('vidx_v3', rec); idbSet('vidx_v2', null);
+    rec = { ids, bin, clu, offs }; idbSet(key, rec); for(let v=2; v<+IV; v++) idbSet('vidx_v'+v, null);
   }
   const N = rec.ids.length, raw = new Uint8Array(rec.bin), D = 88, V = new Float32Array(N*D*3);
   for(let n=0;n<N;n++){ for(let ch=0;ch<3;ch++){ let mu=0; for(let i=0;i<D;i++) mu+=raw[(n*D+i)*3+ch]; mu/=D; let sd=0; for(let i=0;i<D;i++){ const v=raw[(n*D+i)*3+ch]-mu; sd+=v*v; } sd=Math.sqrt(sd/D)||1; for(let i=0;i<D;i++) V[n*264+ch*D+i]=(raw[(n*D+i)*3+ch]-mu)/sd; } }
