@@ -18,6 +18,7 @@ Résumé de ce qui a été fait en session avec Flo (assistant dans l'appli Clau
 - **v1.20.4 (13 nov.) — Icône officielle de Flo** : remplace l'icône v1.20.3 partout (appli installée, iPhone, favicon, extension, paquet du store) et sert aussi de logo dans l'en-tête compact. `icon.svg` supprimé.
 - **v1.21.0 (13 nov.) — « Marché de ma base »** : variation du marché, comparatif de valeur et nouveau classement « Les plus chères » (rang, valeur, part de la valeur totale, phrase « les 10 plus chères = X % de ta base ») regroupés dans un bloc à onglets ; moins de lignes par défaut + « Voir plus ». Variation : hausses et baisses séparées (avant, « 10 hausses » pouvait afficher des baisses quand peu de cartes montaient). Hauteur sur ordinateur ≈ 2 500 → 800 px.
 - **v1.21.1 (14 nov.) — Lecteur de photos unique** : l'onglet Scanner photo, les Annonces et le moteur GitHub (`photo_engine.mjs`) passent par la même fonction `fxReadOne` (voir `scanner_image.md`) avec les mêmes réglages ; une modification de la lecture s'applique aux trois.
+- **v1.22.0 (14 nov.) — Fond holo + sous-titre** : choix de Flo parmi 3 maquettes (néon rouge / holo / classeur) : fond holo en clair et en sombre, panneaux légèrement translucides. Sous-titre : phrase « Achète malin, revends au bon prix. » sur l'accueil, ligne dynamique ailleurs (ex. « 395 cartes · 1 753,40 € · ▼ −3,6 % sur 30 j »).
 
 ## Environnement et habitudes de travail
 - Les fichiers ont été écrits dans le clone local de Flo ; il commit/pousse lui-même avec GitHub Desktop.
