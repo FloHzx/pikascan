@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'; import http from 'node:http'; impor
 const require = createRequire(import.meta.url);
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.gz': 'application/gzip', '.wasm': 'application/wasm' };
 
-export async function startEngine({ root = process.cwd(), port = 0, textAssist = false, log = () => {}, launch = {}, context = {} } = {}) {
+export async function startEngine({ root = process.cwd(), port = 0, textAssist = true, log = () => {}, launch = {}, context = {} } = {}) {
   const { chromium } = require('playwright');
   const srv = http.createServer((q, s) => {
     let p = path.join(root, decodeURIComponent(q.url.split('?')[0])); if (!p.startsWith(root)) { s.writeHead(403); s.end(); return; }

@@ -94,7 +94,7 @@ const MAXPH = env('MAX_PHOTOS', 3), MAXAN = env('MAX_ANALYSES', 12), PHOTOS_ON =
 /* ---------- lecture des photos (scanner par l'image de PikaScan) ---------- */
 let engine = null, analysed = 0;
 async function readPhotos(p) {
-  if (!engine) { console.log('Démarrage du lecteur de photos…'); engine = await startEngine({ root: process.env.ENGINE_ROOT || process.cwd(), textAssist: process.env.TEXT_ASSIST === '1', log: m => console.log('  [page]', m) }); }
+  if (!engine) { console.log('Démarrage du lecteur de photos…'); engine = await startEngine({ root: process.env.ENGINE_ROOT || process.cwd(), textAssist: process.env.TEXT_ASSIST !== '0', log: m => console.log('  [page]', m) }); }
   const cells = new Map(); let lost = 0, nph = 0;
   for (const u of p.photos.slice(0, MAXPH)) {
     try {
