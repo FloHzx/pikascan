@@ -4,7 +4,7 @@ import { createRequire } from 'node:module'; import http from 'node:http'; impor
 const require = createRequire(import.meta.url);
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.json': 'application/json', '.gz': 'application/gzip', '.wasm': 'application/wasm' };
 
-export async function startEngine({ root = process.cwd(), port = 0, textAssist = false, log = () => {} } = {}) {
+export async function startEngine({ root = process.cwd(), port = 0, textAssist = false, log = () => {}, launch = {}, context = {} } = {}) {
   const { chromium } = require('playwright');
   const srv = http.createServer((q, s) => {
     let p = path.join(root, decodeURIComponent(q.url.split('?')[0])); if (!p.startsWith(root)) { s.writeHead(403); s.end(); return; }
@@ -12,7 +12,7 @@ export async function startEngine({ root = process.cwd(), port = 0, textAssist =
     fs.readFile(p, (e, d) => { if (e) { s.writeHead(404); s.end(); return; } s.writeHead(200, { 'content-type': TYPES[path.extname(p)] || 'application/octet-stream' }); s.end(d); });
   });
   await new Promise(r => srv.listen(port, '127.0.0.1', r)); const url = `http://127.0.0.1:${srv.address().port}/index.html`;
-  const browser = await chromium.launch(); const page = await (await browser.newContext({ viewport: { width: 1000, height: 900 } })).newPage();
+  const browser = await chromium.launch(launch); const page = await (await browser.newContext(Object.assign({ viewport: { width: 1000, height: 900 } }, context))).newPage();
   page.on('pageerror', e => log('page:', e.message));
   await page.goto(url); await page.waitForFunction(() => window.__ocr && window.__ocr.PH, null, { timeout: 60000 }); await page.waitForTimeout(1500);
   await page.click('#tab-photo'); await page.evaluate(() => { __ocr.PH.quiet = true; });
