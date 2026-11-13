@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.23.2 | 2026-11-14 15:30 UTC">
+<meta name="pikascan-build" content="1.24.0 | 2026-11-14 17:00 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1078,6 +1078,14 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
 .tg2-live{ display:none; } body:not([data-tab="scan"]) .tg2-live{ display:inline; } body[data-tab="scan"] .tg2{ display:none; }
 .tg2-live .up{ color:var(--good); } .tg2-live .down{ color:var(--bad); }
 @media (max-width:600px){ body:not([data-tab="scan"]) .tg2{ display:block !important; font-size:13px; } }
+/* v1.24 : réglage précis des cadres d'annonce */
+.fx-lc{ display:block; border-radius:8px; background:#0b0d12; }
+.fx-cmp .fx-lc{ height:min(300px,34vh); width:auto; aspect-ratio:63/88; max-width:100%; margin:0 auto; box-shadow:0 2px 10px rgba(0,0,0,.3); }
+.fx-strip .fx-lc{ height:54px; width:auto; aspect-ratio:63/88; border-radius:6px; }
+.fx-fine{ display:flex; flex-direction:column; gap:8px; margin:0 0 12px; padding:10px; border:1px solid var(--hairline); border-radius:12px; }
+.fx-mode,.fx-sel{ display:flex; flex-wrap:wrap; gap:6px; } .fx-mode .btn.on,.fx-sel .btn.on{ background:#ffd23f !important; color:#1a1d24 !important; border-color:#ffd23f !important; opacity:1 !important; }
+.fx-sel .btn{ min-width:38px; justify-content:center; }
+.fx-pad{ display:grid; grid-template-columns:repeat(3,38px); gap:4px; align-items:center; justify-items:center; } .fx-pad .btn{ width:38px; justify-content:center; } .fx-pad b{ font-size:18px; }
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1098,7 +1106,7 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2"><span class="tg2-live" id="mastLive"></span></span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.23.2</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.24.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -4250,15 +4258,15 @@ function fxConfLbl(c){ return c.conf==='sure'?'Certaine':c.conf==='probable'?'Pr
 function fxReviewHTML(it,ents){
   const i=Math.min(FXV.i,ents.length-1), e=ents[i], okN=ents.filter(x=>x.c&&x.c.ok).length, crops=FXV.media.crops||{};
   const nav=`<div class="fx-rv-h"><b>Carte ${i+1} / ${ents.length}</b><span class="hint" style="margin:0">✔ ${okN} validée${okN>1?'s':''}</span></div>
-    <div class="fx-strip c">${ents.map((x,j)=>{ const k=(x.c||x.l).k, cr=crops[k]; return `<button type="button" class="${j===i?'on':''}${x.c&&x.c.ok?' ok':''}${x.kind==='lost'?' lost':''}" data-fxv="card" data-i="${j}" title="${esc(x.c?x.c.name:'Non lue')}">${cr?`<img src="${esc(cr)}" alt="">`:(x.c&&x.c.img?`<img src="${esc(x.c.img)}" alt="" referrerpolicy="no-referrer">`:'?')}<span>${j+1}</span></button>`; }).join('')}</div>`;
+    <div class="fx-strip c">${ents.map((x,j)=>{ const k=(x.c||x.l).k, cr=crops[k], lc=fxLiveCrop(x.c||x.l); return `<button type="button" class="${j===i?'on':''}${x.c&&x.c.ok?' ok':''}${x.kind==='lost'?' lost':''}" data-fxv="card" data-i="${j}" title="${esc(x.c?x.c.name:'Non lue')}">${lc?lc:cr?`<img src="${esc(cr)}" alt="">`:(x.c&&x.c.img?`<img src="${esc(x.c.img)}" alt="" referrerpolicy="no-referrer">`:'?')}<span>${j+1}</span></button>`; }).join('')}</div>`;
   const search=`<div class="fx-find"><input type="search" id="fxvQ" placeholder="${e.kind==='lost'?'Quelle est cette carte ? (nom + n°)':'Autre carte : nom (+ n°), ex. Pikachu 53'}" value="${esc(FXV.q)}"><button type="button" class="btn small" data-fxv="search">Chercher</button></div>${FXV.res.length?`<div class="fx-res">${FXV.res.map((r,j)=>`<button type="button" class="fl-cand" data-fxv="pickres" data-i="${j}">${r.img?`<img src="${esc(r.img)}" alt="" referrerpolicy="no-referrer">`:''}<span>${esc(r.name)}<small>${esc(r.ed||'')} · ${esc(r.number||'')}</small></span></button>`).join('')}</div>`:''}`;
   if(e.kind==='lost'){
-    const cr=crops[e.l.k]; return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="">`:'<div class="fl-noimg">?</div>'}<figcaption>Sur la photo</figcaption></figure></div><div class="hint">Cette carte n'a pas été reconnue (comptée 0 €). Cherche-la par son nom pour l'ajouter au lot.</div>${search}<div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀ Précédente</button><button type="button" class="btn small" data-fxv="next">Suivante ▶</button></div><div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Déplacer / ajuster le cadre</button><button type="button" class="btn small danger" data-fxv="rmlost">🗑 Retirer ce cadre</button></div>`;
+    const cr=crops[e.l.k], lc=fxLiveCrop(e.l); return nav+`<div class="fx-cmp"><figure>${lc?lc:cr?`<img src="${esc(cr)}" alt="">`:'<div class="fl-noimg">?</div>'}<figcaption>Sur la photo</figcaption></figure></div><div class="hint">Cette carte n'a pas été reconnue (comptée 0 €). Cherche-la par son nom pour l'ajouter au lot.</div>${search}<div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀ Précédente</button><button type="button" class="btn small" data-fxv="next">Suivante ▶</button></div><div class="fx-acts" style="margin-top:6px"><button type="button" class="btn small" data-fxv="fedit">✋ Déplacer / ajuster le cadre</button><button type="button" class="btn small danger" data-fxv="rmlost">🗑 Retirer ce cadre</button></div>`;
   }
   const c=e.c, cr=crops[c.k], alts=[c.id,...(c.alts||[])].filter((x,j,a)=>x&&a.indexOf(x)===j).slice(0,6);
   setTimeout(()=>alts.forEach(id=>{ if(!FXV.sums[id]) fxSumC(id).then(()=>{ const box=$('fxAlts'); if(box&&FXV.i===i) box.innerHTML=fxAltsHTML(c,alts); const a=document.querySelector('.fb-cm'), sm=FXV.sums[c.id]; if(a&&sm&&sm.cm&&FXV.i===i){ a.href=cmUrl(sm.cm); if(!c.cm) c.cm=sm.cm; } }); }),0);
-  return nav+`<div class="fx-cmp"><figure>${cr?`<img src="${esc(cr)}" alt="Carte sur la photo">`:'<div class="fl-noimg">—</div>'}<figcaption>Sur la photo</figcaption></figure><figure>${c.img?`<img src="${esc(c.img)}" alt="Carte trouvée" referrerpolicy="no-referrer">`:'<div class="fl-noimg">?</div>'}<figcaption>Carte trouvée</figcaption></figure></div>
-    ${(!cr && !c.poly)?'<div class="fx-warn">ℹ️ Cette annonce a été analysée avant l\'ajout des zones sur la photo. <b>Re-clique sur l\'icône de l\'extension depuis la page Vinted</b> : l\'annonce sera mise à jour (photos relues) avec les cadres et les cartes découpées.</div>':''}
+  const lc=fxLiveCrop(c); return nav+`<div class="fx-cmp"><figure>${lc?lc:cr?`<img src="${esc(cr)}" alt="Carte sur la photo">`:'<div class="fl-noimg">—</div>'}<figcaption>Sur la photo</figcaption></figure><figure>${c.img?`<img src="${esc(c.img)}" alt="Carte trouvée" referrerpolicy="no-referrer">`:'<div class="fl-noimg">?</div>'}<figcaption>Carte trouvée</figcaption></figure></div>
+    ${(!cr && !lc && !c.poly)?'<div class="fx-warn">ℹ️ Cette annonce a été analysée avant l\'ajout des zones sur la photo. <b>Re-clique sur l\'icône de l\'extension depuis la page Vinted</b> : l\'annonce sera mise à jour (photos relues) avec les cadres et les cartes découpées.</div>':''}
     <div class="fx-info"><b>${esc(c.name)}</b>${c.q>1?` <span class="chip">× ${esc(c.q)}</span>`:''}<div class="hint" style="margin:2px 0">${esc(c.ed||'')} · n° ${esc(c.number||'')}</div><div>${c.p?`Valeur <b class="num">${esc(eur(c.p))}</b>`:'<span class="hint" style="margin:0">Moins de 0,30 € : comptée 0 €</span>'} <span class="chip">${esc(fxConfLbl(c))}${c.s1?' · '+Math.round(c.s1*100)+' %':''}</span>${c.ok?' <span class="chip okc">✔ Validée</span>':''}</div><div class="fb-pair"><a class="fb-cm" href="${esc(fxCmHref(Object.assign({},c,{cm:(FXV.sums[c.id]&&FXV.sums[c.id].cm)||c.cm})))}" target="_blank" rel="noopener noreferrer" title="Ouvre la fiche de la carte sur Cardmarket pour vérifier le prix" aria-label="Cardmarket"><span class="bdg bdg-cm">CM</span></a><a class="fb-ebay" href="${esc(fxEbayHref(c))}" target="_blank" rel="noopener noreferrer" title="Ventes terminées sur eBay.fr pour cette carte (prix réellement payés)" aria-label="eBay"><span class="bdg bdg-eb">eBay</span></a></div>${cmBoxHTML(c, c.p||0, 'viewer')}${fxEbBox(c)}</div>
     ${alts.length>1?`<div class="hint" style="margin:8px 0 4px">Ce n'est pas la bonne impression ? Choisis-en une autre :</div><div class="fx-alts" id="fxAlts">${fxAltsHTML(c,alts)}</div>`:''}${search}
     <div class="fx-acts"><button type="button" class="btn small" data-fxv="prev">◀</button><button type="button" class="btn primary small" data-fxv="ok">✓ Valider et suivante</button><button type="button" class="btn small" data-fxv="next">▶</button><button type="button" class="btn small danger" data-fxv="rm">🗑 Retirer du lot</button></div>
@@ -4273,6 +4281,10 @@ function fxEditPath(ed){ const d=[]; for(let r=1;r<ed.rows;r++){ const a=fxGP(ed
 function fxEditOverlay(ed){ const nm=['↖','↗','↘','↙'];
   return `<svg class="fx-ov edit" viewBox="0 0 1 1" preserveAspectRatio="none"><polygon id="fxEdQ" points="${ed.quad.map(p=>p.join(',')).join(' ')}"></polygon><path id="fxEdG" d="${fxEditPath(ed)}"></path></svg>`+ed.quad.map((p,i)=>`<button type="button" class="fx-hd" data-hd="${i}" style="left:${p[0]*100}%;top:${p[1]*100}%" aria-label="Coin ${i+1}">${nm[i]}</button>`).join('')+(ed.frame?`<button type="button" class="fx-hd mv" data-hd="m" style="left:${fxCen(ed.quad)[0]*100}%;top:${fxCen(ed.quad)[1]*100}%" aria-label="Déplacer le cadre">✥</button>`:''); }
 const fxCen=q=>[q.reduce((a,p)=>a+p[0],0)/4,q.reduce((a,p)=>a+p[1],0)/4];
+/* vignette d'un cadre prise directement dans la photo (SVG, sans canvas : suit toujours la position actuelle du cadre) */
+function fxLiveCrop(o){ const ph=o&&o.ph!=null?o.ph:null, src=ph!=null&&FXV.photos?FXV.photos[ph]:null, q=o&&o.poly; if(!src||!q||q.length!==4) return '';
+  const xs=q.map(p=>p[0]), ys=q.map(p=>p[1]), x0=Math.max(0,Math.min(...xs)), y0=Math.max(0,Math.min(...ys)), w=Math.min(1,Math.max(...xs))-x0, h=Math.min(1,Math.max(...ys))-y0; if(!(w>0.003&&h>0.003)) return '';
+  return `<svg class="fx-lc" viewBox="${x0.toFixed(4)} ${y0.toFixed(4)} ${w.toFixed(4)} ${h.toFixed(4)}" preserveAspectRatio="none" role="img" aria-label="Carte sur la photo"><image href="${esc(src)}" x="0" y="0" width="1" height="1" preserveAspectRatio="none"/></svg>`; }
 function fxFrameCtx(ents,ph,skip){ const ps=ents.filter(e=>{ const o=e.c||e.l; return o&&o.poly&&o.ph===ph&&o!==skip; }).map(e=>(e.c||e.l).poly); return ps.length?`<svg class="fx-ov ctx" viewBox="0 0 1 1" preserveAspectRatio="none">${ps.map(q=>`<polygon points="${q.map(p=>p.join(',')).join(' ')}"></polygon>`).join('')}</svg>`:''; }
 function fxEditDraw(){ const ed=FXV.edit; if(!ed) return; const q=$('fxEdQ'), g=$('fxEdG'); if(q) q.setAttribute('points',ed.quad.map(p=>p.join(',')).join(' ')); if(g) g.setAttribute('d',fxEditPath(ed)); document.querySelectorAll('.fx-hd').forEach(h=>{ const p=h.dataset.hd==='m'?fxCen(ed.quad):ed.quad[+h.dataset.hd]; h.style.left=p[0]*100+'%'; h.style.top=p[1]*100+'%'; }); }
 function fxEditPane(ed){
@@ -4321,10 +4333,26 @@ async function fxRescanApply(it, ph, res){
   it.scanNote=`Lot lu sur les photos (découpage ajusté) : ${L.n} carte${L.n>1?'s':''} reconnue${L.n>1?'s':''} ≈ ${L.value.toFixed(2)} €${L.lost?` · ${L.lost} non lue${L.lost>1?'s':''} (comptée${L.lost>1?'s':''} 0 €)`:''}. Vérifie sur les photos.`;
   await FXI.put(it.id,media); await fxSave(it);
 }
-document.addEventListener('pointerdown',e=>{ const h=e.target.closest&&e.target.closest('.fx-hd'); if(!h) return; e.preventDefault(); const hd=h.dataset.hd; FXV.drag=hd==='m'?'m':+hd; if(hd==='m'&&FXV.edit) FXV.dragStart={x:e.clientX,y:e.clientY,q:FXV.edit.quad.map(p=>p.slice())}; try{ h.setPointerCapture(e.pointerId); }catch(_){} fxLoupe(e); });
+document.addEventListener('pointerdown',e=>{ const h=e.target.closest&&e.target.closest('.fx-hd'); if(!h) return; e.preventDefault(); const hd=h.dataset.hd; FXV.drag=hd==='m'?'m':+hd; if(FXV.edit&&FXV.edit.frame&&FXV.sel!==FXV.drag){ FXV.sel=FXV.drag; document.querySelectorAll('.fx-sel [data-c]').forEach(x=>x.classList.toggle('on',x.dataset.c===String(FXV.sel))); const lb=document.querySelector('.fx-pad b'); if(lb) lb.textContent={0:'↖',1:'↗',2:'↘',3:'↙',m:'✥'}[FXV.sel]; } if(hd==='m'&&FXV.edit) FXV.dragStart={x:e.clientX,y:e.clientY,q:FXV.edit.quad.map(p=>p.slice())}; try{ h.setPointerCapture(e.pointerId); }catch(_){} fxLoupe(e); });
 document.addEventListener('pointermove',e=>{ if(FXV.drag==null||!FXV.edit) return; const img=document.querySelector('.fx-pw>img'); if(!img) return; const r=img.getBoundingClientRect();
   if(FXV.drag==='m'){ const st=FXV.dragStart; if(!st) return; let dx=(e.clientX-st.x)/r.width, dy=(e.clientY-st.y)/r.height; const xs=st.q.map(p=>p[0]), ys=st.q.map(p=>p[1]); dx=Math.max(-Math.min(...xs),Math.min(1-Math.max(...xs),dx)); dy=Math.max(-Math.min(...ys),Math.min(1-Math.max(...ys),dy)); FXV.edit.quad=st.q.map(p=>[Math.round((p[0]+dx)*1000)/1000,Math.round((p[1]+dy)*1000)/1000]); fxEditDraw(); return; }
-  const x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)), y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)); FXV.edit.quad[FXV.drag]=[Math.round(x*1000)/1000,Math.round(y*1000)/1000]; fxEditDraw(); });
+  const x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)), y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height));
+  if(FXV.edit.fixed&&FXV.edit.frame){ FXV.edit.quad=fxFixedRect(FXV.edit.quad, FXV.drag, x, y); fxEditDraw(); return; }
+  FXV.edit.quad[FXV.drag]=[Math.round(x*1000)/1000,Math.round(y*1000)/1000]; fxEditDraw(); });
+/* cadre fixe : rectangle droit aux proportions d'une carte (63×88), coin opposé immobile */
+function fxImgDims(){ const im=document.querySelector('.fx-pw>img'); return [(im&&im.naturalWidth)||3,(im&&im.naturalHeight)||4]; }
+function fxFixedRect(q, i, x, y){ const [nw,nh]=fxImgDims(), a=q[(i+2)%4], sx=(i===1||i===2)?1:-1, sy=(i===2||i===3)?1:-1;
+  let hp=Math.max(Math.abs((y-a[1])*nh), Math.abs((x-a[0])*nw)/0.716, 12), wp=hp*0.716;
+  const cl=v=>Math.round(Math.min(1,Math.max(0,v))*1000)/1000, bx=a[0]+sx*wp/nw, by=a[1]+sy*hp/nh, x0=Math.min(a[0],bx), x1=Math.max(a[0],bx), y0=Math.min(a[1],by), y1=Math.max(a[1],by);
+  return [[cl(x0),cl(y0)],[cl(x1),cl(y0)],[cl(x1),cl(y1)],[cl(x0),cl(y1)]]; }
+/* réglage au pixel près du coin (ou du cadre) sélectionné */
+function fxNudge(dx, dy, step){ const ed=FXV.edit; if(!ed) return; const [nw,nh]=fxImgDims(), ux=dx*step/nw, uy=dy*step/nh, sel=FXV.sel==null?'m':FXV.sel, r=v=>Math.round(Math.min(1,Math.max(0,v))*10000)/10000;
+  if(sel==='m') ed.quad=ed.quad.map(p=>[r(p[0]+ux),r(p[1]+uy)]);
+  else if(ed.fixed&&ed.frame){ const p=ed.quad[sel]; ed.quad=fxFixedRect(ed.quad, sel, p[0]+ux, p[1]+uy); }
+  else ed.quad[sel]=[r(ed.quad[sel][0]+ux), r(ed.quad[sel][1]+uy)];
+  fxEditDraw(); }
+document.addEventListener('keydown',e=>{ if(!FXV.edit||!FXV.edit.frame||!$('fxMd')) return; const t=e.target; if(t&&(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+  const k={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key]; if(!k) return; e.preventDefault(); fxNudge(k[0],k[1],e.shiftKey?10:1); });
 document.addEventListener('pointerup',()=>{ FXV.drag=null; fxLoupe(null); });
 /* loupe : pendant qu'on tire un coin, un cercle agrandi (×3) montre ce qu'il y a sous le coin, le doigt ou le curseur ne cachent plus rien */
 function fxLoupe(e){
@@ -4350,20 +4378,28 @@ document.addEventListener('pointercancel',()=>fxLoupe(null));
 
 
 /* --- ajustement d'un seul cadre (une carte) : déplacer / déformer le cadre puis relire uniquement cette carte --- */
+function fxFixPref(){ try{ return localStorage.getItem('pk_fxfix')==='1'; }catch(_){ return false; } }
 function fxFramePane(ed){
-  return `<div class="fx-rv-h"><b>✋ ${ed.isNew?'Nouveau cadre':'Déplacer / ajuster le cadre'} · photo ${ed.ph+1}</b></div>
+  const sel=FXV.sel==null?'m':FXV.sel, nm={0:'↖',1:'↗',2:'↘',3:'↙',m:'✥'};
+  const fine=`<div class="fx-fine">
+      <div class="fx-mode" role="group" aria-label="Mode du cadre"><button type="button" class="btn small${ed.fixed?'':' on'}" data-fxv="ffix" data-v="0" aria-pressed="${!ed.fixed}">Coins libres</button><button type="button" class="btn small${ed.fixed?' on':''}" data-fxv="ffix" data-v="1" aria-pressed="${!!ed.fixed}">Cadre fixe (format carte)</button></div>
+      <div class="fx-sel" role="group" aria-label="Point à déplacer">${['0','1','2','3','m'].map(k=>`<button type="button" class="btn small${String(sel)===k?' on':''}" data-fxv="fsel" data-c="${k}" title="${k==='m'?'Tout le cadre':'Ce coin'}">${nm[k]}</button>`).join('')}</div>
+      <div class="fx-pad" aria-label="Déplacer au pixel près"><span></span><button type="button" class="btn small" data-fxv="fnud" data-dx="0" data-dy="-1" aria-label="Haut">▲</button><span></span><button type="button" class="btn small" data-fxv="fnud" data-dx="-1" data-dy="0" aria-label="Gauche">◀</button><b>${nm[sel]}</b><button type="button" class="btn small" data-fxv="fnud" data-dx="1" data-dy="0" aria-label="Droite">▶</button><span></span><button type="button" class="btn small" data-fxv="fnud" data-dx="0" data-dy="1" aria-label="Bas">▼</button><span></span></div>
+      <div class="hint" style="margin:0">Choisis un coin (ou ✥ pour tout le cadre) puis règle-le au pixel près avec les flèches (ou celles du clavier ; Maj = 10 px).${ed.fixed?' En <b>cadre fixe</b>, le cadre reste droit aux proportions d\'une carte : tirer un coin l\'agrandit ou le réduit, le coin opposé ne bouge pas.':''}</div>
+    </div>`;
+  return `<div class="fx-rv-h"><b>✋ ${ed.isNew?'Nouveau cadre':'Déplacer / ajuster le cadre'} · photo ${ed.ph+1}</b></div>${fine}
     <div class="hint" style="margin:0 0 10px">Place le cadre <b>pile sur la carte</b> : tire les <b>4 coins</b> (↖ ↗ ↘ ↙) ou déplace tout le cadre avec <b>✥</b>. Place-le à peu près, puis <b>« Ajuster aux bords »</b> le cale tout seul sur la carte. Ensuite : <b>« Enregistrer la position »</b> si la carte est déjà la bonne, ou <b>« Relire ce cadre »</b> pour la reconnaître de nouveau.</div>
     <div class="fx-acts">${ed.isNew?'':`<button type="button" class="btn small fb-save" data-fxv="fsave" ${FXV.busy?'disabled':''} title="Garde la carte identifiée, change seulement la position du cadre">💾 Enregistrer la position</button>`}<button type="button" class="btn small" data-fxv="fedge" ${FXV.busy?'disabled':''} title="Cale automatiquement les 4 côtés sur les bords de la carte (à partir de la position actuelle)">🎯 Ajuster aux bords</button><button type="button" class="btn primary small" data-fxv="fanalyse" ${FXV.busy?'disabled':''} title="Relit la carte dans ce cadre (peut changer l'identification)">🔍 Relire ce cadre</button><button type="button" class="btn small" data-fxv="fsnap" ${FXV.busy?'disabled':''} title="Redresse le cadre aux proportions d'une carte">📐 Proportions carte</button><button type="button" class="btn small" data-fxv="cancel" ${FXV.busy?'disabled':''}>Annuler</button></div>
     <div class="hint" id="fxEdMsg" style="margin-top:10px">${FXV.busy?'<span class="spinner" aria-hidden="true"></span> '+esc(FXV.busyMsg||'Lecture…'):'Seul ce cadre change ; les autres ne bougent pas.'}</div>`; }
 function fxDefaultFrame(){ const im=document.querySelector('.fx-pw>img'), nw=(im&&im.naturalWidth)||3, nh=(im&&im.naturalHeight)||4, w=0.28, h=Math.min(0.9,w*nw/0.716/nh); return [[.5-w/2,.5-h/2],[.5+w/2,.5-h/2],[.5+w/2,.5+h/2],[.5-w/2,.5+h/2]].map(p=>p.map(v=>Math.round(v*1000)/1000)); }
 function fxSnapFrame(q){ const c=fxCen(q), im=document.querySelector('.fx-pw>img'), nw=(im&&im.naturalWidth)||3, nh=(im&&im.naturalHeight)||4, d=(a,b)=>Math.hypot((a[0]-b[0])*nw,(a[1]-b[1])*nh); const hpx=(d(q[0],q[3])+d(q[1],q[2]))/2, wpx=hpx*0.716, w=wpx/nw, h=hpx/nh; const cl=v=>Math.round(Math.min(1,Math.max(0,v))*1000)/1000; return [[c[0]-w/2,c[1]-h/2],[c[0]+w/2,c[1]-h/2],[c[0]+w/2,c[1]+h/2],[c[0]-w/2,c[1]+h/2]].map(p=>[cl(p[0]),cl(p[1])]); }
-function fxCropFromPhoto(dataUrl, poly){ return new Promise(res=>{ const im=new Image(); im.onload=()=>{ try{ const sw=im.naturalWidth, sh=im.naturalHeight, c0=document.createElement('canvas'); c0.width=sw; c0.height=sh; const x0=c0.getContext('2d',{willReadFrequently:true}); x0.drawImage(im,0,0); const src=x0.getImageData(0,0,sw,sh).data, w=84, h=118, cv=document.createElement('canvas'); cv.width=w; cv.height=h; const cx=cv.getContext('2d'), out=cx.createImageData(w,h), q=poly;
+function fxCropFromPhoto(dataUrl, poly, noCors){ return new Promise(res=>{ const im=new Image(); if(!noCors && !/^(data|blob):/.test(String(dataUrl))) im.crossOrigin='anonymous'; im.onerror=()=>{ if(!noCors && im.crossOrigin) fxCropFromPhoto(dataUrl,poly,true).then(res); else res(''); }; im.onload=()=>{ try{ const sw=im.naturalWidth, sh=im.naturalHeight, c0=document.createElement('canvas'); c0.width=sw; c0.height=sh; const x0=c0.getContext('2d',{willReadFrequently:true}); x0.drawImage(im,0,0); const src=x0.getImageData(0,0,sw,sh).data, w=84, h=118, cv=document.createElement('canvas'); cv.width=w; cv.height=h; const cx=cv.getContext('2d'), out=cx.createImageData(w,h), q=poly;
     for(let j=0;j<h;j++) for(let i=0;i<w;i++){ const u=(i+0.5)/w, v=(j+0.5)/h, px=(q[0][0]*(1-u)*(1-v)+q[1][0]*u*(1-v)+q[2][0]*u*v+q[3][0]*(1-u)*v)*sw, py=(q[0][1]*(1-u)*(1-v)+q[1][1]*u*(1-v)+q[2][1]*u*v+q[3][1]*(1-u)*v)*sh, xi=Math.min(sw-1,Math.max(0,Math.round(px))), yi=Math.min(sh-1,Math.max(0,Math.round(py))), a=(yi*sw+xi)*4, o=(j*w+i)*4; out.data[o]=src[a]; out.data[o+1]=src[a+1]; out.data[o+2]=src[a+2]; out.data[o+3]=255; }
-    cx.putImageData(out,0,0); res(cv.toDataURL('image/jpeg',0.8)); }catch(e){ res(''); } }; im.onerror=()=>res(''); im.src=dataUrl; }); }
+    cx.putImageData(out,0,0); res(cv.toDataURL('image/jpeg',0.8)); }catch(e){ res(''); } }; im.src=dataUrl; }); }
 async function fxFrameSave(it, ed){
   const o=ed.ref&&(ed.ref.c||ed.ref.l); if(!o) throw new Error('Aucun cadre à enregistrer.'); const poly=ed.quad.map(p=>p.slice()); o.poly=poly; o.ph=ed.ph;
   const crop=await fxCropFromPhoto(FXV.photos[ed.ph],poly), media=FXV.media; media.crops=media.crops||{};
-  if(ed.ref.kind==='single'){ if(it.scanCard) it.scanCard.poly=poly; if(crop) media.crops.c0=crop; } else if(crop) media.crops[o.k]=crop;
+  if(ed.ref.kind==='single'){ if(it.scanCard){ it.scanCard.poly=poly; it.scanCard.ph=ed.ph; } if(crop) media.crops.c0=crop; else delete media.crops.c0; } else if(crop) media.crops[o.k]=crop; else delete media.crops[o.k];
   await FXI.put(it.id,media); await fxSave(it);
 }
 async function fxFrameApply(it, ed, res){
@@ -4636,8 +4672,11 @@ async function fxViewerClick(e){
     if(FXV.delArm!==FXV.ph){ FXV.delArm=FXV.ph; fxViewerRender(); setTimeout(()=>{ if(FXV.delArm!=null){ FXV.delArm=null; if($('fxMd')) fxViewerRender(); } },4500); return; }
     const ph=FXV.ph; FXV.delArm=null; try{ await fxDeletePhoto(it,ph); toast('Photo '+(ph+1)+' supprimée (et ses cartes retirées du lot).'); }catch(err){ toast(String(err&&err.message||err)); } fxViewerRender(); return;
   }
-  if(a==='fnew'){ FXV.edit={ph:FXV.ph,quad:fxDefaultFrame(),rows:1,cols:1,frame:true,isNew:true,ref:null}; fxViewerRender(); return; }
-  if(a==='fedit'){ const c0=ents[FXV.i]; if(!c0) return; const o=c0.c||c0.l, ph=(o.ph!=null?o.ph:FXV.ph); FXV.ph=ph; FXV.edit={ph,quad:(o.poly?o.poly.map(p=>p.slice()):fxDefaultFrame()),rows:1,cols:1,frame:true,isNew:false,ref:c0}; fxViewerRender(); return; }
+  if(a==='fnew'){ FXV.sel='m'; FXV.edit={ph:FXV.ph,quad:fxDefaultFrame(),rows:1,cols:1,frame:true,isNew:true,ref:null,fixed:fxFixPref()}; fxViewerRender(); return; }
+  if(a==='ffix'&&FXV.edit&&FXV.edit.frame){ const on=b.dataset.v==='1'; FXV.edit.fixed=on; try{ localStorage.setItem('pk_fxfix',on?'1':'0'); }catch(_){} if(on) FXV.edit.quad=fxSnapFrame(FXV.edit.quad); fxViewerRender(); return; }
+  if(a==='fsel'&&FXV.edit){ FXV.sel=b.dataset.c==='m'?'m':+b.dataset.c; fxViewerRender(); return; }
+  if(a==='fnud'&&FXV.edit){ fxNudge(+b.dataset.dx,+b.dataset.dy,e&&e.shiftKey?10:1); return; }
+  if(a==='fedit'){ const c0=ents[FXV.i]; if(!c0) return; const o=c0.c||c0.l, ph=(o.ph!=null?o.ph:FXV.ph); FXV.ph=ph; FXV.sel='m'; FXV.edit={ph,quad:(o.poly?o.poly.map(p=>p.slice()):fxDefaultFrame()),rows:1,cols:1,frame:true,isNew:false,ref:c0,fixed:fxFixPref()}; if(FXV.edit.fixed) FXV.edit.quad=fxSnapFrame(FXV.edit.quad); fxViewerRender(); return; }
   if(a==='ebay'||a==='ebayr'){ const e0=ents[FXV.i], c0=e0&&e0.c; if(!c0) return; FXV.ebBusy=true; fxViewerRender(); const r=await fxEbFetch(c0,a==='ebayr'); FXV.ebBusy=false; if(r.err) toast(fxEbErr(r)); else if(!r.n) toast('Aucune vente trouvée : la requête est peut-être trop précise (voir « eBay ↗ »).'); fxViewerRender(); return; }
   if(a==='fedge'&&FXV.edit&&FXV.edit.frame){
     try{ const im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Photo illisible.')); i.src=FXV.photos[FXV.edit.ph]; }), r=window.__ocr.phFitCard(im,FXV.edit.quad);
