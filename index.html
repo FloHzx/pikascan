@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.19.3 | 2026-11-13 09:30 UTC">
+<meta name="pikascan-build" content="1.20.0 | 2026-11-13 10:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1013,6 +1013,33 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
   .footer-row .btn{ flex:1 1 auto; padding:7px 10px; font-size:12.5px; }
   .deltas{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
 }
+/* v1.20 : fiches repliées par défaut */
+.dossier.folded{ grid-template-columns:96px 1fr; }
+.dossier.folded .imgcell{ padding:12px; }
+.dossier.folded .body{ padding:12px 14px; cursor:pointer; display:flex; flex-direction:column; gap:6px; border-radius:0 14px 14px 0; }
+.dossier.folded .body:hover{ background:rgba(127,127,127,.06); }
+.dossier.folded .body:focus-visible{ outline:2px solid var(--rail); outline-offset:-2px; }
+.dossier.folded h3{ font-size:17px; margin:0; }
+.dossier.folded .chips{ margin:0; }
+.fold-sum{ display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin-top:auto; }
+.fs-v{ font-size:20px; font-weight:700; color:var(--ink); }
+.fs-d{ font-size:13px; font-weight:600; } .fs-d.up{ color:var(--good); } .fs-d.down{ color:var(--bad); } .fs-d small{ color:var(--muted); font-weight:400; }
+.fs-more{ margin-left:auto; font-size:12.5px; color:var(--ink-secondary); font-weight:600; }
+.fold-right{ display:inline-flex; align-items:center; gap:8px; }
+.fold-btn{ padding:4px 10px; }
+@media (min-width:860px){
+  .dossiers{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+  .dossier:not(.folded){ grid-column:1/-1; }
+}
+@media (max-width:560px){
+  .dossier.folded{ grid-template-columns:78px 1fr; }
+  .dossier.folded .imgcell{ position:static; padding:10px 0 10px 10px; }
+  .dossier.folded .imgcell img{ width:68px; max-width:68px; }
+  .dossier.folded .body > .title-row, .dossier.folded .body > .chips{ margin-left:0; }
+  .dossier.folded .body > .chips{ min-height:0; }
+  .dossier.folded .body{ padding:10px 12px; }
+  .dossier.folded .chips .chip.rarity{ display:none; }
+}
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1032,7 +1059,7 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> suivis chaque jour, verdict d'achat et suivi de revente.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.19.3</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.20.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -1205,7 +1232,7 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
         </div>
         <div class="chart-card" id="barChart"></div>
 
-        <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Survole les courbes · clique une image pour l'agrandir</div></div></div>
+        <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Touche une fiche pour voir sa courbe et ses actions · clique une image pour l'agrandir</div></div><button type="button" class="btn small" data-act="foldall" id="foldAllBtn">Tout déplier</button></div>
         <div class="dossiers" id="dossiers"></div>
       </main>
     </div>
@@ -1588,7 +1615,7 @@ function iconImg(st, cls, serieLogo, preferLogo, name){
 function symImg(sid, fallback){ const st = Object.assign({}, fallback||{}, SETS[sid]||{}); return iconImg(st, 'edsym', serieLogoOf(sid), false, ''); }
 function edChip(c){ const sid=setIdOf(c); return `<span class="chip edchip">${symImg(sid)}${esc(edName(c))}</span>`; }
 
-S.openSerie = null; S.edOpen = false;
+S.openSerie = null; S.edOpen = false; S.open = new Set();
 function renderSidebar(){
   const q = ($('editionSearch').value||'').trim().toLowerCase();
   const list = $('eraList'); let html='';
@@ -1760,7 +1787,7 @@ function dossierOrder(list){
 }
 function goToCard(id){
   const c = S.cards[id]; if(!c){ toast("Cette carte n'est plus dans ta base."); return; }
-  S.edition = null; setTab('base');
+  S.edition = null; S.open.add(id); setTab('base');
   const idx = dossierOrder(cardsArr()).findIndex(x=>x.id===id);
   S._dkey = '|'+S.sort; S.limit = Math.max(S.limit||24, Math.ceil((idx+1)/24)*24);
   renderAll();
@@ -1780,16 +1807,28 @@ function renderDossiers(){
   const dkey = (S.edition||'')+'|'+S.sort; if(S._dkey!==dkey){ S._dkey=dkey; S.limit=24; }
   if(!S.limit) S.limit=24;
   const shown = list.slice(0, S.limit), rest = list.length - shown.length;
+  const fab=$('foldAllBtn'); if(fab) fab.textContent = S.open.size ? 'Tout replier' : 'Tout déplier';
   $('dossiers').innerHTML = shown.map(c=>{
     const col=`var(${SLOTS[(c.slot||0)%4]})`, s=lastSnap(c), f=deltaFirst(c), range=S.ranges[c.id]||'all';
     const key='card-'+c.id, pts=cardPoints(c,range);
     const bought = c.status==='bought';
     const pnl = (bought && c.buyPrice!=null && valueEur(c)!=null) ? valueEur(c)-c.buyPrice : null;
+    const pill = `<span class="status-pill ${c.status==='pack'?'pack':bought?'bought':'spotted'}">${c.status==='pack'?'Pack':bought?'Acheté':'Repéré'}</span>`;
+    if(!S.open.has(c.id)){   /* fiche repliée : l'essentiel, un toucher déplie le reste */
+      const d30 = c.mom30!=null ? c.mom30 : deltaWindow(c,30,10);
+      return `<article class="dossier folded" style="--rail:${col}" data-card="${esc(c.id)}">
+      <div class="imgcell">${imgTag(c)}</div>
+      <div class="body" data-act="unfold" data-id="${esc(c.id)}" role="button" tabindex="0" aria-expanded="false" title="Voir le détail de la carte">
+        <div class="title-row"><div><h3>${esc(dn(c))}</h3></div>${pill}</div>
+        <div class="chips">${edChip(c)}<span class="chip">${esc(c.number||'')}</span>${c.rarity?`<span class="chip rarity">${esc(c.rarity)}</span>`:''}</div>
+        <div class="fold-sum"><span class="fs-v num">${eur(valueEur(c))}</span>${d30!=null&&isFinite(d30)?`<span class="fs-d num ${d30>=0?'up':'down'}">${d30>=0?'▲':'▼'} ${esc(pctS(d30))}<small> 30 j</small></span>`:''}${pnl!=null?`<span class="fs-d num ${pnl>=0?'up':'down'}">${pnl>=0?'+':'−'}${eur(Math.abs(pnl))}<small> plus-value</small></span>`:''}<span class="fs-more" aria-hidden="true">Détails ▾</span></div>
+      </div></article>`;
+    }
     return `<article class="dossier" style="--rail:${col}" data-card="${esc(c.id)}">
       <div class="imgcell">${imgTag(c)}</div>
       <div class="body">
         <div class="title-row"><div><h3>${esc(dn(c))}</h3><div class="en-name">${esc(c.nameEn)}</div></div>
-          <span class="status-pill ${c.status==='pack'?'pack':bought?'bought':'spotted'}">${c.status==='pack'?'Pack':bought?'Acheté':'Repéré'}</span></div>
+          <span class="fold-right">${pill}<button type="button" class="btn small fold-btn" data-act="fold" data-id="${esc(c.id)}" aria-expanded="true">Replier ▴</button></span></div>
         <div class="chips">${edChip(c)}<span class="chip">${esc(c.number||'')}</span><span class="chip rarity">${esc(c.rarity||'')}</span>${c.chaseTier?`<span class="chip">${esc(c.chaseTier)}</span>`:''}<span class="chip">${esc(condOf(c).l)}</span></div>
         <div class="price-block">
           <div class="price-now"><div class="label">Valeur estimée</div><div class="value num">${eur(valueEur(c))}</div><div class="label" style="text-transform:none;letter-spacing:0">prix Cardmarket (toutes langues)${c.lowUsd!=null?` · bas ${eur(c.lowUsd*fx()*condOf(c).f*frF(c))}`:''}</div>${ebayStat(c)}</div>
@@ -2245,6 +2284,9 @@ document.addEventListener('click',async e=>{
   if(act==='pick') return pickResult(parseInt(b.dataset.i,10));
   if(act==='add') return addToBase();
   if(act==='range'){ S.ranges[id]=b.dataset.r; return renderDossiers(); }
+  if(act==='unfold'||act==='fold'){ if(act==='unfold') S.open.add(id); else S.open.delete(id); renderDossiers();
+    const el=document.querySelector('.dossier[data-card="'+String(id).replace(/"/g,'\\"')+'"]'); if(el){ const r=el.getBoundingClientRect(); if(r.top<0||r.top>innerHeight*0.6) el.scrollIntoView({block:'start',behavior:'smooth'}); const f=el.querySelector(act==='unfold'?'.fold-btn':'.body'); if(f) f.focus({preventScroll:true}); } return; }
+  if(act==='foldall'){ const all=S.open.size===0; if(all) dossierOrder(getFiltered()).slice(0,S.limit||24).forEach(c=>S.open.add(c.id)); else S.open.clear(); return renderDossiers(); }
   if(act==='refresh1') return refreshOne(id);
   if(act==='analyse') return analyseExisting(id);
   if(act==='editlink'){ S.listingEdit=id; return renderDossiers(); }
@@ -3792,7 +3834,7 @@ async function syncHistory(){
   }catch(e){ /* service de relevé indisponible (hors ligne, fichier local…) : on ignore */ }
 }
 window.__imgChain = imgChain; window.__imgTag = imgTag;
-document.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.clickable[data-act="gocard"]')){ e.preventDefault(); goToCard(e.target.dataset.id); } });
+document.addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.clickable[data-act="gocard"]')){ e.preventDefault(); goToCard(e.target.dataset.id); } if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.dossier.folded .body')){ e.preventDefault(); e.target.click(); } });
 /* ---------- Annonces (Vinted & co) ---------- */
 const FLUX = { items:{}, filter:'todo', busy:false, pulled:false, cmBusy:null };
 const FX_NOISE = /\b(carte|cartes|pok[eé]mon|pokemon|neuve?s?|tbe|tr[eè]s bon [eé]tat|[eé]tat|nm|mint|fr|vf|fran[cç]aise?|anglaise?|lot|holo|brillante?|collection|vinted|vends?|vente)\b/gi;
