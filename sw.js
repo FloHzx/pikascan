@@ -1,6 +1,6 @@
 /* PikaScan : service worker. Le site reste toujours à jour (réseau d'abord pour la page),
    et les polices, images, icônes et index de reconnaissance sont gardés pour l'usage hors ligne. */
-const V='pikascan-sw-1.20.2', SHELL=['./','index.html','manifest.webmanifest','banner.jpg','logo.webp','firebase-config.js','icon-192.png','icon-512.png',
+const V='pikascan-sw-1.20.3', SHELL=['./','index.html','manifest.webmanifest','banner.jpg','logo.webp','icon.svg','firebase-config.js','icon-192.png','icon-512.png',
  'fonts/lilita-one-latin-400-normal.woff2','fonts/nunito-latin-400-normal.woff2','fonts/nunito-latin-500-normal.woff2','fonts/nunito-latin-600-normal.woff2','fonts/nunito-latin-700-normal.woff2','fonts/nunito-latin-800-normal.woff2',
  'fonts/ibm-plex-mono-latin-400-normal.woff2','fonts/ibm-plex-mono-latin-500-normal.woff2','fonts/ibm-plex-mono-latin-600-normal.woff2'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(V).then(c=>Promise.all(SHELL.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})))).then(()=>self.skipWaiting())); });
