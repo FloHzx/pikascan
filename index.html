@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.22.0 | 2026-11-14 12:30 UTC">
+<meta name="pikascan-build" content="1.23.0 | 2026-11-14 14:00 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1052,10 +1052,10 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
 }
 /* v1.20.2 : logo de l'en-tête compact = logotype de la bannière */
 .mast-logo{ display:none; }
-body:not([data-tab="scan"]) .mast-logo{ display:block; height:72px; width:72px; filter:drop-shadow(0 4px 12px rgba(0,0,0,.4)); flex:0 0 auto; }
+body:not([data-tab="scan"]) .mast-logo{ display:block; height:64px; width:64px; filter:drop-shadow(0 4px 14px rgba(229,28,36,.35)); flex:0 0 auto; }
 body:not([data-tab="scan"]) header.mast .pokeball{ display:none; }
-body:not([data-tab="scan"]) header.mast h1{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-@media (max-width:600px){ body:not([data-tab="scan"]) .mast-logo{ height:54px; width:54px; } }
+body:not([data-tab="scan"]) header.mast h1{ position:static; width:auto; height:auto; overflow:visible; clip:auto; font-size:30px; line-height:1.05; margin:0 0 2px; }
+@media (max-width:600px){ body:not([data-tab="scan"]) .mast-logo{ height:50px; width:50px; } body:not([data-tab="scan"]) header.mast h1{ font-size:23px; } }
 /* v1.21 : bloc « Marché de ma base » à onglets */
 .mk-head{ align-items:center; }
 .mk-tabs button[aria-selected="true"]{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
@@ -1078,6 +1078,28 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
 .tg2-live{ display:none; } body:not([data-tab="scan"]) .tg2-home{ display:none; } body:not([data-tab="scan"]) .tg2-live{ display:inline; }
 .tg2-live .up{ color:var(--good); } .tg2-live .down{ color:var(--bad); }
 @media (max-width:600px){ body:not([data-tab="scan"]) .tg2{ display:block !important; font-size:13px; } }
+/* v1.23 : harmonisation sur les couleurs de la marque — rouge Poké Ball + jaune Pikachu */
+:root{ --accent:#d81e25; --accent-ink:#ffffff; --brand:229,28,36; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --accent:#ff4d52; --accent-ink:#16090a; } }
+:root[data-theme="dark"]{ --accent:#ff4d52; --accent-ink:#16090a; }
+/* fond « holo » aux tons de la marque : rouge, magenta, violet profond, pointe d'or */
+:root{ --holo: radial-gradient(860px 540px at 4% -8%,rgba(229,28,36,.16),transparent 64%),radial-gradient(820px 520px at 96% 2%,rgba(190,40,140,.12),transparent 64%),radial-gradient(1000px 640px at 50% 110%,rgba(110,50,170,.10),transparent 64%),radial-gradient(700px 480px at 0% 72%,rgba(255,190,0,.08),transparent 64%); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --holo: radial-gradient(860px 540px at 4% -8%,rgba(229,28,36,.38),transparent 64%),radial-gradient(820px 520px at 96% 2%,rgba(190,40,140,.26),transparent 64%),radial-gradient(1000px 640px at 50% 110%,rgba(110,50,170,.24),transparent 64%),radial-gradient(700px 480px at 0% 72%,rgba(255,190,0,.08),transparent 64%); } }
+:root[data-theme="dark"]{ --holo: radial-gradient(860px 540px at 4% -8%,rgba(229,28,36,.38),transparent 64%),radial-gradient(820px 520px at 96% 2%,rgba(190,40,140,.26),transparent 64%),radial-gradient(1000px 640px at 50% 110%,rgba(110,50,170,.24),transparent 64%),radial-gradient(700px 480px at 0% 72%,rgba(255,190,0,.08),transparent 64%); }
+/* onglets : une seule teinte (rouge) pour l'onglet actif, icônes neutres sinon */
+.tabs .tab[data-tab]{ --tc:var(--brand); }
+.tabs .tab:not([aria-selected="true"]) .ti{ background:rgba(140,140,155,.14); color:var(--ink-secondary); }
+.tabs .tab:hover .ti{ background:rgba(var(--brand),.22); color:rgb(var(--brand)); }
+/* cartouches de l'en-tête : liseré neutre, rouge seulement s'il y a des alertes */
+.mc-base,.mc-last,.mc-al,.mc-src{ --c:rgba(140,140,155,.35); }
+.mc-al.on{ --c:var(--accent); }
+/* boutons « actualiser » : neutres ; étapes et atouts de l'accueil : rouge de la marque */
+.btn[data-act="refresh1"],#fxRefresh,#refreshAll,#trackBtn{ --tbg:rgba(140,140,155,.12); --tbd:rgba(140,140,155,.45); }
+.pres .pst[data-k], .pres .pf[data-k]{ --tc:var(--brand); }
+/* « Scanne · Estime · Revends » aux couleurs du logo */
+.tg .t1{ color:var(--ink); } .tg .t2{ color:var(--accent); } .tg .t3{ color:var(--accent2); }
+:root[data-theme="light"] .tg .t3{ color:#c79200; }
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .tg .t3{ color:#c79200; } }
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1098,7 +1120,7 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2"><span class="tg2-home">Achète malin, revends au bon prix.</span><span class="tg2-live" id="mastLive"></span></span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.22.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.23.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
