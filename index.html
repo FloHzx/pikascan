@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.20.1 | 2026-11-13 11:30 UTC">
+<meta name="pikascan-build" content="1.20.2 | 2026-11-13 12:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1050,6 +1050,12 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
   .fl-item .fb-sep{ display:none; }
   .fl-item .fl-when{ width:100%; text-align:right; }
 }
+/* v1.20.2 : logo de l'en-tête compact = logotype de la bannière */
+.mast-logo{ display:none; }
+body:not([data-tab="scan"]) .mast-logo{ display:block; height:64px; width:auto; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,.35); flex:0 0 auto; }
+body:not([data-tab="scan"]) header.mast .pokeball{ display:none; }
+body:not([data-tab="scan"]) header.mast h1{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+@media (max-width:600px){ body:not([data-tab="scan"]) .mast-logo{ height:46px; border-radius:10px; } }
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1066,10 +1072,11 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
         <circle cx="36" cy="36" r="3" fill="var(--ink)"/>
         <rect x="2" y="23.2" width="68" height="3" rx="1.5" fill="url(#psBeam)"/>
       </svg>
+      <img class="mast-logo" src="logo.webp" width="480" height="188" alt="" aria-hidden="true">
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> suivis chaque jour, verdict d'achat et suivi de revente.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.20.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.20.2</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
