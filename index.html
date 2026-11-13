@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.23.0 | 2026-11-14 14:00 UTC">
+<meta name="pikascan-build" content="1.23.1 | 2026-11-14 14:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1075,7 +1075,7 @@ html{ background:var(--paper); }
 body{ background:var(--holo), var(--paper); background-attachment:fixed; min-height:100vh; }
 .card-box,.chart-card,.tile,.dossier,.mc,.pres,.side,.fl-item,.tr-it,.tr-buy,.tr-ch-wrap,#trChart,.imp-banner{ background-color:color-mix(in srgb, var(--card) var(--panel-a), transparent); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
 /* sous-titre : phrase sur l'accueil, ligne dynamique sur les autres onglets */
-.tg2-live{ display:none; } body:not([data-tab="scan"]) .tg2-home{ display:none; } body:not([data-tab="scan"]) .tg2-live{ display:inline; }
+.tg2-live{ display:none; } body:not([data-tab="scan"]) .tg2-live{ display:inline; } body[data-tab="scan"] .tg2{ display:none; }
 .tg2-live .up{ color:var(--good); } .tg2-live .down{ color:var(--bad); }
 @media (max-width:600px){ body:not([data-tab="scan"]) .tg2{ display:block !important; font-size:13px; } }
 /* v1.23 : harmonisation sur les couleurs de la marque — rouge Poké Ball + jaune Pikachu */
@@ -1119,8 +1119,8 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
       <img class="mast-logo" src="logo.webp" width="256" height="256" alt="" aria-hidden="true">
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
-        <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2"><span class="tg2-home">Achète malin, revends au bon prix.</span><span class="tg2-live" id="mastLive"></span></span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.23.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2"><span class="tg2-live" id="mastLive"></span></span></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.23.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
