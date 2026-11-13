@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.20.0 | 2026-11-13 10:30 UTC">
+<meta name="pikascan-build" content="1.20.1 | 2026-11-13 11:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -924,6 +924,7 @@ h2{ font-size:1.35em; } .tab{ font-size:15px; } .fl-top>b{ font-size:17px; }
 .tr-gl{ stroke:var(--hairline); stroke-width:1; } .tr-ax{ fill:var(--muted); font-size:11px; font-family:inherit; }
 .tr-bb{ fill:var(--tr-buy); } .tr-bs{ fill:var(--tr-sell); }
 .tr-hit{ fill:transparent; cursor:default; } .tr-hit.on{ fill:var(--chip-bg); }
+.tr-tip[hidden]{ display:none !important; }
 .tr-tip{ position:absolute; z-index:3; pointer-events:none; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow); border-radius:10px; padding:8px 10px; font-size:12.5px; display:flex; flex-direction:column; gap:3px; min-width:170px; }
 .tr-tip span{ display:flex; align-items:center; gap:4px; } .tr-tip span b{ margin-left:auto; padding-left:10px; }
 .tr-tab{ margin-top:6px; font-size:12.5px; } .tr-tab summary{ cursor:pointer; color:var(--muted); } .tr-tab table{ border-collapse:collapse; margin-top:6px; width:100%; max-width:520px; } .tr-tab td,.tr-tab th{ padding:4px 8px; border-bottom:1px solid var(--hairline); text-align:left; } .tr-tab td.num{ text-align:right; font-variant-numeric:tabular-nums; }
@@ -1040,6 +1041,15 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
   .dossier.folded .body{ padding:10px 12px; }
   .dossier.folded .chips .chip.rarity{ display:none; }
 }
+/* v1.20.1 : annonces sur mobile (l'image ne réserve plus une colonne entière) */
+@media (max-width:560px){
+  .fl-item{ display:block; }
+  .fl-item .fl-img{ float:left; margin:0 10px 6px 0; width:56px; }
+  .fl-item .fl-acts{ clear:both; gap:6px; }
+  .fl-item .fl-acts .fb{ padding:6px 9px; font-size:12px; }
+  .fl-item .fb-sep{ display:none; }
+  .fl-item .fl-when{ width:100%; text-align:right; }
+}
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1059,7 +1069,7 @@ body:not([data-tab="scan"]) header.mast{ align-items:center; }
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> suivis chaque jour, verdict d'achat et suivi de revente.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.20.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.20.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -4655,7 +4665,8 @@ function fxMetaHTML(it){
 }
 function fxContentLine(it, st){
   const T=((it.title||'')+' '+(it.desc||'')).toLowerCase();
-  const kind=/classeur|binder|portfolio/.test(T)?'Classeur de cartes Pokémon':/\bdeck\b/.test(T)?'Deck Pokémon':/booster|display|\betb\b|coffret/.test(T)?'Produits Pokémon scellés':/\blots?\b|collection|bundle/.test(T)?'Lot de cartes Pokémon':'Carte(s) Pokémon';
+  const sealed=/booster|display|\betb\b|coffret|scell[ée]/.test(T.replace(/sorti(e|es|s)?\s+(de|d'un|du|des)\s+boosters?|(de|en|du)\s+boosters?|pack\s+fresh/g,' '));
+  const kind=/classeur|binder|portfolio/.test(T)?'Classeur de cartes Pokémon':/\bdeck\b/.test(T)?'Deck Pokémon':sealed?'Produits Pokémon scellés':/\blots?\b|collection|bundle/.test(T)?'Lot de cartes Pokémon':'Carte(s) Pokémon';
   const parts=[`<b>${esc(kind)}</b>`];
   if(st&&st.qty) parts.push(`${esc(st.qty)} carte${st.qty>1?'s':''} annoncée${st.qty>1?'s':''} par le vendeur`);
   if(it.lot){ const L=it.lot, nTot=L.cards.reduce((a,c)=>a+c.q,0)+(L.lostCells||[]).length, nph=it.nph||(it.photos&&it.photos.length)||0;
@@ -5121,7 +5132,10 @@ function trBuyHTML(b){
 }
 /* graphique : achats et ventes par mois (12 derniers mois), un seul axe en euros, info-bulle au survol */
 function trChartHTML(){
-  const sm=window.innerWidth<640, NM=sm?6:12, now=new Date(), M=[]; for(let i=NM-1;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); M.push({k:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'), l:d.toLocaleDateString('fr-FR',{month:'short'}).replace('.',''), y:d.getFullYear(), buy:0, sell:0, prof:0, n:0}); }
+  const sm=window.innerWidth<640, now=new Date();
+  const ds=[...Object.values(TR.buys).map(b=>String(b.date||'')), ...Object.values(TR.stock).map(x=>x.sale?String(x.sale.date||''):'')].filter(d=>/^\d{4}-\d{2}/.test(d)).sort();
+  const span=ds.length ? (now.getFullYear()-+ds[0].slice(0,4))*12+(now.getMonth()+1-+ds[0].slice(5,7))+1 : 0;
+  const NM=Math.min(sm?6:12, Math.max(sm?4:6, span)), M=[]; for(let i=NM-1;i>=0;i--){ const d=new Date(now.getFullYear(), now.getMonth()-i, 1); M.push({k:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'), l:d.toLocaleDateString('fr-FR',{month:'short'}).replace('.',''), y:d.getFullYear(), buy:0, sell:0, prof:0, n:0}); }
   const at=k=>M.find(m=>m.k===k);
   Object.values(TR.buys).forEach(b=>{ const m=at(String(b.date).slice(0,7)); if(m) m.buy+=b.total||0; });
   Object.values(TR.stock).forEach(x=>{ if(x.status==='sold'&&x.sale){ const m=at(String(x.sale.date).slice(0,7)); if(m){ m.sell+=x.sale.price||0; m.prof+=trCalc(x).profit; m.n+=x.qty||1; } } });

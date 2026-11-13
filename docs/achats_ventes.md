@@ -17,7 +17,7 @@
 - Prix de revient : total payé (articles + port + frais) réparti au prorata de la valeur Cardmarket (ou à parts égales), plus les frais de gradation. Bénéfice = prix de vente − frais de la plateforme − port à la charge du vendeur − prix de revient.
 - Depuis l'onglet Annonces : bouton « 🛒 J'ai acheté », pré-rempli avec les cartes reconnues. L'annonce garde `it.bought` (bandeau, filtre « Achetées ») ; elle est exclue des « Bons plans » et du badge.
 - Tableau de bord : investi, valeur du stock et plus-value latente, ventes, bénéfice net, ROI, délai moyen de revente.
-- Graphique achats/ventes par mois (orange/bleu validés pour le thème clair et le sombre, info-bulle, vue tableau).
+- Graphique achats/ventes par mois (orange/bleu validés pour le thème clair et le sombre, info-bulle, vue tableau), depuis le premier mois d'activité (6 à 12 mois ; 4 à 6 sur mobile).
 - Points d'attention : stock de plus de 60 j, annonce de plus de 30 j, gradation de plus de 60 j, marché à −10 % sur 30 j, prix de vente sous le prix de revient.
 - Autres fonctions : séparation des quantités (vendre 1 exemplaire sur 3), texte d'annonce à copier, export CSV (séparateur `;`), actualisation des valeurs via TCGdex, ajout optionnel des cartes à « Ma base » (statut Acheté) pour le suivi des prix et les alertes.
 - Les règles Firestore doivent couvrir `users/{uid}/{collection}/{doc}` pour toutes les collections, sinon la synchro des nouvelles collections échoue (message « Règles Firestore non publiées »).
