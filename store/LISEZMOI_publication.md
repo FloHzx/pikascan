@@ -1,4 +1,6 @@
-# Publier l'extension PikaScan (installation en un clic pour tout le monde)
+# Publier l'extension PikaScan (installation en un clic)
+
+> Flo utilise **Edge** : voir d'abord la section « Microsoft Edge Add-ons » (gratuit). Le Chrome Web Store (5 $) n'est utile que pour Chrome/Opera/Brave/Vivaldi.
 
 Une extension publiée sur le **Chrome Web Store** s'installe en un clic (« Ajouter à Chrome »), sans ZIP ni mode développeur.
 Ça passe obligatoirement par ton compte : je ne peux pas le faire à ta place (identité + paiement + validation).
@@ -11,8 +13,15 @@ Une extension publiée sur le **Chrome Web Store** s'installe en un clic (« Ajo
 5. Distribution → **Visibilité : « Non répertoriée »** (seules les personnes avec le lien l'installent ; pas besoin d'être dans la recherche du store) → Soumettre à l'examen. Délai : de quelques heures à environ une semaine (les accès à des sites sont examinés de près).
 6. Une fois validée, copie l'adresse de la fiche et donne-la-moi : j'en ferai le bouton « Ajouter à Chrome » du site.
 
-## Microsoft Edge (gratuit) — https://partner.microsoft.com/dashboard/microsoftedge
-Même ZIP, même texte, inscription gratuite.
+## Microsoft Edge Add-ons (navigateur de Flo) — gratuit
+1. Va sur https://partner.microsoft.com/dashboard/microsoftedge et inscris-toi au programme « Microsoft Edge » (compte Microsoft, gratuit, compte individuel).
+2. « Créer une extension » → envoie `store/pikascan-extension-store.zip`.
+3. **Disponibilité** → Visibilité **« Masquée »** (Hidden) : l'extension n'apparaît pas dans la recherche, seules les personnes qui ont le lien peuvent l'installer. Marchés : France (ou tous).
+4. **Propriétés** : catégorie Productivité ; URL de confidentialité = `https://flohzx.github.io/pikascan/privacy.html`.
+5. **Fiche (Français)** : colle le résumé et la description ci-dessous, ajoute `store/screenshot-1280x800.png` ; le logo est pris dans le ZIP (icône 128 px) — si un logo 300×300 est demandé, utilise `icon-512.png` du dépôt.
+6. **Notes pour la certification** : colle la « Justification des autorisations » ci-dessous.
+7. Publier → examen de quelques jours (jusqu'à 7 jours ouvrés). Une fois validée, donne-moi le lien de la fiche : j'en ferai le bouton « Installer l'extension » du site.
+En attendant (ou sans publier) : `edge://extensions` → « Mode développeur » → « Charger l'extension décompressée » → dossier `extension/` du dépôt (c'est ce que tu fais déjà).
 
 ## Texte de la fiche (paquet v1.5.1, reconstruit le 13 nov. 2026)
 **Nom** : PikaScan – Envoyer l'annonce
