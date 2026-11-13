@@ -18,23 +18,19 @@ export async function startEngine({ root = process.cwd(), port = 0, textAssist =
   await page.click('#tab-photo'); await page.evaluate(() => { __ocr.PH.quiet = true; });
   await page.evaluate(ta => { document.getElementById('phAuto').checked = false; document.getElementById('phTxtAssist').checked = ta; }, textAssist);
 
-  // Lit une photo (Buffer) et renvoie les cartes reconnues : [{id, name, conf, s1, margin, qty}]
+  // Lit une photo (Buffer) et renvoie les cartes reconnues : [{id, name, conf, s1, margin, qty, alt}]
+  // Même lecteur que l'appli (onglet Scanner photo et Annonces) : __ocr.readBest = fxReadOne
+  // (repérage carte par carte v2 + redressement, zones, grille, carte seule, photo entière → meilleur résultat).
   async function readPhoto(buf, name = 'photo.jpg') {
-    const run = async mode => {   // mode 'auto' = grille détectée par l'appli ; 'single' = une seule carte sur toute la zone texturée
-      await page.evaluate(() => { __ocr.PH.files.length = 0; __ocr.PH.items = []; });
-      await page.setInputFiles('#phFile', { name, mimeType: /png$/i.test(name) ? 'image/png' : 'image/jpeg', buffer: buf });
-      await page.waitForFunction(() => __ocr.PH.files.length && __ocr.PH.files.every(x => x.grid) && !__ocr.PH.busy, null, { timeout: 120000 });
-      if (mode === 'single' || mode === 'full') await page.evaluate(async mode => { const f = __ocr.PH.files[0], im = await new Promise(r => { if (f.im) return r(f.im); const i = new Image(); i.onload = () => r(i); i.src = f.url; }); f.im = im; const tb = mode === 'full' ? { x0: 0.03, y0: 0.03, x1: 0.97, y1: 0.97 } : __ocr.phTextureBox(im); f.grid = { quad: [[tb.x0, tb.y0], [tb.x1, tb.y0], [tb.x1, tb.y1], [tb.x0, tb.y1]], rows: 1, cols: 1 }; }, mode);
-      const grid = await page.evaluate(() => { const g = __ocr.PH.files[0].grid; return g.rows + 'x' + g.cols; });
-      await page.evaluate(() => __ocr.phRunVis());
-      await page.waitForFunction(() => !__ocr.PH.busy, null, { timeout: 300000 });
-      const cells = await page.evaluate(() => __ocr.PH.items.filter(i => i.kind !== 'lost' && i.conf !== 'lost' && i.cands.length).map(i => ({ id: i.cands[0].id, name: i.cands[0].name, conf: i.conf, s1: +(i.s1 || 0).toFixed(3), margin: +(i.margin || 0).toFixed(3), qty: i.qty || 1, alt: i.cands.slice(1, 4).map(c => c.id) })));
-      const lost = await page.evaluate(() => __ocr.PH.items.filter(i => i.kind === 'lost' || i.conf === 'lost' || !i.cands.length).length);
-      return { grid, cells, lost };
-    };
-    let r = await run('auto');
-    const ok = x => x.cells.some(c => c.conf === 'sure' || c.conf === 'probable');
-    for (const m of ['single', 'full']) { if (ok(r)) break; if (m === 'single' && r.grid === '1x1') continue; const r2 = await run(m); if (r2.cells.length && (!r.cells.length || ok(r2))) r = Object.assign(r2, { fallback: m }); }
+    const r = await page.evaluate(async ({ b64, name }) => {
+      const bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+      const file = new File([u8], name, { type: /png$/i.test(name) ? 'image/png' : 'image/jpeg' }), url = URL.createObjectURL(file);
+      const PH = __ocr.PH, keep = { files: PH.files, items: PH.items };
+      try {
+        const w = await __ocr.readBest(file, url, 0, () => {});
+        return { grid: String(w.r.grid || ''), cells: w.r.cs.map(c => ({ id: c.id, name: c.name || '', conf: c.conf, s1: +(c.s1 || 0).toFixed(3), margin: +(c.margin || 0).toFixed(3), qty: c.qty || 1, alt: c.alt || [] })), lost: w.r.lc.length };
+      } finally { PH.files = keep.files; PH.items = keep.items; URL.revokeObjectURL(url); }
+    }, { b64: buf.toString('base64'), name });
     return r;
   }
   return { readPhoto, close: async () => { await browser.close(); srv.close(); } };

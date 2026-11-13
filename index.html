@@ -2893,7 +2893,7 @@ async function phOcrImage(file, deep, setMsg){
 /* --- pipeline principal --- */
 function phSet(msg, pct){ const s=$('phStatus'); if(s) s.innerHTML = msg ? `<span class="spinner" aria-hidden="true"></span> ${esc(msg)}` : ''; const p=$('phProg'); if(p){ p.hidden = pct==null; if(pct!=null) p.value = pct; } }
 async function phRun(){
-  if(PH.mode!=='txt') return phRunVis();
+  if(PH.mode!=='txt') return phRunTab();
   if(PH.busy || !PH.files.length) return; PH.busy=true; renderPhoto();
   try{
     const idx = await phIndex(m=>phSet(m));
@@ -3018,10 +3018,12 @@ async function phAddFiles(list){
   for(const file of fs.slice(0, 12 - PH.files.length)){ const f={file, thumb: await phThumb(file), url:URL.createObjectURL(file), edit:true}; PH.files.push(f); added.push(f); }
   PH.items=[]; renderPhoto();
   if(PH.mode==='vis'){
-    try{ for(const f of added) await phPrepare(f); }catch(e){ console.warn(e); phSet(''); }
+    /* préparation (repérage des cartes) : la lecture attend qu'elle soit finie (PH.prep) pour ne pas être écrasée */
+    PH.prep=(async()=>{ try{ for(const f of added) await phPrepare(f); }catch(e){ console.warn(e); phSet(''); } })();
+    await PH.prep; PH.prep=null;
     renderGridEd();
-    if($('phAuto').checked){ for(const f of added){ if(f.grid && f.grid.rows*f.grid.cols===1){ const i=PH.files.indexOf(f); if(i>=0) await phRunVis(i); } } }
-    if(added.some(f=>f.grid && f.grid.rows*f.grid.cols>1)) phSet('Vérifie la grille jaune sur la photo (tire les coins si besoin), puis clique « Analyser ».');
+    if($('phAuto').checked){ for(const f of added){ if(f.grid && (f.grid.cards?f.grid.cards.length:f.grid.rows*f.grid.cols)===1){ const i=PH.files.indexOf(f); if(i>=0) await phRunTab(i); } } }
+    if(added.some(f=>f.grid && f.grid.rows*f.grid.cols>1)) phSet('Vérifie les cadres jaunes sur la photo (tire les coins si besoin), puis clique « Analyser ».');
     return;
   }
   if($('phAuto').checked) phRun();
@@ -3600,12 +3602,41 @@ function phEnsureImg(f){
   return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>{ f.im=im; res(im); }; im.onerror=()=>rej(new Error('Image illisible : '+((f.file&&f.file.name)||''))); im.src=f.url; });
 }
 const phYield = ()=>new Promise(r=>setTimeout(r,0));
-async function phPrepare(f){
+async function phPrepare(f, opt){
   if(f.grid) return f.grid;
   const im=await phEnsureImg(f), vidx=await phLoadIndex(m=>phSet(m));
+  if(!(opt&&opt.noCards)){ try{ phSet('Repérage des cartes…'); const dc=phDetectCards(im);
+    if(dc && dc.cards.length>=2){ f.grid={ cards:dc.cards.map(c=>c.q), quad:dc.quad, rows:dc.rows, cols:dc.cols }; f.dc=dc; f.auto=true; phSet(''); return f.grid; } }catch(e){ console.warn('cartes',e); } }
   phSet('Recherche de la disposition des cartes…');
   const g=await phAutoGrid(vidx, im, m=>phSet(m)); f.grid={ quad:g.quad.map(p=>p.slice()), rows:g.rows, cols:g.cols }; f.auto=true;
   phSet(''); return f.grid;
+}
+/* Onglet « Scanner photo » : chaque photo sans retouche manuelle passe par le MÊME lecteur que les annonces
+   (window.__ocr.readBest = fxReadOne : détection carte par carte v2, zones, grille, carte seule, photo entière → meilleur résultat).
+   Une grille retouchée à la main (f.auto===false) est lue telle quelle. */
+async function phRunTab(only){
+  if(PH.prep){ phSet('Repérage des cartes…'); await PH.prep; }
+  if(PH.busy || PH.cascade || !PH.files.length) return;
+  const R=window.__ocr && window.__ocr.readBest, targets=only!=null?[only]:PH.files.map((_,i)=>i);
+  const auto=R?targets.filter(i=>PH.files[i] && PH.files[i].auto!==false):[], manual=targets.filter(i=>auto.indexOf(i)<0);
+  if(!auto.length) return only!=null?phRunVis(only):phRunVis();
+  PH.cascade=true; const keepF=PH.files, quiet=PH.quiet, rerun=[];
+  let items=PH.items.filter(it=>auto.indexOf(it.img)<0);
+  try{
+    PH.quiet=true;
+    for(const i of auto){ const f=keepF[i], tag=keepF.length>1?`Image ${i+1}/${keepF.length} · `:'';
+      try{ await phEnsureImg(f);
+        const w=await R(f.file, f.url, i, m=>phSet(tag+m));
+        if(w.win){ f.grid=w.win.f.grid; f.im=w.win.f.im||f.im; f.W=w.win.f.W; f.dc=w.win.f.dc; f.auto=true;
+          w.win.items.forEach(it=>items.push(Object.assign(it,{img:i}))); }
+        else if(w.r && w.r.zones){ const polys=w.r.cs.concat(w.r.lc).map(c=>c.poly).filter(Boolean); if(polys.length){ f.grid={cards:polys, quad:[[0,0],[1,0],[1,1],[0,1]], rows:1, cols:polys.length}; f.auto=true; rerun.push(i); } }
+      }catch(e){ f.err=(e&&e.message)||'analyse impossible'; console.error(e); }
+    }
+  } finally { PH.files=keepF; PH.items=items; PH.quiet=quiet; PH.cascade=false; }
+  auto.forEach(i=>{ const f=PH.files[i]; if(!f) return; f.edit=false; f.found=PH.items.filter(it=>it.img===i && it.conf!=='lost').length; f.lost=PH.items.filter(it=>it.img===i && it.conf==='lost').length; });
+  phSet(''); renderPhoto(); renderGridEd();
+  for(const i of rerun.concat(manual)) await phRunVis(i);
+  if(!rerun.length && !manual.length){ phDemoteHubs(auto); await phFinish(); }
 }
 async function phRunVis(only){
   if(PH.busy || !PH.files.length) return;
@@ -3730,6 +3761,7 @@ async function phFinish(){
 /* --- éditeur de grille (4 coins déplaçables) --- */
 function phGridSVG(g){
   const P=(u,v)=>phQuadPt(g.quad,u,v), pt=p=>p[0].toFixed(4)+','+p[1].toFixed(4);
+  if(g.cards) return g.cards.map(q=>`<polygon points="${q.map(pt).join(' ')}" fill="rgba(255,203,5,.10)" stroke="#ffcb05" stroke-width="2" vector-effect="non-scaling-stroke"/>`).join('');
   let s=`<polygon points="${g.quad.map(pt).join(' ')}" fill="rgba(255,203,5,.10)" stroke="#ffcb05" stroke-width="2.5" vector-effect="non-scaling-stroke"/>`;
   for(let j=1;j<g.rows;j++){ const a=P(0,j/g.rows), b=P(1,j/g.rows); s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#ffcb05" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>`; }
   for(let j=1;j<g.cols;j++){ const a=P(j/g.cols,0), b=P(j/g.cols,1); s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#ffcb05" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/>`; }
@@ -3747,7 +3779,7 @@ function renderGridEd(){
         <span class="ph-step">Lignes <button class="btn small" data-ph="grid" data-g="rows" data-d="-1" data-i="${i}">−</button><b class="num">${g.rows}</b><button class="btn small" data-ph="grid" data-g="rows" data-d="1" data-i="${i}">+</button></span>
         <span class="ph-step">Colonnes <button class="btn small" data-ph="grid" data-g="cols" data-d="-1" data-i="${i}">−</button><b class="num">${g.cols}</b><button class="btn small" data-ph="grid" data-g="cols" data-d="1" data-i="${i}">+</button></span>
         <button class="btn small" data-ph="regrid" data-i="${i}">↺ Détection auto</button>
-        <button class="btn primary small" data-ph="analyse" data-i="${i}" ${PH.busy?'disabled':''}>🔍 Analyser ces ${g.rows*g.cols} case${g.rows*g.cols>1?'s':''}</button>
+        <button class="btn primary small" data-ph="analyse" data-i="${i}" ${PH.busy?'disabled':''}>🔍 Analyser ${g.cards?`ces ${g.cards.length} cartes`:`ces ${g.rows*g.cols} case${g.rows*g.cols>1?'s':''}`}</button>
       </div></div>`; }).join('');
 }
 function phEdInit(){
@@ -3755,15 +3787,15 @@ function phEdInit(){
   host.addEventListener('pointerdown',e=>{ const h=e.target.closest('.ph-h'); if(!h) return; const ed=h.closest('.ph-ed'); drag={ i:+ed.dataset.i, p:+h.dataset.p, stage:h.closest('.ph-stage'), h }; h.setPointerCapture(e.pointerId); e.preventDefault(); });
   host.addEventListener('pointermove',e=>{ if(!drag) return; const f=PH.files[drag.i], g=f.grid, r=drag.stage.getBoundingClientRect();
     const x=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)), y=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height));
-    g.quad[drag.p]=[x,y]; delete g.quad.H; f.auto=false;
+    if(g.cards){ delete g.cards; } g.quad[drag.p]=[x,y]; delete g.quad.H; f.auto=false;
     drag.h.style.left=x*100+'%'; drag.h.style.top=y*100+'%'; drag.stage.querySelector('svg').innerHTML=phGridSVG(g); });
   const end=()=>{ drag=null; };
   host.addEventListener('pointerup',end); host.addEventListener('pointercancel',end);
   host.addEventListener('click',async e=>{
     const b=e.target.closest('[data-ph]'); if(!b) return; const i=+b.dataset.i, f=PH.files[i]; if(!f) return;
-    if(b.dataset.ph==='grid'){ const k=b.dataset.g; f.grid[k]=Math.min(8,Math.max(1,f.grid[k]+(+b.dataset.d))); renderGridEd(); }
+    if(b.dataset.ph==='grid'){ const k=b.dataset.g; delete f.grid.cards; f.auto=false; f.grid[k]=Math.min(8,Math.max(1,f.grid[k]+(+b.dataset.d))); renderGridEd(); }
     else if(b.dataset.ph==='regrid'){ if(PH.busy) return; f.grid=null; renderGridEd(); await phPrepare(f); renderGridEd(); }
-    else if(b.dataset.ph==='analyse'){ phRunVis(i); }
+    else if(b.dataset.ph==='analyse'){ phRunTab(i); }
   });
 }
 /* --- comparaison agrandie : ta photo (pleine résolution) à côté de la carte trouvée, zoom synchronisé --- */
@@ -4072,30 +4104,24 @@ async function fxSegOne(dataUrl, ph, onMsg){
   try{ const r=await fxSegCore(dataUrl,ph,onMsg); if(!r) throw new Error('Aucune carte repérée sur cette photo.'); return r; }
   finally{ clearInterval(poll); PH.files=keep.files; PH.items=keep.items; PH.quiet=keep.quiet; try{ O.renderPhoto(); }catch(e){} const s=$('phStatus'); if(s) s.innerHTML=''; }
 }
-async function fxScanPhotos(files, onMsg){
-  const O=window.__ocr, PH=O&&O.PH; if(!PH) throw new Error('Lecteur de photos indisponible.');
-  if(PH.busy) throw new Error('Le scanner est occupé : attends la fin de la lecture en cours.');
-  const keep={files:PH.files, items:PH.items, quiet:PH.quiet}, cells=new Map(), lostCells=[], photos=[], grids=[]; let lost=0, read=0;
-  const poll=setInterval(()=>{ const s=$('phStatus'); if(s && s.textContent.trim() && onMsg) onMsg(s.textContent.trim()); },400);
-  PH.quiet=true;
-  try{
-    for(let n=0;n<files.length;n++){
-      const file=files[n], url=URL.createObjectURL(file), tag=files.length>1?`Photo ${n+1}/${files.length} · `:'';
-      photos.push(await fxPhotoData(file,1400)); grids.push(null);
+/* Lecture d'UNE photo, partagée par les annonces, l'onglet « Scanner photo » et le relevé automatique (photo_engine.mjs).
+   Ordre : 1) repérage carte par carte (phDetectCards + phRectify) ; 2) zones ; 3) grille ; 4) carte seule / photo entière ; on garde le meilleur.
+   Retourne { r:{grid, g, cs, lc, zones?}, win:{f, items}|null }. Ne touche pas PH.files / PH.items de l'appelant au-delà de la lecture : à restaurer par l'appelant. */
+async function fxReadOne(file, url, n, onMsg){
+  const O=window.__ocr, PH=O.PH, tag='';
       const run=async (mode,dc)=>{
         const f={file, url, thumb:'', edit:false}; PH.files=[f]; PH.items=[];
         if(mode==='cards'){ f.im=dc.im; f.grid={cards:dc.cards.map(c=>c.q), quad:dc.quad, rows:dc.rows, cols:dc.cols}; }
-        else if(mode==='auto'){ await O.phPrepare(f); const g0=f.grid; if(g0.rows*g0.cols>1){ const car=O.phCellARq(f.im,g0.quad,g0.rows,g0.cols); if(car<0.58||car>1.05) return { grid:g0.rows+'x'+g0.cols, g:null, cs:[], lc:[], invalid:true }; } }
+        else if(mode==='auto'){ await O.phPrepare(f,{noCards:true}); const g0=f.grid; if(g0.rows*g0.cols>1){ const car=O.phCellARq(f.im,g0.quad,g0.rows,g0.cols); if(car<0.58||car>1.05) return { grid:g0.rows+'x'+g0.cols, g:null, cs:[], lc:[], invalid:true }; } }
         else { const im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('Photo illisible.')); i.src=url; }); f.im=im; const tb=mode==='full'?{x0:.03,y0:.03,x1:.97,y1:.97}:O.phTextureBox(im); f.grid={quad:[[tb.x0,tb.y0],[tb.x1,tb.y0],[tb.x1,tb.y1],[tb.x0,tb.y1]],rows:1,cols:1}; }
         const g=f.grid, grid=g.rows+'x'+g.cols; if(onMsg) onMsg(tag+'lecture des cartes…');
-        await O.phRunVis();
+        await O.phRunVis(); const snap=PH.items.slice();
         const pl=i=>{ try{ return i.cell?fxPoly(g,i.cell[0],i.cell[1]):null; }catch(_){ return null; } };
-        return { grid, g:{quad:g.quad.map(p=>p.map(v=>Math.round(v*1000)/1000)),rows:g.rows,cols:g.cols}, cs:PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length).map(i=>({id:i.cands[0].id, conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,5).map(c=>c.id), crop:i.crop||'', poly:pl(i), ph:n})),
+        return { win:{f, items:snap}, grid, g:{quad:g.quad.map(p=>p.map(v=>Math.round(v*1000)/1000)),rows:g.rows,cols:g.cols}, cs:PH.items.filter(i=>i.kind!=='lost'&&i.conf!=='lost'&&i.cands.length).map(i=>({id:i.cands[0].id, name:i.cands[0].name, margin:+(i.margin||0).toFixed(3), conf:i.conf, s1:i.s1||0, qty:i.qty||1, alt:i.cands.slice(1,5).map(c=>c.id), crop:i.crop||'', poly:pl(i), ph:n})),
           lc:PH.items.filter(i=>(i.kind==='lost'||i.conf==='lost'||!i.cands.length) && !(dc && i.cell && dc.cards[i.cell[0]] && dc.cards[i.cell[0]].src!=='edge')).map(i=>({ph:n, poly:pl(i), crop:i.crop||''})) };
       };
       const gcount=x=>x?x.cs.filter(c=>c.conf==='sure'||c.conf==='probable').length:-1;
       const good=r=>r.cs.some(c=>c.conf==='sure'||c.conf==='probable');
-      try{
         let r=null, rCards=null;
         try{   /* 1) repérage carte par carte (bords de chaque carte) : marche quels que soient le cadrage, le zoom et le nombre de cartes */
           const imC=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url; }), dc=O.phDetectCards(imC);
@@ -4115,6 +4141,22 @@ async function fxScanPhotos(files, onMsg){
         for(const m of ['single','full']){ if(good(r)) break; if(m==='single' && r.grid==='1x1') continue; const r2=await run(m); if(r2.cs.length && (!r.cs.length || good(r2))) r=r2; }
         if(rCards && gcount(rCards)>=gcount(r)) r=rCards;
         }
+  if(r && /^zones/.test(String(r.grid||''))) r.zones=true;
+  return { r, win: r && r.win ? r.win : null };
+}
+if(window.__ocr) window.__ocr.readBest = fxReadOne;
+async function fxScanPhotos(files, onMsg){
+  const O=window.__ocr, PH=O&&O.PH; if(!PH) throw new Error('Lecteur de photos indisponible.');
+  if(PH.busy) throw new Error('Le scanner est occupé : attends la fin de la lecture en cours.');
+  const keep={files:PH.files, items:PH.items, quiet:PH.quiet}, cells=new Map(), lostCells=[], photos=[], grids=[]; let lost=0, read=0;
+  const poll=setInterval(()=>{ const s=$('phStatus'); if(s && s.textContent.trim() && onMsg) onMsg(s.textContent.trim()); },400);
+  PH.quiet=true;
+  try{
+    for(let n=0;n<files.length;n++){
+      const file=files[n], url=URL.createObjectURL(file), tag=files.length>1?`Photo ${n+1}/${files.length} · `:'';
+      photos.push(await fxPhotoData(file,1400)); grids.push(null);
+      try{
+        const r=(await fxReadOne(file, url, n, m=>onMsg&&onMsg(tag+m))).r;
         read++; grids[n]=r.g; lost+=r.lc.length; r.lc.forEach(l=>lostCells.push(l));
         /* plusieurs exemplaires d'une même carte sur UNE photo = plusieurs cartes ; la même carte revue sur une AUTRE photo = la même carte (on garde la photo qui en montre le plus) */
         const mine=new Map(); for(const c of r.cs){ if(c.conf!=='sure'&&c.conf!=='probable') continue; if(!mine.has(c.id)) mine.set(c.id,[]); mine.get(c.id).push(Object.assign({},c)); }
