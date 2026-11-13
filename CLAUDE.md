@@ -10,7 +10,7 @@ Appli d'achat/revente de cartes Pokémon (Flo, francophone). **Répondre en fran
 - Aucun secret dans le dépôt. `firebase-config.js` ne contient que des clés publiques (la protection vient des règles Firestore). Les secrets (ex. `APIFY_TOKEN`) sont dans GitHub Secrets.
 
 ## Structure
-- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.19.2 | date UTC`, + badge `#verBadge`) : l'incrémenter à chaque livraison.
+- `index.html` (~725 Ko) : **toute l'appli** (HTML + CSS + JS). Version affichée dans le bloc de build (`1.19.3 | date UTC`, + badge `#verBadge`) : l'incrémenter à chaque livraison.
   - Le script principal est le **3ᵉ bloc `<script>` inline** (index 2). Vérif syntaxe : extraire avec `re.findall(r'<script(?![^>]*src)[^>]*>(.*?)</script>', s, re.S)[2]` puis `node --check`.
   - **Fins de ligne LF** (vérifié le 12/11/2026) : lire/écrire en Python avec `newline=''`, ne pas normaliser.
   - Interface : `body[data-tab]` suit l'onglet actif (`setTab`). La bannière n'apparaît que sur « Repérer » ; ailleurs, en-tête compact. ≤ 600 px : barre d'onglets fixe en bas (libellés courts `.ts`).
