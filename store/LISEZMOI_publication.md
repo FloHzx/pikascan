@@ -14,14 +14,19 @@ Une extension publiée sur le **Chrome Web Store** s'installe en un clic (« Ajo
 ## Microsoft Edge (gratuit) — https://partner.microsoft.com/dashboard/microsoftedge
 Même ZIP, même texte, inscription gratuite.
 
-## Texte de la fiche
+## Texte de la fiche (paquet v1.5.1, reconstruit le 13 nov. 2026)
 **Nom** : PikaScan – Envoyer l'annonce
-**Résumé (132 car. max)** : Sur une annonce Vinted, un clic envoie photos, prix, description et date à PikaScan pour lire les cartes.
-**Description** : Cette extension complète l'application web PikaScan (achat/revente de cartes Pokémon). Sur une annonce Vinted, clique sur l'icône : l'extension lit le titre, le prix, la description, la date de mise en ligne et les photos de la page que tu consultes, et les envoie à ton onglet PikaScan. PikaScan reconnaît visuellement les cartes, les compare aux prix Cardmarket et affiche un verdict (bon plan ou non). Rien n'est envoyé à un serveur : tout se passe entre deux onglets de ton navigateur. L'extension ne fait rien tant que tu ne cliques pas dessus.
+**Résumé (132 car. max)** : Sur une annonce Vinted ou Leboncoin, un clic envoie photos, prix, description et date à PikaScan pour lire les cartes.
+**Description** : Cette extension complète l'application web PikaScan (achat/revente de cartes Pokémon). Sur une annonce Vinted ou Leboncoin, clique sur l'icône : l'extension lit le titre, le prix, la description, la date de mise en ligne et les photos de la page que tu consultes, et les envoie à ton onglet PikaScan. PikaScan reconnaît visuellement les cartes, les compare aux prix Cardmarket et affiche un verdict (bon plan ou non). À ta demande, depuis PikaScan, l'extension peut aussi lire les prix des ventes eBay.fr terminées et les offres Cardmarket en français / Near Mint d'une carte, comme si tu ouvrais ces pages toi-même. Rien n'est envoyé à un serveur : tout se passe entre les onglets de ton navigateur. L'extension ne fait rien tant que tu ne cliques pas.
 **Catégorie** : Productivité · **Langue** : Français
 
 ## Justification des autorisations
 - activeTab / scripting : lire l'annonce de l'onglet actif au clic et transmettre le résultat à l'onglet PikaScan.
-- Hôtes vinted.* : lire la page d'annonce et télécharger ses photos (vinted.net), uniquement au clic de l'utilisateur.
+- Hôtes vinted.* et leboncoin.fr (+ img.leboncoin.fr, vinted.net pour les photos) : lire la page d'annonce et télécharger ses photos, uniquement au clic de l'utilisateur.
+- Hôte www.ebay.fr : à la demande de l'utilisateur dans PikaScan, lire une page de résultats « ventes terminées » pour en extraire les prix (aucun achat, aucun compte utilisé).
+- Hôte www.cardmarket.com : à la demande de l'utilisateur, lire la page produit d'une carte filtrée en français / Near Mint pour en extraire les prix des offres (aucun panier, aucune action sur le compte).
 - Hôte flohzx.github.io : retrouver/ouvrir l'onglet PikaScan et y déposer l'annonce ; un petit script signale à la page que l'extension est installée.
-- Usage unique : transmettre les données de l'annonce à l'application PikaScan ; aucune donnée n'est collectée, stockée ou vendue.
+- Usage unique : transmettre ces informations à l'application PikaScan de l'utilisateur ; aucune donnée n'est collectée, stockée sur un serveur ou vendue.
+
+## Contenu du paquet
+`manifest.json`, `background.js`, `content.js`, `ebay.js`, `cardmarket.js`, `icon16/48/128.png` (nouvelle icône, style de la bannière). Capture : `store/screenshot-1280x800.png` (onglet Annonces, thème sombre).
