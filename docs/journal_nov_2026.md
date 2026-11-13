@@ -16,6 +16,7 @@ Résumé de ce qui a été fait en session avec Flo (assistant dans l'appli Clau
 - **v1.20.2 (13 nov.) — Logo** : l'en-tête compact (onglets autres que « Repérer ») affiche `logo.webp`, découpé dans la bannière (Poké Ball, « PikaScan » chromé/rouge, cadre de scan), à la place de la petite Poké Ball dessinée et du titre texte. Ajouté au cache du service worker (`pikascan-sw-1.20.2`).
 - **v1.20.3 (13 nov.) — Icônes** : nouvelle icône assortie à la bannière (`icon.svg`, rendue en PNG par Chromium) pour la PWA, l'onglet du navigateur (favicon `icon.svg`), l'iPhone et l'extension. Le paquet du Chrome Web Store (`store/pikascan-extension-store.zip`) garde l'ancienne icône tant qu'il n'est pas reconstruit.
 - **v1.20.4 (13 nov.) — Icône officielle de Flo** : remplace l'icône v1.20.3 partout (appli installée, iPhone, favicon, extension, paquet du store) et sert aussi de logo dans l'en-tête compact. `icon.svg` supprimé.
+- **v1.21.0 (13 nov.) — « Marché de ma base »** : variation du marché, comparatif de valeur et nouveau classement « Les plus chères » (rang, valeur, part de la valeur totale, phrase « les 10 plus chères = X % de ta base ») regroupés dans un bloc à onglets ; moins de lignes par défaut + « Voir plus ». Variation : hausses et baisses séparées (avant, « 10 hausses » pouvait afficher des baisses quand peu de cartes montaient). Hauteur sur ordinateur ≈ 2 500 → 800 px.
 
 ## Environnement et habitudes de travail
 - Les fichiers ont été écrits dans le clone local de Flo ; il commit/pousse lui-même avec GitHub Desktop.

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.20.4 | 2026-11-13 15:00 UTC">
+<meta name="pikascan-build" content="1.21.0 | 2026-11-13 16:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1056,6 +1056,17 @@ body:not([data-tab="scan"]) .mast-logo{ display:block; height:72px; width:72px; 
 body:not([data-tab="scan"]) header.mast .pokeball{ display:none; }
 body:not([data-tab="scan"]) header.mast h1{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 @media (max-width:600px){ body:not([data-tab="scan"]) .mast-logo{ height:54px; width:54px; } }
+/* v1.21 : bloc « Marché de ma base » à onglets */
+.mk-head{ align-items:center; }
+.mk-tabs button[aria-selected="true"]{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+.mk-bar{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px 12px; margin:-6px 0 10px; }
+.mk-bar .sub{ margin:0; }
+.mk-more{ display:flex; justify-content:center; margin-top:10px; }
+.top-row{ grid-template-columns:28px minmax(0,1.3fr) minmax(0,1fr) auto auto; }
+.top-rk{ font-weight:700; color:var(--muted); text-align:center; flex:0 0 26px; width:26px; }
+.top-row:nth-child(-n+3) .top-rk{ color:var(--accent2); }
+.top-pct{ width:62px; color:var(--ink-secondary); font-weight:500; }
+@media (max-width:560px){ .bar-row.top-row{ grid-template-columns:22px minmax(0,1fr) auto; } .top-row .top-rk{ grid-column:1; grid-row:1; width:auto; } .top-row .bname{ grid-column:2; } .top-row .bar-val{ grid-column:3; } .top-row .bar-track{ grid-column:2 / -1; } .mk-head{ flex-direction:column; align-items:stretch; gap:8px; } .mk-tabs{ display:grid; grid-template-columns:repeat(3,1fr); } .mk-tabs button{ padding:7px 4px; font-size:12.5px; } .top-pct{ display:none; } }
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1076,7 +1087,7 @@ body:not([data-tab="scan"]) header.mast h1{ position:absolute; width:1px; height
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2">Prix <b>Cardmarket</b> suivis chaque jour, verdict d'achat et suivi de revente.</span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.20.4</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.21.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -1232,22 +1243,34 @@ body:not([data-tab="scan"]) header.mast h1{ position:absolute; width:1px; height
         </div>
         <div class="card-box" id="portChart"></div>
 
-        <div class="section-head">
-          <div><h2>Variation du marché</h2><div class="sub" id="varSub"></div></div>
-          <div id="periodCtl"></div>
-        </div>
-        <div class="card-box" id="varChart"></div>
-
-        <div class="section-head">
-          <div><h2>Comparatif de valeur</h2><div class="sub">Valeur actuelle par carte (état pris en compte)</div></div>
-          <div class="sort-controls" role="group" aria-label="Trier">
-            <button class="sort-btn" data-sort="edition" aria-pressed="true">Édition récente</button>
-            <button class="sort-btn" data-sort="value" aria-pressed="false">Valeur ↓</button>
-            <button class="sort-btn" data-sort="trend" aria-pressed="false">Tendance</button>
-            <button class="sort-btn" data-sort="name" aria-pressed="false">Nom A→Z</button>
+        <section class="mk" aria-label="Marché de ma base">
+        <div class="section-head mk-head">
+          <div><h2>Marché de ma base</h2></div>
+          <div class="seg-btns mk-tabs" role="tablist" aria-label="Vue">
+            <button type="button" role="tab" data-mk="var" aria-selected="true">📈 Variation</button>
+            <button type="button" role="tab" data-mk="bars" aria-selected="false">💶 Valeur</button>
+            <button type="button" role="tab" data-mk="top" aria-selected="false">🏆 Les plus chères</button>
           </div>
         </div>
-        <div class="chart-card" id="barChart"></div>
+        <div class="mk-pane" data-pane="var" role="tabpanel">
+          <div class="mk-bar"><div class="sub" id="varSub"></div><div id="periodCtl"></div></div>
+          <div class="card-box" id="varChart"></div>
+        </div>
+        <div class="mk-pane" data-pane="bars" role="tabpanel" hidden>
+          <div class="mk-bar"><div class="sub">Valeur actuelle par carte (état pris en compte)</div>
+            <div class="sort-controls" role="group" aria-label="Trier">
+              <button class="sort-btn" data-sort="edition" aria-pressed="true">Édition récente</button>
+              <button class="sort-btn" data-sort="value" aria-pressed="false">Valeur ↓</button>
+              <button class="sort-btn" data-sort="trend" aria-pressed="false">Tendance</button>
+              <button class="sort-btn" data-sort="name" aria-pressed="false">Nom A→Z</button>
+            </div></div>
+          <div class="chart-card" id="barChart"></div>
+        </div>
+        <div class="mk-pane" data-pane="top" role="tabpanel" hidden>
+          <div class="mk-bar"><div class="sub" id="topSub"></div></div>
+          <div class="card-box" id="topChart"></div>
+        </div>
+        </section>
 
         <div class="section-head"><div><h2>Fiches cartes</h2><div class="sub">Touche une fiche pour voir sa courbe et ses actions · clique une image pour l'agrandir</div></div><button type="button" class="btn small" data-act="foldall" id="foldAllBtn">Tout déplier</button></div>
         <div class="dossiers" id="dossiers"></div>
@@ -1721,6 +1744,23 @@ function renderPortfolio(){
   attachChartHover($('portChart'));
 }
 
+function mkMoreBtn(show){ return show?`<div class="mk-more"><button type="button" class="btn small" data-act="mkmore">${S.mkMore?'Voir moins ▴':'Voir plus ▾'}</button></div>`:''; }
+function mkTab(){ if(!S.mk){ try{ S.mk=localStorage.getItem('pk_mk')||'var'; }catch(_){ S.mk='var'; } }
+  document.querySelectorAll('[data-mk]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.mk===S.mk)));
+  document.querySelectorAll('.mk-pane').forEach(p=>{ p.hidden=p.dataset.pane!==S.mk; }); }
+function renderTop(){
+  const el=$('topChart'); if(!el) return; mkTab();
+  const list=getFiltered().filter(c=>(valueEur(c)||0)>0).sort((a,b)=>(valueEur(b)||0)-(valueEur(a)||0));
+  if(!list.length){ el.innerHTML='<div class="hint">Ajoute des cartes pour voir les plus chères.</div>'; $('topSub').textContent=''; return; }
+  const total=list.reduce((a,c)=>a+(valueEur(c)||0),0), lim=S.mkMore?25:10, top=list.slice(0,lim), topSum=top.reduce((a,c)=>a+(valueEur(c)||0),0), max=valueEur(top[0])||1;
+  $('topSub').textContent=`Les ${top.length} plus chères valent ${eur(topSum)}, soit ${Math.round(topSum/total*100)} % de la valeur de ${S.edition?'cette édition':'ta base'} (${eur(total)}).`;
+  el.innerHTML=top.map((c,i)=>{ const v=valueEur(c)||0, t=trendPct(c);
+    return `<div class="bar-row top-row clickable" data-act="gocard" data-id="${esc(c.id)}" role="button" tabindex="0" title="Voir la fiche"><span class="top-rk num">${i+1}</span><div class="bname"><span class="thumb-box">${thumb(c)}</span><span class="bn-t">${esc(dn(c))}<small>${esc(edName(c))} · ${esc(c.number||'')}</small></span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2,v/max*100)}%;background:var(--bar-one)"></div></div>
+      <div class="bar-val num">${eur(v)}</div><div class="bar-val num top-pct" title="Part de la valeur totale">${(v/total*100).toFixed(1).replace('.',',')} %</div></div>`; }).join('')
+    + `<div class="hint">${t0(list.length,lim)}Part = poids de la carte dans la valeur totale.</div>` + mkMoreBtn(list.length>10);
+  function t0(n,l){ return n>l?`Les ${l} premières sur ${n} cartes. `:''; }
+}
 function renderBars(){
   const list=getFiltered();
   if(!list.length){ $('barChart').innerHTML=`<div class="empty-state"><div class="big">🃏</div>${S.edition?`Aucune carte dans « ${esc(edLabel(S.edition))} » pour l'instant.`:'Ta base est vide — repère une carte dans le premier onglet et ajoute-la.'}</div>`; return; }
@@ -1729,14 +1769,14 @@ function renderBars(){
   else if(S.sort==='name') arr.sort((a,b)=>dn(a).localeCompare(dn(b),'fr'));
   else if(S.sort==='trend') arr.sort((a,b)=>(trendPct(b)??-1e9)-(trendPct(a)??-1e9));
   else arr.sort((a,b)=>(valueEur(b)||0)-(valueEur(a)||0));
-  const totalBars = arr.length; if(totalBars>20) arr.length = 20;
+  const lim=S.mkMore?25:8, totalBars = arr.length; if(totalBars>lim) arr.length = lim;
   const max=Math.max(...arr.map(c=>valueEur(c)||0),0.01);
   $('barChart').innerHTML = arr.map(c=>{
     const v=valueEur(c)||0, t=trendPct(c), col='var(--bar-one)';
     return `<div class="bar-row clickable" data-act="gocard" data-id="${esc(c.id)}" role="button" tabindex="0" title="Voir la fiche"><div class="bname"><span class="thumb-box">${thumb(c)}</span><span class="bn-t">${esc(dn(c))}<small>${esc(edName(c))} · ${esc(c.number||'')}</small></span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${Math.max(2,v/max*100)}%;background:${col}" title="${esc(c.nameEn)} — ${esc(eur(v))}"></div></div>
       <div class="bar-val num">${eur(v)}</div><div class="bar-val num" style="width:70px;font-weight:500;color:${t==null?'var(--muted)':t>0?'var(--good)':'var(--bad)'}">${t==null?'':(t>0?'▲ ':'▼ ')+pctS(t)}</div></div>`;
-  }).join('') + (totalBars>20 ? `<div class="hint">Les 20 premières cartes sur ${totalBars}, selon le tri choisi. La liste complète est dans les fiches ci-dessous.</div>` : '');
+  }).join('') + (totalBars>lim ? `<div class="hint">Les ${lim} premières cartes sur ${totalBars}, selon le tri choisi. La liste complète est dans les fiches ci-dessous.</div>` : '') + mkMoreBtn(totalBars>8);
 }
 
 /* ---------- fiches cartes ---------- */
@@ -1950,10 +1990,11 @@ function renderVariation(){
   let rows=list.map(c=>{ let d=deltaPeriod(c,S.period); if(d&&(!isFinite(d.pct)||d.pct<=-99.5)) d=null; return {c,d}; });
   rows.sort((a,b)=>(b.d?b.d.pct:-1e9)-(a.d?a.d.pct:-1e9));
   let varNote='';
-  if(rows.length>20){
-    const withD=rows.filter(r=>r.d), noD=rows.length-withD.length;
-    rows = withD.length>20 ? withD.slice(0,10).concat(withD.slice(-10)) : withD.concat(rows.filter(r=>!r.d).slice(0,Math.max(0,20-withD.length)));
-    varNote = `<div class="hint">${withD.length>20?'Les 10 plus fortes hausses et les 10 plus fortes baisses':'Un extrait'} sur ${list.length} cartes${noD?` · ${noD} sans relevé assez proche`:''}.</div>`;
+  { const K=S.mkMore?10:5, withD=rows.filter(r=>r.d), noD=rows.length-withD.length;
+    const ups=withD.filter(r=>r.d.pct>0), downs=withD.filter(r=>r.d.pct<0), flat=withD.length-ups.length-downs.length;
+    const U=ups.slice(0,K), Dn=downs.slice(-K), cut=ups.length>U.length||downs.length>Dn.length;
+    rows = withD.length ? U.concat(Dn) : rows.slice(0,K*2);
+    varNote = `<div class="hint">${withD.length?`${U.length} plus forte${U.length>1?'s':''} hausse${U.length>1?'s':''} (sur ${ups.length}) et ${Dn.length} plus forte${Dn.length>1?'s':''} baisse${Dn.length>1?'s':''} (sur ${downs.length})${flat?` · ${flat} stable${flat>1?'s':''}`:''}`:'Aucune variation mesurée'} · ${list.length} cartes${noD?` · ${noD} sans relevé assez proche`:''}.</div>`+mkMoreBtn(cut||S.mkMore);
   }
   if(small) varNote += `<div class="hint">${small} carte${small>1?'s':''} sous ${vm} € non comptée${small>1?'s':''} (quelques centimes d'écart y font ±100 %).</div>`;
   const max=Math.max(5,...rows.map(r=>r.d?Math.abs(r.d.pct):0));
@@ -2284,6 +2325,7 @@ $('eraList').addEventListener('click',e=>{
   const sh=e.target.closest('.serie-head'); if(sh){ S.openSerie=(S.openSerie===sh.dataset.serie)?null:sh.dataset.serie; renderSidebar(); return; }
   const ab=e.target.closest('.alleds-btn'); if(ab){ S.edOpen=!S.edOpen; renderSidebar(); return; }
   const b=e.target.closest('.edition-btn'); if(!b) return; S.edition = (S.edition===b.dataset.ed)?null:b.dataset.ed; if(b.classList.contains('sub')) S.edOpen=false; renderAll(); });
+document.querySelectorAll('[data-mk]').forEach(b=>b.addEventListener('click',()=>{ S.mk=b.dataset.mk; try{ localStorage.setItem('pk_mk',S.mk); }catch(_){} mkTab(); }));
 document.querySelectorAll('.sort-btn').forEach(b=>b.addEventListener('click',()=>{ S.sort=b.dataset.sort; document.querySelectorAll('.sort-btn').forEach(x=>x.setAttribute('aria-pressed',String(x===b))); renderBars(); renderDossiers(); }));
 $('refreshAll').addEventListener('click',()=>refreshAll(false));
 $('markAllSeen').addEventListener('click',async()=>{ for(const a of Object.values(S.alerts)){ if(!a.seen){ a.seen=true; try{ await S.db.collection('alerts').doc(a.id).update({seen:true}); }catch(e){} } } renderAll(); });
@@ -2297,6 +2339,7 @@ $('saveSettings').addEventListener('click',async()=>{
 });
 document.addEventListener('click',async e=>{
   const b=e.target.closest('[data-act]'); if(!b) return; const act=b.dataset.act, id=b.dataset.id;
+  if(act==='mkmore'){ S.mkMore=!S.mkMore; renderVariation(); renderBars(); renderTop(); return; }
   if(act==='period'){ S.period=parseInt(b.dataset.d,10); renderVariation(); if(S.sel) renderAnalysis(); return; }
   if(act==='pick') return pickResult(parseInt(b.dataset.i,10));
   if(act==='add') return addToBase();
@@ -2326,7 +2369,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('change',e=>{ const t=e.target; if(t && t.classList && t.classList.contains('vmin-sel')){ S.varMin=+t.value; try{ localStorage.setItem('pk_varmin',t.value); }catch(_){} setTimeout(renderVariation,0); return; } if(t && t.classList && t.classList.contains('pc-in')){ const v=parseInt(t.value,10); if(v>0 && v<=365){ S.period=v; setTimeout(()=>{ renderVariation(); if(S.sel) renderAnalysis(); },0); } } });
 function renderAll(){
   renderMeta(); renderSidebar(); renderImpBanner();
-  if(S.tab==='base'){ renderTiles(); renderPortfolio(); renderVariation(); renderBars(); renderDossiers(); }
+  if(S.tab==='base'){ renderTiles(); renderPortfolio(); renderVariation(); renderBars(); renderTop(); renderDossiers(); }
   renderAlerts(); renderSettings();
 }
 
