@@ -20,6 +20,7 @@ Résumé de ce qui a été fait en session avec Flo (assistant dans l'appli Clau
 - **v1.21.1 (14 nov.) — Lecteur de photos unique** : l'onglet Scanner photo, les Annonces et le moteur GitHub (`photo_engine.mjs`) passent par la même fonction `fxReadOne` (voir `scanner_image.md`) avec les mêmes réglages ; une modification de la lecture s'applique aux trois.
 - **v1.22.0 (14 nov.) — Fond holo + sous-titre** : choix de Flo parmi 3 maquettes (néon rouge / holo / classeur) : fond holo en clair et en sombre, panneaux légèrement translucides. Sous-titre : phrase « Achète malin, revends au bon prix. » sur l'accueil, ligne dynamique ailleurs (ex. « 395 cartes · 1 753,40 € · ▼ −3,6 % sur 30 j »).
 - **v1.23.0 (14 nov.) — Harmonisation** : tout ramené au rouge Poké Ball + jaune Pikachu (accent, holo, onglets, cartouches, étapes de l'accueil, « Scanne · Estime · Revends », boutons « Actualiser » neutres) ; logo de l'en-tête = Poké Ball dans le cadre de scan + « PikaScan » en texte (l'icône de l'appli installée reste celle de Flo).
+- **v1.23.2 (14 nov.)** : retour aux couleurs d'origine (Flo préfère les onglets/boutons multicolores ; il ne voulait qu'un léger contraste du fond) ; fond = dégradé discret ; icône du site et de l'appli installée = Poké Ball dans le cadre de scan (`?v=3` dans le manifeste et les liens pour forcer le rechargement).
 
 ## Environnement et habitudes de travail
 - Les fichiers ont été écrits dans le clone local de Flo ; il commit/pousse lui-même avec GitHub Desktop.

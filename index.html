@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.23.1 | 2026-11-14 14:30 UTC">
+<meta name="pikascan-build" content="1.23.2 | 2026-11-14 15:30 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PikaScan">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <meta name="description" content="Recherche de cartes Pokémon en direct : noms français, vraies images, prix Cardmarket en euros, verdict d'achat et suivi de ta base.">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3">
 <style>
 /* polices hébergées avec le site (aucune dépendance à Google Fonts, fonctionne hors ligne) */
 @font-face{ font-family:"Lilita One"; src:url(fonts/lilita-one-latin-400-normal.woff2) format("woff2"); font-weight:100 900; font-style:normal; font-display:swap; }
@@ -1067,10 +1067,10 @@ body:not([data-tab="scan"]) header.mast h1{ position:static; width:auto; height:
 .top-row:nth-child(-n+3) .top-rk{ color:var(--accent2); }
 .top-pct{ width:62px; color:var(--ink-secondary); font-weight:500; }
 @media (max-width:560px){ .bar-row.top-row{ grid-template-columns:22px minmax(0,1fr) auto; } .top-row .top-rk{ grid-column:1; grid-row:1; width:auto; } .top-row .bname{ grid-column:2; } .top-row .bar-val{ grid-column:3; } .top-row .bar-track{ grid-column:2 / -1; } .mk-head{ flex-direction:column; align-items:stretch; gap:8px; } .mk-tabs{ display:grid; grid-template-columns:repeat(3,1fr); } .mk-tabs button{ padding:7px 4px; font-size:12.5px; } .top-pct{ display:none; } }
-/* v1.22 : fond « holo » (reflets de carte holographique) + panneaux légèrement translucides */
-:root{ --holo: radial-gradient(820px 520px at 6% -6%,rgba(124,92,255,.22),transparent 64%),radial-gradient(820px 520px at 94% 4%,rgba(0,170,255,.18),transparent 64%),radial-gradient(1000px 640px at 50% 108%,rgba(255,70,150,.15),transparent 64%),radial-gradient(700px 500px at 0% 70%,rgba(255,190,0,.10),transparent 64%); --panel-a:90%; }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --holo: radial-gradient(820px 520px at 6% -6%,rgba(124,92,255,.45),transparent 64%),radial-gradient(820px 520px at 94% 4%,rgba(0,190,255,.30),transparent 64%),radial-gradient(1000px 640px at 50% 108%,rgba(255,70,150,.26),transparent 64%),radial-gradient(700px 500px at 0% 70%,rgba(255,203,5,.10),transparent 64%); --panel-a:84%; } }
-:root[data-theme="dark"]{ --holo: radial-gradient(820px 520px at 6% -6%,rgba(124,92,255,.45),transparent 64%),radial-gradient(820px 520px at 94% 4%,rgba(0,190,255,.30),transparent 64%),radial-gradient(1000px 640px at 50% 108%,rgba(255,70,150,.26),transparent 64%),radial-gradient(700px 500px at 0% 70%,rgba(255,203,5,.10),transparent 64%); --panel-a:84%; }
+/* v1.23.2 : fond en léger dégradé (contraste discret) + panneaux légèrement translucides */
+:root{ --holo: radial-gradient(1100px 560px at 50% -10%,rgba(110,120,200,.10),transparent 65%),linear-gradient(180deg,#f4f6fa 0%,#e9edf3 100%); --panel-a:92%; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --holo: radial-gradient(1100px 560px at 50% -10%,rgba(120,130,255,.12),transparent 65%),linear-gradient(180deg,#181c26 0%,#0f1117 100%); --panel-a:88%; } }
+:root[data-theme="dark"]{ --holo: radial-gradient(1100px 560px at 50% -10%,rgba(120,130,255,.12),transparent 65%),linear-gradient(180deg,#181c26 0%,#0f1117 100%); --panel-a:88%; }
 html{ background:var(--paper); }
 body{ background:var(--holo), var(--paper); background-attachment:fixed; min-height:100vh; }
 .card-box,.chart-card,.tile,.dossier,.mc,.pres,.side,.fl-item,.tr-it,.tr-buy,.tr-ch-wrap,#trChart,.imp-banner{ background-color:color-mix(in srgb, var(--card) var(--panel-a), transparent); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
@@ -1078,28 +1078,6 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
 .tg2-live{ display:none; } body:not([data-tab="scan"]) .tg2-live{ display:inline; } body[data-tab="scan"] .tg2{ display:none; }
 .tg2-live .up{ color:var(--good); } .tg2-live .down{ color:var(--bad); }
 @media (max-width:600px){ body:not([data-tab="scan"]) .tg2{ display:block !important; font-size:13px; } }
-/* v1.23 : harmonisation sur les couleurs de la marque — rouge Poké Ball + jaune Pikachu */
-:root{ --accent:#d81e25; --accent-ink:#ffffff; --brand:229,28,36; }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --accent:#ff4d52; --accent-ink:#16090a; } }
-:root[data-theme="dark"]{ --accent:#ff4d52; --accent-ink:#16090a; }
-/* fond « holo » aux tons de la marque : rouge, magenta, violet profond, pointe d'or */
-:root{ --holo: radial-gradient(860px 540px at 4% -8%,rgba(229,28,36,.16),transparent 64%),radial-gradient(820px 520px at 96% 2%,rgba(190,40,140,.12),transparent 64%),radial-gradient(1000px 640px at 50% 110%,rgba(110,50,170,.10),transparent 64%),radial-gradient(700px 480px at 0% 72%,rgba(255,190,0,.08),transparent 64%); }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --holo: radial-gradient(860px 540px at 4% -8%,rgba(229,28,36,.38),transparent 64%),radial-gradient(820px 520px at 96% 2%,rgba(190,40,140,.26),transparent 64%),radial-gradient(1000px 640px at 50% 110%,rgba(110,50,170,.24),transparent 64%),radial-gradient(700px 480px at 0% 72%,rgba(255,190,0,.08),transparent 64%); } }
-:root[data-theme="dark"]{ --holo: radial-gradient(860px 540px at 4% -8%,rgba(229,28,36,.38),transparent 64%),radial-gradient(820px 520px at 96% 2%,rgba(190,40,140,.26),transparent 64%),radial-gradient(1000px 640px at 50% 110%,rgba(110,50,170,.24),transparent 64%),radial-gradient(700px 480px at 0% 72%,rgba(255,190,0,.08),transparent 64%); }
-/* onglets : une seule teinte (rouge) pour l'onglet actif, icônes neutres sinon */
-.tabs .tab[data-tab]{ --tc:var(--brand); }
-.tabs .tab:not([aria-selected="true"]) .ti{ background:rgba(140,140,155,.14); color:var(--ink-secondary); }
-.tabs .tab:hover .ti{ background:rgba(var(--brand),.22); color:rgb(var(--brand)); }
-/* cartouches de l'en-tête : liseré neutre, rouge seulement s'il y a des alertes */
-.mc-base,.mc-last,.mc-al,.mc-src{ --c:rgba(140,140,155,.35); }
-.mc-al.on{ --c:var(--accent); }
-/* boutons « actualiser » : neutres ; étapes et atouts de l'accueil : rouge de la marque */
-.btn[data-act="refresh1"],#fxRefresh,#refreshAll,#trackBtn{ --tbg:rgba(140,140,155,.12); --tbd:rgba(140,140,155,.45); }
-.pres .pst[data-k], .pres .pf[data-k]{ --tc:var(--brand); }
-/* « Scanne · Estime · Revends » aux couleurs du logo */
-.tg .t1{ color:var(--ink); } .tg .t2{ color:var(--accent); } .tg .t3{ color:var(--accent2); }
-:root[data-theme="light"] .tg .t3{ color:#c79200; }
-@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]) .tg .t3{ color:#c79200; } }
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1120,7 +1098,7 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2"><span class="tg2-live" id="mastLive"></span></span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.23.1</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.23.2</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
