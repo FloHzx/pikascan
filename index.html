@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PikaScan Live</title>
-<meta name="pikascan-build" content="1.24.0 | 2026-11-14 17:00 UTC">
+<meta name="pikascan-build" content="1.25.0 | 2026-11-24 10:00 UTC">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#12151c">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1086,6 +1086,17 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
 .fx-mode,.fx-sel{ display:flex; flex-wrap:wrap; gap:6px; } .fx-mode .btn.on,.fx-sel .btn.on{ background:#ffd23f !important; color:#1a1d24 !important; border-color:#ffd23f !important; opacity:1 !important; }
 .fx-sel .btn{ min-width:38px; justify-content:center; }
 .fx-pad{ display:grid; grid-template-columns:repeat(3,38px); gap:4px; align-items:center; justify-items:center; } .fx-pad .btn{ width:38px; justify-content:center; } .fx-pad b{ font-size:18px; }
+/* v1.25 : achats — prix par carte, objectif, import Cardmarket */
+.tr-ln{ grid-template-columns:auto 34px minmax(0,1fr) auto auto auto; }
+.tr-ln2{ grid-column:1/-1; display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; padding-left:42px; font-size:12.5px; color:var(--ink-secondary); }
+.tr-ln2 input{ width:70px; font:inherit; padding:4px 6px; border-radius:7px; border:1px solid var(--border); background:var(--paper); color:var(--ink); }
+.tr-ln2 .tr-ln-c{ margin-left:auto; font-weight:700; color:var(--ink); }
+.tr-imp{ display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; margin:0 0 10px; padding:8px 10px; border:1px dashed var(--border); border-radius:10px; }
+.tr-imp.ok{ border-style:solid; border-color:rgba(42,157,58,.6); background:rgba(42,157,58,.08); font-size:13px; }
+#trCmTx{ width:100%; box-sizing:border-box; font:inherit; font-size:12.5px; padding:8px 10px; border-radius:10px; border:1px solid var(--border); background:var(--paper); color:var(--ink); resize:vertical; }
+.tr-cmL{ margin:6px 0 0; padding-left:18px; font-size:13px; } .tr-cmL small{ color:var(--muted); } .tr-cmL .num{ float:right; }
+.tr-goal i{ color:#c98500; } .fb-trp{ border-color:rgba(242,183,5,.7)!important; background:rgba(242,183,5,.14)!important; } .fb.hot{ box-shadow:0 0 0 2px rgba(242,183,5,.8); }
+@media (max-width:560px){ .tr-ln{ grid-template-columns:auto 30px minmax(0,1fr) auto; } .tr-ln2{ padding-left:0; } }
 </style></head><body data-tab="scan">
 <div class="topband" aria-hidden="true"></div>
 <div class="wrap">
@@ -1106,7 +1117,7 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
       <div>
         <h1>Pika<span class="ps-scan">Scan</span></h1>
         <div class="mast-sub"><span class="tg"><b class="t1">Scanne</b><i aria-hidden="true">•</i><b class="t2">Estime</b><i aria-hidden="true">•</i><b class="t3">Revends</b></span><span class="tg2"><span class="tg2-live" id="mastLive"></span></span></div>
-        <button type="button" class="ver" id="verBadge" title="Version du site">v1.24.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
+        <button type="button" class="ver" id="verBadge" title="Version du site">v1.25.0</button> <button type="button" class="ver" id="syncBtn" data-state="off" title="Synchronisation entre appareils">☁️ Synchro</button><button type="button" class="ver" id="installBtn" title="Installer PikaScan comme une appli" hidden>📲 Installer</button><div class="sync-pop" id="syncPop" hidden></div>
       </div>
     </div>
     <div class="mast-meta" id="mastMeta"></div>
@@ -1230,7 +1241,7 @@ body{ background:var(--holo), var(--paper); background-attachment:fixed; min-hei
   <section class="panel" id="panel-trade" role="tabpanel" aria-labelledby="tab-trade" hidden>
     <div class="section-head" style="margin-top:0">
       <div><h2>Achats &amp; ventes</h2><div class="sub" id="trSub"></div></div>
-      <div class="inline-edit"><button class="btn primary" id="trNew" type="button">➕ Nouvel achat</button><button class="btn small" id="trRefresh" type="button" title="Relit la valeur Cardmarket des cartes non vendues">↻ Actualiser les valeurs</button><button class="btn small" id="trCsv" type="button" title="Tableur de tous les achats et ventes (comptabilité)">⬇️ Export CSV</button><span class="hint" id="trStatus" aria-live="polite" style="margin:0"></span></div>
+      <div class="inline-edit"><button class="btn primary" id="trNew" type="button">➕ Nouvel achat</button><button class="btn small" id="trImp" type="button" title="Colle la page d'une commande Cardmarket : cartes, prix, port et date repris automatiquement">📥 Importer une commande Cardmarket</button><button class="btn small" id="trRefresh" type="button" title="Relit la valeur Cardmarket des cartes non vendues">↻ Actualiser les valeurs</button><button class="btn small" id="trCsv" type="button" title="Tableur de tous les achats et ventes (comptabilité)">⬇️ Export CSV</button><span class="hint" id="trStatus" aria-live="polite" style="margin:0"></span></div>
     </div>
     <section class="tiles" aria-label="Résumé des achats et ventes" id="trTiles"></section>
     <div class="card-box tr-chart" id="trChart" hidden></div>
@@ -2402,7 +2413,9 @@ const LocalDB = (function(){
   function load(){ try{ const r=localStorage.getItem(KEY); mem = r ? JSON.parse(r) : {}; }catch(e){ mem = {}; } }
   function saveNow(){ clearTimeout(st); st=null; try{ localStorage.setItem(KEY, JSON.stringify(mem)); }catch(e){ if(!saveNow.warned){ saveNow.warned=true; try{ toast('Stockage du navigateur plein : exporte ta base.'); }catch(_){} } } }
   function save(){ clearTimeout(st); st=setTimeout(saveNow,200); }
-  function notify(){ if(nt) return; nt=setTimeout(()=>{ nt=null; L.slice().forEach(f=>f()); },60); }
+  /* n'avertit que les écrans abonnés à la collection modifiée (avant : chaque écriture redessinait tous les onglets) */
+  let dirty=new Set();
+  function notify(n){ dirty.add(n||'*'); if(nt) return; nt=setTimeout(()=>{ nt=null; const d=dirty; dirty=new Set(); L.slice().forEach(f=>{ if(d.has('*')||!f.n||d.has(f.n)) f(); }); },60); }
   window.addEventListener('pagehide', ()=>{ if(st) saveNow(); });
   document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden' && st) saveNow(); });
   const col = n => (mem[n] = mem[n] || {}); const CH=[]; const emit=(n,id,d,del)=>{ CH.forEach(f=>{ try{ f(n,id,d,del); }catch(_){} }); };
@@ -2412,18 +2425,18 @@ const LocalDB = (function(){
     markSeeded(){ mem.__seeded = true; save(); },
     exportJSON(){ return JSON.stringify(mem); },
     get(n,id){ return col(n)[id]; }, all(n){ return col(n); }, onChange(f){ CH.push(f); },
-    applyRemote(n,id,v,del){ if(del) delete col(n)[id]; else col(n)[id]=v; save(); notify(); },
+    applyRemote(n,id,v,del){ if(del) delete col(n)[id]; else col(n)[id]=v; save(); notify(n); },
     importJSON(t){ const o=JSON.parse(t); if(!o || typeof o!=='object') throw new Error('bad'); mem=o; saveNow(); notify(); emit('*','',null,false); },
     flush(){ if(st) saveNow(); },
-    setMany(n, docs){ const c=col(n), u=Date.now(); Object.keys(docs).forEach(id=>{ const v=JSON.parse(JSON.stringify(docs[id])); v._u=u; c[id]=v; emit(n,id,v,false); }); saveNow(); notify(); },
+    setMany(n, docs){ const c=col(n), u=Date.now(); Object.keys(docs).forEach(id=>{ const v=JSON.parse(JSON.stringify(docs[id])); v._u=u; c[id]=v; emit(n,id,v,false); }); saveNow(); notify(n); },
     collection(n){ return {
       doc(id){ return {
-        async set(d){ const v=JSON.parse(JSON.stringify(d)); v._u=Date.now(); col(n)[id]=v; save(); notify(); emit(n,id,v,false); },
-        async update(d){ const v=Object.assign({}, col(n)[id], d); v._u=Date.now(); col(n)[id]=v; save(); notify(); emit(n,id,v,false); },
-        async delete(){ delete col(n)[id]; save(); notify(); emit(n,id,null,true); },
-        onSnapshot(next){ const f=()=>{ const v=col(n)[id]; next({id, exists:v!==undefined, data:()=>v}); }; L.push(f); setTimeout(f,0); return ()=>{}; }
+        async set(d){ const v=JSON.parse(JSON.stringify(d)); v._u=Date.now(); col(n)[id]=v; save(); notify(n); emit(n,id,v,false); },
+        async update(d){ const v=Object.assign({}, col(n)[id], d); v._u=Date.now(); col(n)[id]=v; save(); notify(n); emit(n,id,v,false); },
+        async delete(){ delete col(n)[id]; save(); notify(n); emit(n,id,null,true); },
+        onSnapshot(next){ const f=()=>{ const v=col(n)[id]; next({id, exists:v!==undefined, data:()=>v}); }; f.n=n; L.push(f); setTimeout(f,0); return ()=>{}; }
       }; },
-      onSnapshot(next){ const f=()=>next({docs:Object.entries(col(n)).map(([id,v])=>({id, exists:true, data:()=>v}))}); L.push(f); setTimeout(f,0); return ()=>{}; }
+      onSnapshot(next){ const f=()=>next({docs:Object.entries(col(n)).map(([id,v])=>({id, exists:true, data:()=>v}))}); f.n=n; L.push(f); setTimeout(f,0); return ()=>{}; }
     }; }
   };
 })();
@@ -5156,7 +5169,7 @@ const TR={ buys:{}, stock:{}, view:'stock', flag:'', q:'', open:null, refreshing
 const TR_PLAT=[['vinted','Vinted'],['leboncoin','Leboncoin'],['cardmarket','Cardmarket'],['ebay','eBay'],['brocante','Brocante / salon'],['main','Main propre'],['autre','Autre']];
 const TR_GRADERS=['PCA','PSA','CGC','Collect Aura','Beckett (BGS)','Autre'];
 const TR_ST={ stock:['En stock','📦'], listed:['En vente','🏷️'], grading:['En gradation','🎖️'], sold:['Vendue','💶'], kept:['Gardée','⭐'] };
-const TR_EV={ buy:'Achat', list:'Mise en vente', relist:'Annonce modifiée', unlist:'Retirée de la vente', grade:'Envoyée en gradation', gradeback:'Retour de gradation', sold:'Vendue', unsold:'Vente annulée', keep:'Gardée pour la collection', unkeep:'Remise en stock', split:'Séparée d\'un lot', edit:'Modifiée' };
+const TR_EV={ plan:'Objectif', buy:'Achat', list:'Mise en vente', relist:'Annonce modifiée', unlist:'Retirée de la vente', grade:'Envoyée en gradation', gradeback:'Retour de gradation', sold:'Vendue', unsold:'Vente annulée', keep:'Gardée pour la collection', unkeep:'Remise en stock', split:'Séparée d\'un lot', edit:'Modifiée' };
 const trPlat=k=>(TR_PLAT.find(p=>p[0]===k)||[k,k||'—'])[1];
 const trToday=()=>{ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
 const trD=d=>{ if(!d) return '—'; const x=new Date(String(d).length===10?d+'T12:00:00':d); return isNaN(x)?'—':x.toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}); };
@@ -5211,20 +5224,21 @@ function renderTrade(){
   $('trChart').innerHTML = (buys.length||items.some(x=>x.sale)) ? trChartHTML() : '';
   $('trChart').hidden = !(buys.length||items.some(x=>x.sale));
   $('trFlags').innerHTML = Object.keys(TR_FLAGS).filter(k=>fc[k]).map(k=>`<button type="button" class="tr-flag${TR.flag===k?' on':''}" data-trf="${k}">${TR_FLAGS[k].t} ${esc(TR_FLAGS[k].l(fc[k]))}</button>`).join('') + (TR.flag?'<button type="button" class="tr-flag clr" data-trf="">✕ Tout afficher</button>':'');
-  const cnt=k=>k==='buys'?buys.length:k==='all'?items.length:items.filter(x=>x.status===k).length;
-  const views=[['stock','📦 En stock'],['listed','🏷️ En vente'],['grading','🎖️ Gradation'],['sold','💶 Vendues'],['kept','⭐ Gardées'],['buys','🛒 Achats'],['all','Tout']];
-  $('trChips').innerHTML = views.filter(([k])=>k!=='kept'||cnt('kept')).map(([k,l])=>`<button type="button" class="sort-btn" data-trv="${k}" aria-pressed="${TR.view===k&&!TR.flag}">${l} <span class="num">${cnt(k)}</span></button>`).join('');
+  const toG=x=>x.plan&&x.plan.k==='grade'&&x.status==='stock';
+  const cnt=k=>k==='buys'?buys.length:k==='all'?items.length:k==='tograde'?items.filter(toG).length:items.filter(x=>x.status===k).length;
+  const views=[['stock','📦 En stock'],['tograde','🎯 À grader'],['listed','🏷️ En vente'],['grading','🎖️ Gradation'],['sold','💶 Vendues'],['kept','⭐ Gardées'],['buys','🛒 Achats'],['all','Tout']];
+  $('trChips').innerHTML = views.filter(([k])=>(k!=='kept'&&k!=='tograde')||cnt(k)).map(([k,l])=>`<button type="button" class="sort-btn" data-trv="${k}" aria-pressed="${TR.view===k&&!TR.flag}">${l} <span class="num">${cnt(k)}</span></button>`).join('');
   const q=TR.q.trim().toLowerCase(), hit=s=>!q||String(s||'').toLowerCase().includes(q);
   let html='';
   if(TR.view==='buys' && !TR.flag){
     const list=buys.filter(b=>hit(b.title)||hit(trPlat(b.plat))||items.some(x=>x.buyId===b.id&&hit(x.name))).sort((a,b)=>String(b.date).localeCompare(String(a.date))||(b.t||0)-(a.t||0));
     html=list.map(trBuyHTML).join('');
   } else {
-    const f=TR.flag?TR_FLAGS[TR.flag].f:(TR.view==='all'?()=>true:x=>x.status===TR.view);
+    const f=TR.flag?TR_FLAGS[TR.flag].f:(TR.view==='all'?()=>true:TR.view==='tograde'?toG:x=>x.status===TR.view);
     const list=items.filter(f).filter(x=>hit(x.name)||hit(x.ed)||hit(x.number)||hit(x.note)).sort((a,b)=>{ const k=x=>x.status==='sold'?(x.sale&&x.sale.date)||'':x.status==='listed'?(x.list&&x.list.date)||'':x.buyDate||''; return String(k(b)).localeCompare(String(k(a))); });
     html=list.map(trItemHTML).join('');
   }
-  $('trList').innerHTML = html || `<div class="empty-state"><div class="big">🛒</div>${items.length||buys.length?'Rien dans cette vue.':'Aucun achat enregistré. Depuis l\'onglet <b>Annonces</b>, clique <b>🛒 J\'ai acheté</b> sur une annonce : les cartes reconnues arrivent ici avec leur prix de revient. Ou utilise <b>➕ Nouvel achat</b> (Cardmarket, brocante…).'}</div>`;
+  $('trList').innerHTML = html || `<div class="empty-state"><div class="big">🛒</div>${items.length||buys.length?'Rien dans cette vue.':'Aucun achat enregistré. Depuis l\'onglet <b>Annonces</b>, clique <b>🛒 J\'ai acheté</b> sur une annonce : les cartes reconnues arrivent ici avec leur prix de revient. Ou <b>📥 Importe une commande Cardmarket</b> (copier-coller de la page), ou <b>➕ Nouvel achat</b> (brocante…).'}</div>`;
   $('trStatus').textContent = TR.msg||'';
 }
 function trImg(x){ return x.img?`<img src="${esc(x.img)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.style.visibility='hidden'">`:'<div class="fl-noimg">?</div>'; }
@@ -5233,17 +5247,19 @@ function trItemHTML(x){
   const gr=x.grade&&x.grade.note?`<span class="tr-grade">${esc(x.grade.co||'')} ${esc(x.grade.note)}</span>`:'';
   const since = x.status==='stock'?`en stock depuis ${trDays(x.buyDate)} j`: x.status==='listed'&&x.list?`en ligne depuis ${trDays(x.list.date)} j sur ${esc(trPlat(x.list.plat))}`: x.status==='grading'&&x.grade?`chez ${esc(x.grade.co)} depuis ${trDays(x.grade.sent)} j`: x.status==='sold'&&x.sale?`vendue le ${esc(trD(x.sale.date))} sur ${esc(trPlat(x.sale.plat))} · ${trDays(x.buyDate,x.sale.date)} j après l'achat`:'';
   const buyL = `Achetée le ${esc(trD(x.buyDate))} · ${esc(trPlat(x.plat||(b&&b.plat)))}${b?` · <button type="button" class="tr-lk" data-tr="gobuy" data-id="${esc(x.id)}">${esc((b.title||'achat').slice(0,48))}</button>`:''}`;
-  const nums=[`<span><i>Prix de revient</i><b class="num">${eur(c.cost+c.gc)}</b><small>${c.q>1?esc(eur((c.cost+c.gc)/c.q))+' / carte':''}${c.gc?(c.q>1?' · ':'')+'dont gradation '+esc(eur(c.gc)):''}</small></span>`,
+  const nums=[`<span><i>${x.paid!=null?'Payée':'Prix de revient'}</i><b class="num">${x.paid!=null?eur(x.paid*c.q):eur(c.cost+c.gc)}</b><small>${x.paid!=null?'revient '+esc(eur(c.cost+c.gc))+(c.q>1?' · '+esc(eur((c.cost+c.gc)/c.q))+' / carte':''):(c.q>1?esc(eur((c.cost+c.gc)/c.q))+' / carte':'')}${c.gc?' · dont gradation '+esc(eur(c.gc)):''}</small></span>`,
     `<span><i>Valeur marché</i><b class="num">${c.mkt!=null?eur(c.mkt):'—'}</b><small>${x.mom30!=null?esc(pctS(x.mom30))+' / 30 j':x.cardId?'Cardmarket':'carte non identifiée'}</small></span>`];
   if(x.list && x.status==='listed') nums.push(`<span><i>Prix demandé</i><b class="num">${eur(x.list.price)}</b><small>${x.list.url?`<a href="${esc(x.list.url)}" target="_blank" rel="noopener noreferrer">voir l'annonce ↗</a>`:esc(trPlat(x.list.plat))}</small></span>`);
   if(x.status==='sold') nums.push(`<span><i>Vendue</i><b class="num">${eur(x.sale.price)}</b><small>net ${esc(eur(c.net))}</small></span>`,`<span><i>Bénéfice</i><b class="num ${c.profit>=0?'up':'down'}">${trSg(c.profit)}</b><small>${c.cost+c.gc>0?esc(pctS(c.profit/(c.cost+c.gc)*100)):''}</small></span>`);
   else if(c.latent!=null) nums.push(`<span><i>Plus-value latente</i><b class="num ${c.latent>=0?'up':'down'}">${trSg(c.latent)}</b><small>si vendue au prix du marché</small></span>`);
+  const P=x.plan, est=trPlanEst(x);
+  if(P&&P.k&&x.status!=='sold') nums.push(`<span class="tr-goal"><i>🎯 ${esc(trPlanL(P.k))}</i><b class="num">${P.price!=null?eur(P.price):'—'}</b><small>${est!=null?`marge visée <b class="${est>=0?'up':'down'}">${esc(trSg(est))}</b>`:P.k==='keep'?'pas de revente':'prix visé à fixer'}${P.k==='grade'&&P.gc?' · gradation ~'+esc(eur(P.gc)):''}</small></span>`);
   const A=(k,l,cls)=>`<button type="button" class="fb ${cls||''}" data-tr="${k}" data-id="${esc(x.id)}">${l}</button>`;
-  const acts = x.status==='stock' ? A('list','🏷️ Mettre en vente','fb-trl')+A('grade','🎖️ Envoyer en gradation','fb-trg')+A('sell','💶 Vendue','fb-trs')+A('keep','⭐ Garder')
+  const acts = (x.status!=='sold'?A('plan',P&&P.k?'🎯 Objectif':'🎯 Fixer un objectif','fb-trp'):'') + (x.status==='stock' ? A('list','🏷️ Mettre en vente','fb-trl')+A('grade','🎖️ Envoyer en gradation','fb-trg'+(P&&P.k==='grade'?' hot':''))+A('sell','💶 Vendue','fb-trs')+A('keep','⭐ Garder')
     : x.status==='listed' ? A('list','✏️ Modifier l\'annonce','fb-trl')+A('sell','💶 Vendue','fb-trs')+A('unlist','↩ Retirer de la vente')
     : x.status==='grading' ? A('gradeback','📬 Retour de gradation','fb-trg')
     : x.status==='kept' ? A('unkeep','↩ Remettre en stock')
-    : A('unsell','↩ Annuler la vente');
+    : A('unsell','↩ Annuler la vente'));
   const ev=(x.ev||[]).slice().reverse();
   return `<article class="tr-it st-${esc(x.status)}" data-id="${esc(x.id)}">
     <div class="tr-img">${trImg(x)}</div>
@@ -5329,11 +5345,12 @@ async function trAction(a, id){
   if(a==='delbuy') return trBuyDelete(TR.buys[id]);
   if(a==='addline') return trAddLine(TR.buys[id]);
   if(!x) return;
+  if(a==='plan') return trPlanModal(x);
   const c=trCalc(x), unitCost=(c.cost+c.gc)/c.q;
   if(a==='list'){
     const L=x.list||{};
     trModal(x.status==='listed'?'Modifier l\'annonce':'Mettre en vente', `<div class="tr-sum">${trImg(x)}<div><b>${esc(x.name)}</b><small>${esc(x.ed||'')} ${esc(x.number||'')}</small><small>Prix de revient ${esc(eur(unitCost))} / carte${x.mkt!=null?` · marché ${esc(eur(x.mkt))}`:''}</small></div></div>
-      <div class="tr-grid">${trF('Plateforme',trSel('trP',TR_PLAT,L.plat||'vinted'))}${trF('Prix demandé (total)',trNum('trPr',L.price!=null?L.price:(x.mkt!=null?tr2(x.mkt*(x.qty||1)):''),''),x.mkt!=null?`marché ${esc(eur(x.mkt))} · revient ${esc(eur(unitCost))} / carte · marge 30 % ⇒ ${esc(eur(unitCost*1.3))}`:`revient ${esc(eur(unitCost))} / carte`)}
+      <div class="tr-grid">${trF('Plateforme',trSel('trP',TR_PLAT,L.plat||'vinted'))}${trF('Prix demandé (total)',trNum('trPr',L.price!=null?L.price:(x.plan&&x.plan.price!=null?x.plan.price:(x.mkt!=null?tr2(x.mkt*(x.qty||1)):'')),''),x.mkt!=null?`marché ${esc(eur(x.mkt))} · revient ${esc(eur(unitCost))} / carte · marge 30 % ⇒ ${esc(eur(unitCost*1.3))}`:`revient ${esc(eur(unitCost))} / carte`)}
       ${trF('Date de mise en ligne',`<input id="trDt" type="date" value="${esc(L.date||trToday())}">`)}${x.status==='listed'?'':trQtyF(x)}</div>
       ${trF('Lien de ton annonce',`<input id="trU" type="url" placeholder="https://…" value="${esc(L.url||'')}">`)}
       ${trF('Texte d\'annonce (à copier)',`<textarea id="trTx" rows="4">${esc(trListText(x))}</textarea>`,'<button type="button" class="btn small" id="trCopy">📋 Copier</button>')}`,
@@ -5343,7 +5360,7 @@ async function trAction(a, id){
   }
   if(a==='grade'){
     trModal('Envoyer en gradation', `<div class="tr-sum">${trImg(x)}<div><b>${esc(x.name)}</b><small>${esc(x.ed||'')} ${esc(x.number||'')}</small></div></div>
-      <div class="tr-grid">${trF('Société',trSel('trCo',TR_GRADERS,(x.grade&&x.grade.co)||'PCA'))}${trF('Date d\'envoi',`<input id="trDt" type="date" value="${esc(trToday())}">`)}${trF('Coût total (gradation + envoi)',trNum('trCost','',''),'ajouté au prix de revient')}${trQtyF(x)}</div>
+      <div class="tr-grid">${trF('Société',trSel('trCo',TR_GRADERS,(x.grade&&x.grade.co)||'PCA'))}${trF('Date d\'envoi',`<input id="trDt" type="date" value="${esc(trToday())}">`)}${trF('Coût total (gradation + envoi)',trNum('trCost',x.plan&&x.plan.gc!=null?x.plan.gc:'',''),'ajouté au prix de revient')}${trQtyF(x)}</div>
       ${trF('Note',`<input id="trN" type="text" placeholder="Formule, n° de commande…">`)}`,
       async()=>{ const y=await trTakeQty(x); y.grade={co:trV('trCo'), sent:trV('trDt')||trToday(), cost:tr2(num(trV('trCost'))||0), ref:trV('trN').trim()}; y.status='grading'; trEv(y,'grade',{co:y.grade.co, price:y.grade.cost}); await trPut(y); toast('Carte envoyée en gradation 🎖️'); }, 'Valider l\'envoi');
     return;
@@ -5383,37 +5400,54 @@ async function trAction(a, id){
 
 /* ---------- achat : depuis une annonce repérée ou saisi à la main ---------- */
 let TRB=null;
+function trHasPP(l){ return l.pp!=null && l.pp!=='' && !isNaN(+l.pp); }
+/* prix de revient de chaque ligne = prix payé pour la carte (saisi ou importé) + sa part du port et des frais (au prorata du prix).
+   Lignes sans prix (lot) : le reste du prix des articles est réparti au prorata de la valeur marché (ou à parts égales). */
 function trAlloc(){
-  const B=TRB, total=tr2((num(B.price)||0)+(num(B.ship)||0)+(num(B.fees)||0)), L=B.lines.filter(l=>l.on);
-  const known=L.filter(l=>l.mkt>0).map(l=>l.mkt), base=known.length?Math.min(...known):1;
-  const w=L.map(l=>B.alloc==='value'?(l.mkt>0?l.mkt:base)*(l.qty||1):(l.qty||1)), sw=w.reduce((a,b)=>a+b,0)||1;
-  let acc=0; L.forEach((l,i)=>{ l.cost = i===L.length-1 ? tr2(total-acc) : tr2(total*w[i]/sw); acc+=l.cost; });
+  const B=TRB, L=B.lines.filter(l=>l.on), ex=(num(B.ship)||0)+(num(B.fees)||0);
+  const sumP=tr2(L.filter(trHasPP).reduce((a,l)=>a+(+l.pp)*(l.qty||1),0)), art=num(B.price)!=null?num(B.price):sumP;
+  B.art=tr2(art); B.sumP=sumP;
+  const un=L.filter(l=>!trHasPP(l)), rest=Math.max(0,art-sumP), known=un.filter(l=>l.mkt>0).map(l=>l.mkt), b0=known.length?Math.min(...known):1;
+  const w=un.map(l=>B.alloc==='equal'?(l.qty||1):(l.mkt>0?l.mkt:b0)*(l.qty||1)), sw=w.reduce((a,b)=>a+b,0)||1;
+  L.forEach(l=>{ l.base=trHasPP(l)?(+l.pp)*(l.qty||1):0; }); un.forEach((l,k)=>{ l.base=rest*w[k]/sw; });
+  const sb=L.reduce((a,l)=>a+l.base,0), total=tr2(art+ex); let acc=0;
+  L.forEach((l,k)=>{ l.cost = k===L.length-1 ? tr2(total-acc) : tr2(l.base + ex*(sb>0?l.base/sb:1/L.length)); acc+=l.cost; });
   B.lines.filter(l=>!l.on).forEach(l=>l.cost=0);
   return total;
 }
+const TR_PLAN=[['','— Objectif'],['sell','💶 Revendre'],['grade','🎖️ Faire grader'],['keep','⭐ Garder']];
 function trBuyLinesHTML(){
-  const B=TRB, total=trAlloc(), L=B.lines, mk=tr2(L.filter(l=>l.on).reduce((a,l)=>a+(l.mkt||0)*(l.qty||1),0));
+  const B=TRB, total=trAlloc(), L=B.lines, mk=tr2(L.filter(l=>l.on).reduce((a,l)=>a+(l.mkt||0)*(l.qty||1),0)), un=L.some(l=>l.on&&!trHasPP(l));
   return `<div class="tr-lines">${L.length?L.map((l,i)=>`<div class="tr-ln${l.on?'':' off'}">
       <input type="checkbox" data-trl="on" data-i="${i}" ${l.on?'checked':''} aria-label="Inclure">
-      <span class="tr-ln-i">${l.img?`<img src="${esc(l.img)}" alt="" referrerpolicy="no-referrer">`:'?'}</span>
-      <span class="tr-ln-n"><b>${esc(l.name||'Carte')}</b><small>${esc(l.ed||'')}${l.number?' · '+esc(l.number):''}${l.mkt>0?' · marché '+esc(eur(l.mkt)):l.cardId?'':' · non identifiée'}</small></span>
+      <span class="tr-ln-i">${l.img?`<img src="${esc(l.img)}" alt="" referrerpolicy="no-referrer">`:l.busy?'<span class="spinner" aria-hidden="true"></span>':'?'}</span>
+      <span class="tr-ln-n"><b>${esc(l.name||'Carte')}</b><small>${l.busy?'identification…':`${esc(l.ed||'')}${l.number?' · '+esc(l.number):''}${l.mkt>0?' · marché '+esc(eur(l.mkt)):l.cardId?'':' · ⚠ non identifiée'}`}</small></span>
       <label class="tr-ln-q">× <input type="number" min="1" step="1" value="${esc(l.qty||1)}" data-trl="qty" data-i="${i}" aria-label="Quantité"></label>
       <select data-trl="cond" data-i="${i}" aria-label="État">${COND.map(k=>`<option value="${k.k}" ${k.k===(l.cond||'NM')?'selected':''}>${k.k}</option>`).join('')}</select>
-      <span class="tr-ln-c num" title="Part du prix d'achat attribuée à cette ligne">${l.on?esc(eur(l.cost)):'—'}</span>
-      <button type="button" class="btn small" data-trl="rm" data-i="${i}" aria-label="Retirer">✕</button></div>`).join(''):'<div class="hint" style="margin:6px 0">Aucune carte : ajoute-les ci-dessous (ou une ligne « vrac » pour le reste du lot).</div>'}</div>
-    <div class="tr-tot">Total payé <b class="num">${esc(eur(total))}</b> · valeur marché des cartes <b class="num">${esc(eur(mk))}</b>${mk&&total?` · <b class="${mk-total>=0?'up':'down'}">${esc(trSg(mk-total))}</b> potentiel`:''}</div>`;
+      <button type="button" class="btn small" data-trl="rm" data-i="${i}" aria-label="Retirer">✕</button>
+      <div class="tr-ln2">
+        <label>Payé <input type="number" step="0.01" min="0" inputmode="decimal" value="${trHasPP(l)?esc(l.pp):''}" placeholder="—" data-trl="pp" data-i="${i}" aria-label="Prix payé par carte"> €/carte</label>
+        <select data-trl="plan" data-i="${i}" aria-label="Objectif">${TR_PLAN.map(([k,t])=>`<option value="${k}" ${k===(l.plan||'')?'selected':''}>${t}</option>`).join('')}</select>
+        ${l.plan&&l.plan!=='keep'?`<label>Revente visée <input type="number" step="0.5" min="0" inputmode="decimal" value="${l.tp!=null&&l.tp!==''?esc(l.tp):''}" placeholder="${l.mkt>0?esc(tr2(l.mkt*(l.plan==='grade'?2:1))):'€'}" data-trl="tp" data-i="${i}" aria-label="Prix de revente visé"> €</label>`:''}
+        <span class="tr-ln-c num" title="Prix de revient : prix payé + part du port et des frais">${l.on?'revient '+esc(eur(l.cost)):'—'}</span>
+      </div></div>`).join(''):'<div class="hint" style="margin:6px 0">Aucune carte : importe ta commande Cardmarket, ou ajoute-les ci-dessous (ou une ligne « vrac » pour le reste d\'un lot).</div>'}</div>
+    <div class="tr-tot">Articles <b class="num">${esc(eur(B.art||0))}</b>${num(B.ship)||num(B.fees)?` + port et frais <b class="num">${esc(eur((num(B.ship)||0)+(num(B.fees)||0)))}</b>`:''} = payé <b class="num">${esc(eur(total))}</b> · valeur marché <b class="num">${esc(eur(mk))}</b>${mk&&total?` · <b class="${mk-total>=0?'up':'down'}">${esc(trSg(mk-total))}</b>`:''}${un&&L.some(l=>l.on&&trHasPP(l))?'<br><small class="hint" style="margin:0">Les cartes sans prix se partagent le reste du prix des articles.</small>':''}</div>`;
 }
 function trBuyOpen(o){
-  o=o||{}; const it=o.listing;
+  o=o||{}; const it=o.listing, od=o.order;
   TRB={ id:trId('b'), plat:it?(trPlatOfUrl(it.url)||'vinted'):'vinted', date:trToday(), url:it?(it.url||''):'', title:it?(it.title||it.name||'').slice(0,140):'', price:it&&it.ask!=null?it.ask:'', ship:it?(it.shipIn||0):'', fees:'', note:'', alloc:'value', track:true, listingId:it?it.id:'', img:it?(it.photo||(it.photos&&it.photos[0])||it.img||''):'', lines:[], res:[] };
   if(it && it.lot) TRB.lines=it.lot.cards.map(c=>({cardId:c.id, name:c.name, ed:c.ed, number:c.number, img:c.img, qty:c.q||1, mkt:c.p||null, cond:it.cond||'NM', on:true}));
   else if(it && it.cardId) TRB.lines=[{cardId:it.cardId, name:it.name, ed:it.ed, number:it.number, img:it.img, qty:1, mkt:it.mkt||null, mom30:it.mom30, cond:it.cond||'NM', on:true}];
   if(it && it.lot && it.lot.lost) TRB.lines.push({name:'Cartes non lues du lot', ed:'à identifier', qty:it.lot.lost, mkt:null, cond:it.cond||'NM', on:true});
+  if(od){ Object.assign(TRB,{ plat:'cardmarket', date:od.date||trToday(), url:od.id?'https://www.cardmarket.com/fr/Pokemon/Orders/'+od.id:'', title:('Cardmarket'+(od.id?' #'+od.id:'')+(od.seller?' · '+od.seller:'')).slice(0,140), price:od.articles!=null?od.articles:'', ship:od.ship!=null?od.ship:'', fees:od.fees!=null?od.fees:'', cmOrder:od.id||'', alloc:'value' });
+    TRB.lines=od.items.map(x=>({ name:x.name, ed:x.code, number:x.num, qty:x.qty||1, pp:x.price, cond:x.cond||'NM', on:true, busy:true, cm:x, mkt:null })); }
   const B=TRB;
-  trModal(it?'J\'ai acheté cette annonce':'Nouvel achat', `
+  trModal(it?'J\'ai acheté cette annonce':od?'Commande Cardmarket importée':'Nouvel achat', `
+    ${it||od?'':'<div class="tr-imp"><button type="button" class="btn small" id="trImpB">📥 Importer une commande Cardmarket</button><span class="hint" style="margin:0">ajoute toutes les cartes, leur prix, le port et la date d\'un coup</span></div>'}
+    ${od?`<div class="tr-imp ok">📥 ${esc(od.items.length)} ligne${od.items.length>1?'s':''} importée${od.items.length>1?'s':''}${od.id?' · commande #'+esc(od.id):''}${od.seller?' · '+esc(od.seller):''}${od.track?' · suivi '+esc(od.track):''}. Vérifie les cartes identifiées, puis fixe un objectif pour chacune.</div>`:''}
     <div class="tr-grid">${trF('Plateforme',trSel('trP',TR_PLAT,B.plat))}${trF('Date d\'achat',`<input id="trDt" type="date" value="${esc(B.date)}">`)}
-      ${trF('Prix payé (articles)',trNum('trPr',B.price,''))}${trF('Port',trNum('trSh',B.ship,''))}${trF('Frais (protection, service)',trNum('trFe',B.fees,''),'ex. protection acheteur Vinted')}
-      ${trF('Répartition du coût',trSel('trAl',[['value','Au prorata de la valeur marché'],['equal','À parts égales']],B.alloc),'pour calculer le prix de revient de chaque carte')}</div>
+      ${trF('Prix des articles',trNum('trPr',B.price,'auto'),'vide = somme des prix par carte')}${trF('Port',trNum('trSh',B.ship,''))}${trF('Frais (protection, service)',trNum('trFe',B.fees,''),'ex. Trustee, protection Vinted')}
+      <span id="trAlW">${trF('Cartes sans prix',trSel('trAl',[['value','Au prorata de la valeur marché'],['equal','À parts égales']],B.alloc),'répartition du reste du lot')}</span></div>
     ${trF('Titre / vendeur',`<input id="trTi" type="text" value="${esc(B.title)}" placeholder="ex. Lot 20 cartes EV — vendeur Pierre">`)}
     ${trF('Lien de l\'annonce',`<input id="trU" type="url" value="${esc(B.url)}" placeholder="https://…">`)}
     <div class="tr-sec"><b>Cartes achetées</b><span class="hint" style="margin:0">${it?'pré-remplies avec les cartes reconnues : décoche celles que tu n\'as pas eues':''}</span></div>
@@ -5423,12 +5457,17 @@ function trBuyOpen(o){
     ${trF('Note',`<input id="trNt" type="text" placeholder="État réel, négociation…">`)}
     <label class="tr-chk"><input type="checkbox" id="trTrk" checked> Suivre ces cartes dans <b>Ma base</b> (prix Cardmarket et alertes de fluctuation)</label>`,
     trBuySave, 'Enregistrer l\'achat');
-  const draw=()=>{ $('trLines').innerHTML=trBuyLinesHTML(); };
+  const draw=()=>{ $('trLines').innerHTML=trBuyLinesHTML(); const w=$('trAlW'); if(w) w.hidden=!B.lines.some(l=>l.on&&!trHasPP(l)); };
+  const costs=()=>{ trAlloc(); const c=$('trLines').querySelectorAll('.tr-ln-c'); B.lines.forEach((l,j)=>{ if(c[j]) c[j].textContent=l.on?'revient '+eur(l.cost):'—'; }); const tt=$('trLines').querySelector('.tr-tot'); if(tt){ const tmp=document.createElement('div'); tmp.innerHTML=trBuyLinesHTML(); tt.replaceWith(tmp.querySelector('.tr-tot')); } };
   const sync=()=>{ B.plat=trV('trP'); B.date=trV('trDt'); B.price=trV('trPr'); B.ship=trV('trSh'); B.fees=trV('trFe'); B.alloc=trV('trAl'); };
   ['trPr','trSh','trFe','trAl'].forEach(k=>$(k).addEventListener('input',()=>{ sync(); draw(); }));
   $('trAl').addEventListener('change',()=>{ sync(); draw(); });
-  $('trLines').addEventListener('input',e=>{ const t=e.target, i=+t.dataset.i, l=B.lines[i]; if(!l) return; if(t.dataset.trl==='qty'){ l.qty=Math.max(1,parseInt(t.value)||1); const c=$('trLines').querySelectorAll('.tr-ln-c'); trAlloc(); B.lines.forEach((ll,j)=>{ if(c[j]) c[j].textContent=ll.on?eur(ll.cost):'—'; }); const tt=$('trLines').querySelector('.tr-tot'); if(tt){ const tmp=document.createElement('div'); tmp.innerHTML=trBuyLinesHTML(); tt.replaceWith(tmp.querySelector('.tr-tot')); } } });
-  $('trLines').addEventListener('change',e=>{ const t=e.target, i=+t.dataset.i, l=B.lines[i]; if(!l) return; if(t.dataset.trl==='on'){ l.on=t.checked; draw(); } else if(t.dataset.trl==='cond') l.cond=t.value; else if(t.dataset.trl==='qty') draw(); });
+  $('trLines').addEventListener('input',e=>{ const t=e.target, i=+t.dataset.i, l=B.lines[i]; if(!l) return; const k=t.dataset.trl;
+    if(k==='qty'){ l.qty=Math.max(1,parseInt(t.value)||1); costs(); } else if(k==='pp'){ l.pp=t.value===''?null:num(t.value); costs(); } else if(k==='tp'){ l.tp=t.value===''?null:num(t.value); } });
+  $('trLines').addEventListener('change',e=>{ const t=e.target, i=+t.dataset.i, l=B.lines[i]; if(!l) return; const k=t.dataset.trl; if(k==='on'){ l.on=t.checked; draw(); } else if(k==='cond') l.cond=t.value; else if(k==='plan'){ l.plan=t.value; draw(); } else if(k==='qty'||k==='pp') draw(); });
+  const ib=$('trImpB'); if(ib) ib.addEventListener('click',()=>trCmImport());
+  /* commande importée : identification des cartes (nom + code d'édition + numéro Cardmarket) */
+  if(od){ let k=0; const L=B.lines.slice(); Promise.all(Array.from({length:3},async()=>{ while(k<L.length){ const l=L[k++]; try{ const s=await trCmFind(l.cm); if(s) Object.assign(l,{cardId:s.id, name:s.name, ed:s.ed, number:s.number, img:s.img, mkt:s.mkt||null, mom30:s.mom30}); }catch(e){ console.warn('identification',e); } l.busy=false; if($('trLines')) draw(); } })); }
   $('trLines').addEventListener('click',e=>{ const b=e.target.closest('[data-trl="rm"]'); if(!b) return; B.lines.splice(+b.dataset.i,1); draw(); });
   const search=async()=>{ const q=trV('trS').trim(); if(!q) return; const r=$('trRes'); r.innerHTML='<span class="hint" style="margin:0"><span class="spinner" aria-hidden="true"></span> Recherche…</span>';
     try{ const res=(await tcSearch(q)).slice(0,10).map(fxSummary); B.res=res; r.innerHTML=res.length?res.map((c,i)=>`<button type="button" class="fl-cand" data-trr="${i}" title="${esc(c.name)}">${c.img?`<img src="${esc(c.img)}" alt="" referrerpolicy="no-referrer" loading="lazy">`:''}<span>${esc(c.name)}<small>${esc(c.ed||'')} · ${esc(c.number||'')}</small></span></button>`).join(''):'<span class="hint" style="margin:0">Aucune carte trouvée.</span>'; }
@@ -5443,12 +5482,14 @@ function trBuyOpen(o){
 }
 async function trBuySave(){
   const B=TRB; B.plat=trV('trP'); B.date=trV('trDt')||trToday(); B.price=trV('trPr'); B.ship=trV('trSh'); B.fees=trV('trFe'); B.alloc=trV('trAl');
-  if(num(B.price)==null) throw new Error('Indique le prix payé.');
   const L=B.lines.filter(l=>l.on); if(!L.length) throw new Error('Ajoute au moins une carte (ou une ligne « vrac »).');
+  if(num(B.price)==null && !L.some(trHasPP)) throw new Error('Indique le prix des articles, ou le prix payé de chaque carte.');
+  if(L.some(l=>l.busy)) throw new Error('Identification des cartes en cours : patiente un instant.');
+  if(num(B.price)==null && L.some(l=>!trHasPP(l))) throw new Error('Certaines cartes n\'ont pas de prix : indique leur prix ou le prix total des articles.');
   const total=trAlloc(), now=Date.now();
-  const buy={ id:B.id, date:B.date, plat:B.plat, url:trV('trU').trim(), title:trV('trTi').trim()||L.map(l=>l.name).slice(0,3).join(', '), price:tr2(num(B.price)), ship:tr2(num(B.ship)||0), fees:tr2(num(B.fees)||0), total, note:trV('trNt').trim(), listingId:B.listingId||'', img:B.img||L[0].img||'', n:L.reduce((a,l)=>a+(l.qty||1),0), t:now };
+  const buy={ id:B.id, date:B.date, plat:B.plat, url:trV('trU').trim(), title:trV('trTi').trim()||L.map(l=>l.name).slice(0,3).join(', '), price:tr2(B.art), ship:tr2(num(B.ship)||0), cmOrder:B.cmOrder||'', fees:tr2(num(B.fees)||0), total, note:trV('trNt').trim(), listingId:B.listingId||'', img:B.img||L[0].img||'', n:L.reduce((a,l)=>a+(l.qty||1),0), t:now };
   const docs={};
-  L.forEach(l=>{ const id=trId('s'); docs[id]={ id, buyId:buy.id, cardId:l.cardId||'', name:l.name, ed:l.ed||'', number:l.number||'', img:l.img||'', qty:l.qty||1, cond:l.cond||'NM', lang:'français', cost:l.cost, mkt:l.mkt>0?l.mkt:null, mom30:l.mom30!=null?l.mom30:null, mktT:l.mkt>0?now:null, status:'stock', buyDate:buy.date, plat:buy.plat, note:'', ev:[{t:new Date().toISOString(), type:'buy', price:l.cost, plat:buy.plat}] }; });
+  L.forEach(l=>{ const id=trId('s'); docs[id]={ id, buyId:buy.id, cardId:l.cardId||'', name:l.name, ed:l.ed||'', number:l.number||'', img:l.img||'', qty:l.qty||1, cond:l.cond||'NM', lang:'français', cost:l.cost, paid:trHasPP(l)?tr2(+l.pp):null, plan:l.plan?{k:l.plan, price:l.tp!=null&&l.tp!==''?tr2(+l.tp):null, gc:null}:null, mkt:l.mkt>0?l.mkt:null, mom30:l.mom30!=null?l.mom30:null, mktT:l.mkt>0?now:null, status:'stock', buyDate:buy.date, plat:buy.plat, note:'', ev:[{t:new Date().toISOString(), type:'buy', price:l.cost, plat:buy.plat}] }; });
   await trPutBuy(buy);
   if(S.db && S.db.setMany) S.db.setMany('stock', docs); else for(const d of Object.values(docs)) await trPut(d);
   Object.assign(TR.stock, docs);
@@ -5456,6 +5497,67 @@ async function trBuySave(){
   if($('trTrk') && $('trTrk').checked) trTrackInBase(L, buy);
   toast(`Achat enregistré : ${buy.n} carte${buy.n>1?'s':''} · ${eur(total)} 🛒`);
   TR.view='stock'; TR.flag=''; setTab('trade');
+}
+/* ---------- import d'une commande Cardmarket (contenu de la page « Achat #… » copié-collé) ---------- */
+function trCmMoney(s){ if(s==null) return null; s=String(s).replace(/[\s€ ]/g,''); if(/,\d{1,2}$/.test(s)) s=s.replace(/\./g,'').replace(',','.'); else s=s.replace(/,/g,''); const v=parseFloat(s); return isFinite(v)?tr2(v):null; }
+function trCmParse(t){
+  t=String(t||'').replace(/ /g,' ').replace(/\r/g,'');
+  const M='(\\d{1,3}(?:[ .]\\d{3})*(?:[.,]\\d{1,2})?)\\s*€', field=re=>{ const m=new RegExp('(?:'+re+')[^\\n€\\d]{0,12}\\n?[^\\n€\\d]{0,6}'+M,'i').exec(t); return m?trCmMoney(m[1]):null; };
+  const o={ id:'', seller:'', date:'', articles:field("Valeur de l'article|Valeur des articles|Article value|Articles? value|Item value"), ship:field("Frais de port|Frais d'envoi|Shipping costs?|Shipping"), fees:field('Trustee Service|Frais de service|Service fee|Frais Trustee'), total:field('Total'), track:'', items:[] };
+  let m=/(?:Achat|Commande|Purchase|Order)\s*#\s*(\d{5,})/i.exec(t); if(m){ o.id=m[1]; const after=t.slice(m.index+m[0].length).split('\n').map(x=>x.trim()).filter(Boolean); if(after[0] && !/:|€|\d{2}\.\d{2}\.\d{4}/.test(after[0])) o.seller=after[0].replace(/[^\p{L}\p{N}_.\- ]/gu,'').trim().slice(0,40); }
+  const dt=re=>{ const x=new RegExp('(?:'+re+')\\s*:?\\s*(\\d{2})\\.(\\d{2})\\.(\\d{4})','i').exec(t); return x?x[3]+'-'+x[2]+'-'+x[1]:''; };
+  o.date=dt('Pay[ée]e|Paid')||dt('[ÀA] payer|Bought|Achet[ée]e')||((m=/(\d{2})\.(\d{2})\.(\d{4})/.exec(t))?m[3]+'-'+m[2]+'-'+m[1]:'');
+  if((m=/(?:Num[ée]ro de suivi|Tracking (?:number|code))\s*:?\s*\n?\s*([A-Z0-9]{8,})/i.exec(t))) o.track=m[1];
+  const re=/(\d{1,3})\s*x\s+([^\n\t(]{2,80}?)\s*\(([^()\n]{1,24}?)\)/g, hits=[]; let h;
+  while((h=re.exec(t))) hits.push({i:h.index, end:re.lastIndex, qty:+h[1], name:h[2].trim(), ref:h[3].trim()});
+  hits.forEach((x,k)=>{ const seg=t.slice(x.end, k+1<hits.length?hits[k+1].i:t.length), pm=new RegExp(M).exec(seg), cm=/\b(MT|NM|EX|GD|LP|PL|PO)\b/.exec(seg);
+    const parts=x.ref.split(/\s+/), num=parts.length>1?parts.pop():x.ref.replace(/^\D+/,''), code=parts.length?parts.join(' '):x.ref.replace(/\d.*$/,'');
+    const cond=cm?({MT:'NM',NM:'NM',EX:'EX',GD:'GD',LP:'PL',PL:'PL',PO:'PL'})[cm[1]]:'NM';
+    o.items.push({ qty:x.qty||1, name:x.name, code:code.trim(), num:num.trim(), price:pm?trCmMoney(pm[1]):null, cond }); });
+  if(o.articles==null && o.items.length && o.items.every(x=>x.price!=null)) o.articles=tr2(o.items.reduce((a,x)=>a+x.price*x.qty,0));
+  return o;
+}
+/* carte TCGdex correspondant à une ligne Cardmarket : même nom (fr/en), même numéro, édition dont l'abréviation = code Cardmarket */
+const TR_SETAB={};
+async function trSetAbbr(sid){ if(!(sid in TR_SETAB)) TR_SETAB[sid]=tcJson(TCD+'fr/sets/'+encodeURIComponent(sid)).then(d=>((d&&d.abbreviation&&d.abbreviation.official)||'').toUpperCase()).catch(()=>''); return TR_SETAB[sid]; }
+async function trCmFind(cm){
+  if(!cm||!cm.name) return null; const code=String(cm.code||'').toUpperCase().replace(/\s+/g,''), dg=s=>String(parseInt(String(s||'').replace(/\D/g,''),10));
+  let res=[]; try{ res=await tcSearch(cm.name); }catch(_){ }
+  const loc=r=>r.localId!=null?r.localId:r.number, ok=r=>r && r.id && loc(r)!=null && dg(loc(r))===dg(cm.num);
+  let c=res.filter(ok);
+  if(!c.length){ try{ res=await tcSearch(cm.name+' '+cm.num); c=res.filter(ok); }catch(_){ } }
+  if(!c.length) return null;
+  const sidOf=r=>(r.expansion&&r.expansion.id)||r.id.slice(0,r.id.length-String(loc(r)).length-1);
+  const sc=await Promise.all(c.map(async r=>{ const sid=sidOf(r), ab=(await trSetAbbr(sid)).replace(/\s+/g,''); let v=0;
+    if(code && ab===code) v+=5; if(code && String(loc(r)).toUpperCase().startsWith(code)) v+=4; if(code==='SWSH'&&sid==='swshp') v+=3; if(/^(SVP|SMP|XYP|BWP|DPP|HGSSP|MEP)$/.test(code)&&sid===code.toLowerCase()) v+=3; return v; }));
+  let bi=0; sc.forEach((v,k)=>{ if(v>sc[bi]) bi=k; });
+  return fxSum(c[bi].id);
+}
+function trCmImport(){
+  const prev=()=>{ const o=trCmParse(trV('trCmTx')), e=$('trCmPrev'); if(!e) return o; e.innerHTML=o.items.length?`<div class="tr-imp ok">✔ <b>${o.items.length}</b> ligne${o.items.length>1?'s':''} de cartes${o.id?' · commande #'+esc(o.id):''}${o.date?' · '+esc(trD(o.date)):''}${o.articles!=null?' · articles '+esc(eur(o.articles)):''}${o.ship!=null?' · port '+esc(eur(o.ship)):''}${o.fees!=null?' · frais '+esc(eur(o.fees)):''}</div><ul class="tr-cmL">${o.items.map(x=>`<li>${x.qty} × <b>${esc(x.name)}</b> <small>${esc(x.code)} ${esc(x.num)} · ${esc(x.cond)}</small> <span class="num">${x.price!=null?esc(eur(x.price)):'prix ?'}</span></li>`).join('')}</ul>`:(trV('trCmTx').trim()?'<div class="hint" style="margin:0">Aucune carte trouvée dans ce texte : copie bien toute la page de la commande (lignes du type « 1 x Pikachu VMAX (SWSH 286) … 3,00 € »).</div>':''); return o; };
+  trModal('Importer une commande Cardmarket', `
+    <ol class="imp-steps"><li>Sur Cardmarket : <b>Mon compte → Achats</b>, ouvre la commande (page « Achat #… »).</li><li>Sélectionne toute la page (<b>Ctrl+A</b>, sur téléphone : appui long → <b>Tout sélectionner</b>) et copie (<b>Ctrl+C</b>).</li><li>Colle ici (<b>Ctrl+V</b>) : les cartes, les prix, le port, les frais et la date sont repris.</li></ol>
+    <div class="inline-edit" style="margin:0 0 6px"><button type="button" class="btn small" id="trCmPaste">📋 Coller le presse-papiers</button></div>
+    <textarea id="trCmTx" rows="7" placeholder="Colle ici le contenu de la page de ta commande…"></textarea>
+    <div id="trCmPrev"></div>`,
+    async()=>{ const o=prev(); if(!o.items.length) throw new Error('Aucune carte trouvée : colle le contenu de la page de la commande.');
+      if(o.id){ const dup=Object.values(TR.buys).find(b=>b.cmOrder===o.id); if(dup && !confirm(`La commande #${o.id} est déjà enregistrée (${trD(dup.date)}). L'importer quand même ?`)) return false; }
+      setTimeout(()=>trBuyOpen({order:o}),0); return false; }, 'Continuer');
+  $('trCmTx').addEventListener('input',prev);
+  $('trCmPaste').addEventListener('click',async()=>{ try{ $('trCmTx').value=await navigator.clipboard.readText(); prev(); }catch(_){ toast('Colle avec Ctrl+V (ou appui long → Coller) dans la zone de texte.'); $('trCmTx').focus(); } });
+}
+/* objectif d'une carte en stock : revendre / faire grader / garder, prix de revente visé, coût de gradation estimé */
+const trPlanL=k=>({sell:'Revendre',grade:'Faire grader puis revendre',keep:'Garder (collection)'})[k]||'';
+function trPlanEst(x){ const P=x.plan; if(!P||!P.k||P.k==='keep'||P.price==null) return null; const c=trCalc(x); return tr2(P.price - (c.cost+c.gc) - (P.k==='grade'&&!(x.grade&&x.grade.cost)?(P.gc||0):0)); }
+function trPlanModal(x){ const P=x.plan||{}, c=trCalc(x), unit=(c.cost+c.gc)/c.q;
+  trModal('Objectif pour cette carte', `<div class="tr-sum">${trImg(x)}<div><b>${esc(x.name)}</b><small>${esc(x.ed||'')} ${esc(x.number||'')}</small><small>Payée ${x.paid!=null?esc(eur(x.paid))+' · ':''}revient ${esc(eur(unit))} / carte${x.mkt!=null?` · marché ${esc(eur(x.mkt))}`:''}</small></div></div>
+    <div class="tr-grid">${trF('Objectif',trSel('trPk',TR_PLAN.map(([k,t])=>[k,k?t:'— Aucun']),P.k||''))}${trF('Prix de revente visé (total)',trNum('trPp',P.price,x.mkt!=null?tr2(x.mkt*(x.qty||1)):''),x.mkt!=null?'marché '+esc(eur(x.mkt))+' / carte':'')}
+      ${trF('Coût de gradation estimé',trNum('trPg',P.gc,'ex. 25'),'société + envoi (si « Faire grader »)')}</div>
+    ${trF('Note',`<input id="trPn" type="text" value="${esc(P.note||'')}" placeholder="ex. viser PSA 10, attendre la sortie du film…">`)}
+    <div class="tr-prev" id="trPprev"></div>`,
+    async()=>{ const k=trV('trPk'); x.plan=k?{k, price:num(trV('trPp'))!=null?tr2(num(trV('trPp'))):null, gc:num(trV('trPg'))!=null?tr2(num(trV('trPg'))):null, note:trV('trPn').trim()}:null; trEv(x,'plan',{note:k?trPlanL(k):'aucun'}); await trPut(x); toast(k?'Objectif enregistré 🎯':'Objectif retiré.'); }, 'Enregistrer');
+  const pv=()=>{ const k=trV('trPk'), pr=num(trV('trPp')), g=k==='grade'?(num(trV('trPg'))||0):0, e=$('trPprev'); if(!e) return; if(!k||k==='keep'||pr==null){ e.innerHTML=''; return; } const m=pr-(c.cost+c.gc)-g; e.innerHTML=`Marge visée <b class="${m>=0?'up':'down'}">${esc(trSg(m))}</b>${c.cost+c.gc+g>0?' ('+esc(pctS(m/(c.cost+c.gc+g)*100))+')':''} · revient ${esc(eur(c.cost+c.gc))}${g?' + gradation '+esc(eur(g)):''}`; };
+  ['trPk','trPp','trPg'].forEach(k=>{ const e=$(k); if(e){ e.addEventListener('input',pv); e.addEventListener('change',pv); } }); pv();
 }
 /* les cartes achetées rejoignent « Ma base » (statut Acheté, prix d'achat = prix de revient) : suivi des prix et alertes de marché */
 async function trTrackInBase(L, buy){
@@ -5498,14 +5600,15 @@ async function trRefresh(){
 }
 function trCsv(){
   const items=Object.values(TR.stock); if(!items.length){ toast('Rien à exporter.'); return; }
-  const H=['Date achat','Plateforme achat','Achat','Carte','Édition','Numéro','Quantité','État','Statut','Prix de revient','Gradation','Note gradation','Coût gradation','Valeur marché','Mise en vente','Prix demandé','Date vente','Plateforme vente','Prix vente','Frais','Port','Bénéfice'];
+  const H=['Date achat','Plateforme achat','Achat','Carte','Édition','Numéro','Quantité','État','Statut','Prix payé (unitaire)','Prix de revient','Objectif','Revente visée','Gradation','Note gradation','Coût gradation','Valeur marché','Mise en vente','Prix demandé','Date vente','Plateforme vente','Prix vente','Frais','Port','Bénéfice'];
   const f=v=>{ const s=v==null?'':String(v); return /[;"\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }, n=v=>v==null||v===''?'':String(v).replace('.',',');
-  const rows=items.sort((a,b)=>String(a.buyDate).localeCompare(String(b.buyDate))).map(x=>{ const c=trCalc(x), b=TR.buys[x.buyId]||{}; return [x.buyDate, trPlat(x.plat||b.plat), b.title||'', x.name, x.ed, x.number, x.qty||1, x.cond, (TR_ST[x.status]||[x.status])[0], n(x.cost), x.grade?x.grade.co:'', x.grade?x.grade.note||'':'', n(x.grade?x.grade.cost:''), n(c.mkt), x.list?x.list.date:'', n(x.list?x.list.price:''), x.sale?x.sale.date:'', x.sale?trPlat(x.sale.plat):'', n(x.sale?x.sale.price:''), n(x.sale?x.sale.fees:''), n(x.sale?x.sale.ship:''), n(x.status==='sold'?c.profit:'')].map(f).join(';'); });
+  const rows=items.sort((a,b)=>String(a.buyDate).localeCompare(String(b.buyDate))).map(x=>{ const c=trCalc(x), b=TR.buys[x.buyId]||{}; return [x.buyDate, trPlat(x.plat||b.plat), b.title||'', x.name, x.ed, x.number, x.qty||1, x.cond, (TR_ST[x.status]||[x.status])[0], n(x.paid), n(x.cost), x.plan?trPlanL(x.plan.k):'', n(x.plan?x.plan.price:''), x.grade?x.grade.co:'', x.grade?x.grade.note||'':'', n(x.grade?x.grade.cost:''), n(c.mkt), x.list?x.list.date:'', n(x.list?x.list.price:''), x.sale?x.sale.date:'', x.sale?trPlat(x.sale.plat):'', n(x.sale?x.sale.price:''), n(x.sale?x.sale.fees:''), n(x.sale?x.sale.ship:''), n(x.status==='sold'?c.profit:'')].map(f).join(';'); });
   const blob=new Blob(['﻿'+H.join(';')+'\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'}), a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='pikascan_achats_ventes_'+trToday()+'.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),4000);
 }
 (function trWire(){
   const p=$('panel-trade'); if(!p) return;
   $('trNew').addEventListener('click',()=>trBuyOpen());
+  $('trImp').addEventListener('click',()=>trCmImport());
   $('trRefresh').addEventListener('click',trRefresh);
   $('trCsv').addEventListener('click',trCsv);
   $('trQ').addEventListener('input',e=>{ TR.q=e.target.value; renderTrade(); });
