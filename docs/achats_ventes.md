@@ -21,3 +21,10 @@
 - Points d'attention : stock de plus de 60 j, annonce de plus de 30 j, gradation de plus de 60 j, marché à −10 % sur 30 j, prix de vente sous le prix de revient.
 - Autres fonctions : séparation des quantités (vendre 1 exemplaire sur 3), texte d'annonce à copier, export CSV (séparateur `;`), actualisation des valeurs via TCGdex, ajout optionnel des cartes à « Ma base » (statut Acheté) pour le suivi des prix et les alertes.
 - Les règles Firestore doivent couvrir `users/{uid}/{collection}/{doc}` pour toutes les collections, sinon la synchro des nouvelles collections échoue (message « Règles Firestore non publiées »).
+
+## Import Cardmarket, prix par carte et objectifs (24 nov. 2026, v1.25.0)
+- **📥 Importer une commande Cardmarket** (en-tête de l'onglet et formulaire « Nouvel achat ») : coller le contenu de la page « Achat #… » (Ctrl+A, Ctrl+C). Repris : n° de commande, vendeur, date de paiement, valeur des articles, port, Trustee Service (frais), n° de suivi, et chaque ligne « 1 x Nom (CODE NUM) … NM … 3,00 € » (quantité, état MT/NM/EX/GD/LP/PL/PO → NM/EX/GD/PL, prix unitaire). Aperçu avant de continuer ; commande déjà importée → confirmation.
+- Identification : recherche TCGdex par nom (fr/en), même numéro, et l'édition dont l'abréviation officielle = code Cardmarket (PRE, MEP…), `swshp` pour SWSH. Testé : Pikachu VMAX SWSH 286, Bulbizarre/Salamèche/Carapuce MEP 037-039 → 4/4.
+- **Prix payé par carte** (« Payé … €/carte ») : prix de revient = prix payé + part du port et des frais au prorata du prix (ex. 19,00 € → 19,97 €). Prix des articles = somme si laissé vide ; les lignes sans prix (lots Vinted) se partagent le reste comme avant.
+- **Objectif** par carte (dès l'achat ou « 🎯 Objectif ») : revendre / faire grader / garder, prix de revente visé, coût de gradation estimé, note ; marge visée affichée. Vue « 🎯 À grader ». Le prix visé pré-remplit « Mettre en vente », le coût estimé pré-remplit « Envoyer en gradation ». CSV : prix payé, objectif, revente visée.
+- Perf : `LocalDB.notify(n)` ne réveille plus que les écrans de la collection modifiée (la liste des achats se redessinait ~8 fois/s pendant l'actualisation des prix de Ma base).
